@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import LandingLayout from '../layouts/LandingLayout'
+import LandingLayout from '../layouts/LandingLayout/LandingLayout'
 import Landing from '../pages/Landing'
 
 const AppRoutes = () => {
@@ -8,9 +8,7 @@ const AppRoutes = () => {
       {/* Público */}
       <Route path="/" element={<LandingLayout />}>
         <Route index element={<Landing  />} />
-        {/* <Route path="menu" element={<MenuPage />} /> */}
-        {/* <Route path="login" element={<Login />} /> */}
-        </Route>
+      </Route>
 
       {/* Cliente */}
       {/* <Route path="/cliente" element={<ClienteLayout />}>
