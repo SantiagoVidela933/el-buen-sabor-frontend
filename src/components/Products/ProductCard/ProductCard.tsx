@@ -1,5 +1,5 @@
-import React from 'react';
 import { Product } from '../../../models/Product';
+import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
   product: Product;
@@ -8,11 +8,15 @@ interface ProductCardProps {
 // componente propio de cada producto
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
-    <div>
-      <img src={product.image} alt={product.title} style={{width: 200}} />
-      <h3>{product.title}</h3>
-      <p>{product.description}</p>
-      <p>${product.price}</p>
+    <div className={styles.card_wrapper}>
+      <div className={styles.box_image}>
+        <img src={product.image} alt={product.title} />
+      </div>
+      <div className={styles.box_info}>
+        <h3 className={styles.card_title}>{product.title}</h3>
+        <p className={styles.card_description}>{product.description}</p>
+        <p className={styles.card_price}>${product.price}</p>
+      </div>
     </div>
   );
 };
