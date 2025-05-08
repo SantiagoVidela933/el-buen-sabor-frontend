@@ -2,81 +2,66 @@ import { useState } from 'react';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
-
-  const [optionUser, setOptionUser] = useState(false); // Estado para controlar el desplegable
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado para el menú móvil
+  const isLoggedIn = true;
+  const [optionUser, setOptionUser] = useState(false); 
 
   const handleOptionUser = () => {
-    setOptionUser(prev => !prev); // Alternar el estado de las opciones de usuario
+    setOptionUser(prev => !prev);
   }
-
-  const isLoggedIn = false;
 
   return (
     <div className={styles.navbar}>
-      {/* btn mobile */}
-      <button className={styles.menu_btn} onClick={() => setMobileMenuOpen(prev => !prev)}>
-        <span className="material-symbols-outlined">menu</span>
-      </button>
-      
-      {/* menú desplegable móvil */}
-      <div className={`${styles.mobile_menu} ${mobileMenuOpen ? styles.show : styles.hidden}`}>
-        {isLoggedIn ? (
-          <div className={styles.profile_options}>
-            <div className={styles.profile_options_user}>
-              <span className="material-symbols-outlined">account_circle</span>
-              <button>Mi perfil</button>
-            </div>
-            <div className={styles.profile_options_closeSesion}>
-              <span className="material-symbols-outlined">logout</span>
-              <button>Cerrar sesión</button>
-            </div>
-          </div>
-        ) : (
-          <div className={styles.guest_actions}>
-            <button className={styles.guest_actions_btn}>Ingresar</button>
-            <button className={styles.guest_actions_btn}>Registrate</button>
-          </div>
-        )}
+      {/* Input de Busqueda */}
+      <div className={styles.box_search}>
+        <form className={styles.search_form}>
+          <input type="text" placeholder="Buscar..." />
+          <span className="material-symbols-outlined">search</span>
+        </form>
       </div>
 
-      {/* Navbar elements */}
-      <div className={styles.box_search}>
-        <input type="text" placeholder="Buscar..." />
-        <span className="material-symbols-outlined">search</span>
-      </div>
-      
+      {/* Logo App */}
       <div className={styles.box_logo}>
         <img className={styles.logo} src='/src/assets/logos/logo_buenSabor.png' />
       </div>
 
+      {/* Perfil Usuario */}
       <div className={styles.box_user}>
-        {/* Perfil de usuario logueado */}
-        <div className={styles.user_actions}>
-          <div className={styles.user_actions_profile}>
-            <span className="material-symbols-outlined">person</span>
-            <button className={styles.profile_name} onClick={handleOptionUser}>Nombre Apellido</button>
-            {/* Opciones de perfil solo si optionUser es true */}
+        {isLoggedIn ? (
+          // ESTA LOGUEADO
+          <div className={styles.user_actions}>
+            <div className={styles.user_actions_profile} onClick={handleOptionUser}>
+              <span className="material-symbols-outlined">person</span>
+              <button>Mi Cuenta</button>
+            </div>
             {optionUser && (
-              <div className={styles.profile_options}>
-                <div className={styles.profile_options_user}>
-                  <span className="material-symbols-outlined">account_circle</span>
-                  <button>Mi perfil</button>
+                <div className={styles.profile_options}>
+                    <a href="#">Mis datos personales</a>
+                    <a href="#">Mis pedidos</a>
+                    <a href="#">Cerrar sesión</a>
                 </div>
-                <div className={styles.profile_options_closeSesion}>
-                  <span className="material-symbols-outlined">logout</span>
-                  <button>Cerrar sesión</button>
-                </div>
-              </div>
-            )}
+              )}
+            <div className={styles.div_line_profile}></div>
+            <div className={styles.profile_carrito}>
+              <button>
+                <span className="material-symbols-outlined">local_mall</span>
+              </button>
+            </div>
           </div>
-          <div className={styles.div_line_profile}></div>
-          <div className={styles.profile_carrito}>
-            <button>
-              <span className="material-symbols-outlined">local_mall</span>
-            </button>
-          </div>
-        </div>
+        ) : (
+          // NO ESTA LOGUEADO
+          <>
+            <div className={styles.user_actions_profile}>
+              <span className="material-symbols-outlined">person</span>
+              <button onClick={handleOptionUser}>Iniciar sesión</button>
+            </div>
+            <div className={styles.div_line_profile}></div>
+            <div className={styles.profile_carrito}>
+              <button>
+                <span className="material-symbols-outlined">local_mall</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
