@@ -31,7 +31,7 @@
     flex-direction: column;
     gap: 1rem;
     z-index: 999;
-    border-top: 1px solid #f7c302;
+    border-top: 1px solid #ff6609;
     border-bottom-right-radius: 10px;
 }
 
@@ -78,7 +78,7 @@
 
 .box_search span {
     font-size: 3vh;
-    color: #f7c302;
+    color: #ff6609;
     cursor: pointer;
 }
 
@@ -114,7 +114,7 @@
     padding: 0.5rem 1.2rem;
     font-size: 1rem;
     background-color: transparent;
-    border: 1px solid #f7c302;
+    border: 1px solid #ff6609;
     color: white;
     border-radius: 8px;
     cursor: pointer;
@@ -123,7 +123,7 @@
 }
 
 .guest_actions_btn:hover {
-    background-color: #f7c302;
+    background-color: #ff6609;
     color: black;
 }
 
@@ -152,7 +152,7 @@
     padding: 0.5rem 1rem;
     font-size: 1rem;
     background-color: transparent;
-    border: 1px solid #f7c302;
+    border: 1px solid #ff6609;
     border-radius: 20px;
     color: white;
     cursor: pointer;
@@ -161,7 +161,7 @@
 }
 
 .profile_name:hover {
-    background-color: #f7c302;
+    background-color: #ff6609;
     color: black;
 }
 
@@ -173,7 +173,7 @@
 
 .profile_carrito button {
     background-color: transparent;
-    border: 1px solid #f7c302;
+    border: 1px solid #ff6609;
     border-radius: 50%;
     padding: 0.6rem;
     cursor: pointer;
@@ -184,7 +184,7 @@
 }
 
 .profile_carrito button:hover {
-    background-color: #f7c302;
+    background-color: #ff6609;
     color: black;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .profile_options_user:hover, .profile_options_closeSesion:hover {
-    background-color: #f7c302;
+    background-color: #ff6609;
     color: black;
 }
 
@@ -259,7 +259,7 @@
 
 .profile_carrito button {
     background-color: transparent;
-    border: 1px solid #f7c302;
+    border: 1px solid #ff6609;
     border-radius: 50%;
     padding: 0.6rem;
     cursor: pointer;
@@ -270,7 +270,7 @@
 }
 
 .profile_carrito button:hover {
-    background-color: #f7c302;
+    background-color: #ff6609;
     color: black;
 }
 
@@ -325,7 +325,7 @@
     .profile_carrito button {
         background: none;
         border: none;
-        color: #f7c302;
+        color: #ff6609;
         font-size: 2rem;
     }
 
@@ -342,7 +342,7 @@
         width: 100%;
         padding: 0.5rem 1rem;
         font-size: 1rem;
-        background-color: #f7c302;
+        background-color: #ff6609;
         color: #000;
         border: none;
         border-radius: 6px;
@@ -356,7 +356,7 @@
 
     .profile_options_user button,
     .profile_options_closeSesion button {
-        background: #f7c302;
+        background: #ff6609;
         color: #000;
         border: none;
         padding: 0.5rem 1rem;

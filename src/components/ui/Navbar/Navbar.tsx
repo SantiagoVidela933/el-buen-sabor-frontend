@@ -10,7 +10,7 @@ const Navbar = () => {
     setOptionUser(prev => !prev); // Alternar el estado de las opciones de usuario
   }
 
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   return (
     <div className={styles.navbar}>

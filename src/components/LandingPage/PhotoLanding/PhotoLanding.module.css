@@ -1,0 +1,30 @@
+.image_wrapper{
+    height: 20rem;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image_title{
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: left;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+    .image_wrapper {
+        height: 12rem;
+        padding: 1rem;
+    }   
+    .image_title {
+        font-size: 1.5rem;
+        text-align: center;
+        padding: 0 1rem;
+    }
+}
+  

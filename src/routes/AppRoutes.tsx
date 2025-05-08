@@ -1,32 +1,17 @@
 import { Route, Routes } from 'react-router-dom'
-import LandingLayout from '../layouts/LandingLayout/LandingLayout'
-import Landing from '../pages/Landing'
+import LandingPage from '../pages/LandingPage/LandingPage'
+import ClientLayout from '../layouts/ClientLayout/ClientLayout'
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Público */}
-      <Route path="/" element={<LandingLayout />}>
-        <Route index element={<Landing  />} />
-      </Route>
-
-      {/* Cliente */}
-      {/* <Route path="/cliente" element={<ClienteLayout />}>
-        <Route index element={<MenuCliente />} />
-        <Route path="carrito" element={<Carrito />} />
-        <Route path="historial" element={<HistorialPedidos />} />
-      </Route> */}
-
-      {/* Admin */}
-      {/* <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="usuarios" element={<GestionUsuarios />} />
-        <Route path="estadisticas" element={<Estadisticas />} />
-      </Route> */}
-
-      {/* Repartidor, Cocinero, Cajero... similar */}
+      <Route path="/" element={
+        <ClientLayout>
+          <LandingPage />
+        </ClientLayout>
+        }
+      />
     </Routes>
-
   )
 }
 
