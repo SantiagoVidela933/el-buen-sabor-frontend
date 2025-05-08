@@ -13,7 +13,7 @@
 }
 
 .box_logo img{
-    width: 15vh;
+    width: 10rem;
 }
 
 .box_main{
@@ -25,9 +25,10 @@
 
 .main_texts{
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     text-align: start;
     padding: 1vh 0;
+    gap: 0 5rem;
 }
 
 .main_texts, .main_icons{
@@ -100,6 +101,12 @@
   
     .main_icons i {
       font-size: 2rem;
+    }
+
+    .box_copyright h3{
+        color: #fff;
+        text-align: center;
+        font-size: 1rem;
     }
   }
   

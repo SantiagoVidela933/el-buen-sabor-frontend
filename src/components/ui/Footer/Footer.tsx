@@ -11,18 +11,12 @@ const Footer = () => {
                 <div className={styles.texts_first}>
                     <h2>Conocenos</h2>
                     <p>¿Quienes somos?</p>
-                    <p>Trabaja con nosotros</p>
                 </div>
                 <div className={styles.texts_second}>
-                    <h2>¿Necesitas ayuda?</h2>
-                    <p>Contactanos al 123456789</p>
-                    <p>Mira el video de explicacion</p>
-                </div>
-                <div className={styles.texts_third}>
-                    <h2>Descubre</h2>
-                    <p>Dias de celebración</p>
-                    <p>Juegos recreativos</p>
-                    <p>Videos explicativos</p>
+                    <h2>Contacto</h2>
+                    <p>+54-9-1234567890</p>
+                    <p>elbuensabor@gmail.com</p>
+                    <p>Mendoza - Argentina</p>
                 </div>
             </div>
             <div className={styles.main_icons}>

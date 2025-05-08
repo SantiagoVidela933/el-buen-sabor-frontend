@@ -3,12 +3,13 @@ import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
   product: Product;
+  onClick?: () => void;
 }
 
 // componente propio de cada producto
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
-    <div className={styles.card_wrapper}>
+    <div className={styles.card_wrapper} onClick={onClick}>
       <div className={styles.box_image}>
         <img src={product.image} alt={product.title} />
       </div>

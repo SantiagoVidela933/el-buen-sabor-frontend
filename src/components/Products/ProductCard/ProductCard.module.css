@@ -1,77 +1,83 @@
 .card_wrapper {
-    max-width: 14rem;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #cdcdcd;
-    border-radius: 1.25rem; 
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
-    width: 100%;
+  max-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cdcdcd;
+  border-radius: 1.25rem; 
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card_wrapper:hover {
+  transform: scale(1.02);
 }
 
 .box_image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f9f9f9;
-    overflow: hidden; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  overflow: hidden; 
 }
 
 .box_image img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 0; 
-    display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 0; 
+  display: block;
 }
 
 .box_info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-    background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: white;
 }
 
 .card_title {
-    font-size: 1rem;
-    margin: 0;
+  font-size: 1rem;
+  margin: 0;
 }
 
 .card_description {
-    font-size: 0.9rem;
-    margin: 0;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .card_price {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
-    .card_wrapper {
-      max-width: 100%;
-      margin-left: 0;
-      border-radius: 1rem;
-    }
-  
-    .box_image img {
-      height: auto;
-      max-height: 200px;
-      object-fit: cover;
-    }
-  
-    .card_title {
-      font-size: 1.1rem;
-    }
-  
-    .card_description {
-      font-size: 0.85rem;
-    }
-  
-    .card_price {
-      font-size: 1rem;
-    }
+  .card_wrapper {
+    max-width: 100%;
+    margin-left: 0;
+    border-radius: 1rem;
   }
+
+  .box_image img {
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  .card_title {
+    font-size: 1.1rem;
+  }
+
+  .card_description {
+    font-size: 0.85rem;
+  }
+
+  .card_price {
+    font-size: 1rem;
+  }
+}
   

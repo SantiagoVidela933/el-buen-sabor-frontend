@@ -67,10 +67,6 @@ button.selected {
         align-items: flex-start;
     }   
 
-    .category_box_title{
-        margin-left: 1rem;
-    }
-
     .category_box_title,
     .category_box_ul,
     .box_display {
@@ -79,10 +75,12 @@ button.selected {
         display: flex;
     }
 
+    .category_box_title{
+        margin: 0;
+    }
     
-
     .category_box_title p {
-        margin: 1rem 0 0 0;
+        margin-top: 1rem;
     }   
 
     .category_ul {
