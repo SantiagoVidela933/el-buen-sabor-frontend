@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import styles from './Navbar.module.css';
-import CarritoButton from './CarritoButton/CarritoButton';
+import CartButton from './CartButton/CartButton';
 
-const Navbar = () => {
+
+interface NavbarProps {
+  onCartClick: ()=>void;
+}
+
+const Navbar = ({onCartClick}: NavbarProps) => {
   const isLoggedIn = false;
   const [optionUser, setOptionUser] = useState(false); 
 
@@ -34,7 +39,7 @@ const Navbar = () => {
                 </div>
               )}
             <div className={styles.div_line_profile}></div>
-            <CarritoButton />
+            <CartButton onClick={onCartClick} />
           </div>
         ) : (
           // NO ESTA LOGUEADO
@@ -44,7 +49,7 @@ const Navbar = () => {
               <button onClick={handleOptionUser}>Iniciar sesión</button>
             </div>
             <div className={styles.div_line_profile}></div>
-            <CarritoButton />
+            <CartButton onClick={onCartClick} />
           </>
         )}
       </div>
