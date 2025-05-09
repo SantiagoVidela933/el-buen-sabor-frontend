@@ -5,6 +5,7 @@ import ProductList from '../ProductList/ProductList';
 import { Product } from '../../../models/Product';
 import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
+import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 
 const ProductSection = () => {
   // categoria que se muestra al renderizar
@@ -16,9 +17,13 @@ const ProductSection = () => {
   // estado del modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // estado busqueda
+  const [searchQuery, setSearchQuery] = useState('');
+
   // actualiza categoria seleccionada
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category); 
+    setSearchQuery('');
   };
 
   const handleProductClick = (product: Product) => {
@@ -32,20 +37,33 @@ const ProductSection = () => {
   };
 
   // filtra productos segun categoria elegida
-  const filteredProducts = products.filter((product) => product.category === selectedCategory);
+  const filteredProducts = products.filter(
+    (product) =>
+      product.category === selectedCategory &&
+      product.title.toLowerCase().includes(searchQuery)
+  );
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query.toLowerCase());
+  };
 
   return (
     <div>
       <Category onCategoryChange={handleCategoryChange} />
+
+      <SearchBar
+        value={searchQuery}
+        setValue={setSearchQuery}
+        onSearch={handleSearch}
+      />
+
       <ProductList products={filteredProducts} onProductClick={handleProductClick}/>
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
           <ProductDetail product={selectedProduct} />
         </Modal>
-      )
-
-      }
+      )}
     </div>
   );
 };

@@ -1,0 +1,24 @@
+.profile_carrito {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile_carrito button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.profile_carrito button:hover{
+    transform: scale(1.3);
+}
+
+.profile_carrito span {
+    font-size: 2rem;
+    color: white;
+}

@@ -5,7 +5,7 @@ const PhotoLanding = () => {
   return (
     <>
       <div className={styles.image_wrapper} style={{ backgroundImage: `url(${photoLanding})`}}>
-        <p className={styles.image_title}>Las mejores hamburguesas de Mendoza</p>
+        <p className={styles.image_title}>Tu antojo mendocino, a un clic de distancia.</p>
       </div>
     </>
   )

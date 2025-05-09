@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styles from './Navbar.module.css';
+import CarritoButton from './CarritoButton/CarritoButton';
 
 const Navbar = () => {
-  const isLoggedIn = true;
+  const isLoggedIn = false;
   const [optionUser, setOptionUser] = useState(false); 
 
   const handleOptionUser = () => {
@@ -11,14 +12,6 @@ const Navbar = () => {
 
   return (
     <div className={styles.navbar}>
-      {/* Input de Busqueda */}
-      <div className={styles.box_search}>
-        <form className={styles.search_form}>
-          <input type="text" placeholder="Buscar..." />
-          <span className="material-symbols-outlined">search</span>
-        </form>
-      </div>
-
       {/* Logo App */}
       <div className={styles.box_logo}>
         <img className={styles.logo} src='/src/assets/logos/logo_buenSabor.png' />
@@ -41,11 +34,7 @@ const Navbar = () => {
                 </div>
               )}
             <div className={styles.div_line_profile}></div>
-            <div className={styles.profile_carrito}>
-              <button>
-                <span className="material-symbols-outlined">local_mall</span>
-              </button>
-            </div>
+            <CarritoButton />
           </div>
         ) : (
           // NO ESTA LOGUEADO
@@ -55,11 +44,7 @@ const Navbar = () => {
               <button onClick={handleOptionUser}>Iniciar sesión</button>
             </div>
             <div className={styles.div_line_profile}></div>
-            <div className={styles.profile_carrito}>
-              <button>
-                <span className="material-symbols-outlined">local_mall</span>
-              </button>
-            </div>
+            <CarritoButton />
           </>
         )}
       </div>
