@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import styles from './ProductDetail.module.css';
+import styles from './ProductCart.module.css';
 import { Product } from '../../../models/Product';
 
-interface ProductDetailProps {
-  product: Product;
+interface ProductCartProps {
+    product: Product;
 }
 
-const ProductDetail = ({ product }: ProductDetailProps) => {
+const ProductCart = ({product}: ProductCartProps) => {
 
     const [quantity, setQuantity] = useState(1);
 
@@ -14,17 +14,16 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
     const handleDecrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className={styles.detail_wrapper}>
-      <div className={styles.detail_image}>
-        <img src={product.image} alt="Product Image" />
+    <div className={styles.card_wrapper}>
+      <div className={styles.box_image}>
+        <img src={product.image} alt={product.title} />
       </div>
-      <div className={styles.detail_info}>
-        <h2>{product.title}</h2>
-        <p>{product.description}</p>
-        <p>Precio: ${product.price}</p>
-        <span>STOCK</span>
+      <div className={styles.box_info}>
+        <h3 className={styles.card_title}>{product.title}</h3>
+        <p className={styles.card_description}>{product.description}</p>
+        <p className={styles.card_price}>${product.price}</p>
       </div>
-      <div className={styles.detail_actions}>
+      <div className={styles.box_actions}>
         <div className={styles.counter}>
           <button onClick={handleDecrease}>-</button>
           <span>{quantity}</span>
@@ -37,4 +36,4 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   )
 }
 
-export default ProductDetail
+export default ProductCart
