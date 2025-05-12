@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import styles from './Navbar.module.css';
 import CartButton from './CartButton/CartButton';
+import Modal from '../Modal/Modal';
+import UserData from '../../User/UserData/UserData';
 
 
 interface NavbarProps {
@@ -8,8 +10,10 @@ interface NavbarProps {
 }
 
 const Navbar = ({onCartClick}: NavbarProps) => {
-  const isLoggedIn = false;
+  const isLoggedIn = true;
   const [optionUser, setOptionUser] = useState(false); 
+  
+  const [openModal, setOpenModal] = useState(false);
 
   const handleOptionUser = () => {
     setOptionUser(prev => !prev);
@@ -33,10 +37,16 @@ const Navbar = ({onCartClick}: NavbarProps) => {
             </div>
             {optionUser && (
                 <div className={styles.profile_options}>
-                    <a href="#">Mis datos personales</a>
-                    <a href="#">Mis pedidos</a>
-                    <a href="#">Cerrar sesión</a>
+                    <button onClick={() => setOpenModal(true)}>Mis datos personales</button>
+                    {openModal && (
+                      <Modal onClose={() => setOpenModal(false)}>
+                        <UserData />
+                      </Modal>
+                    )}
+                    <button>Mis pedidos</button>
+                    <button>Cerrar sesión</button>
                 </div>
+                
               )}
             <div className={styles.div_line_profile}></div>
             <CartButton onClick={onCartClick} />

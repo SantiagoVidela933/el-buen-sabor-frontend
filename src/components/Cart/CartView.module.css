@@ -1,142 +1,176 @@
 .cartView_wrapper {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.cartView_title h3 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.cartView_cart {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Productos */
+.cart_products {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Resumen */
+.cart_resumen {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 1rem 0;
+}
+
+.cart_resumen p,
+.cart_resumen span {
+  margin: 0.2rem 0;
+  font-size: 1.1rem;
+}
+
+.resumen_amount,
+.resumen_desc,
+.resumen_total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-weight: 500;
+}
+
+.resumen_total {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.divLine {
+  height: 1px;
+  background-color: #ddd;
+  margin: 1.5rem 0;
+}
+
+/* Formulario */
+.resumen_form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.form_section {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.inputField {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.warningText {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Botón Confirmar */
+.confirmButton {
+  align-self: flex-end;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #ff6609;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirmButton:hover {
+  background-color: #e65c00;
+}
+
+/* Post Confirmación */
+.postConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.invoiceButton,
+.timeButton {
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.invoiceButton {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+}
+
+.invoiceButton:hover {
+  background-color: #e2e2e2;
+}
+
+.timeButton {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+}
+
+.timeButton:hover {
+  background-color: #27ae60;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cartView_wrapper {
+    padding: 1rem;
   }
-  
+
   .cartView_title h3 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #333;
+    font-size: 1.5rem;
   }
-  
-  .cartView_cart {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+
+  .inputField {
+    font-size: 0.9rem;
+    padding: 0.5rem;
   }
-  
-  /* Productos */
-  .cart_products {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  /* Resumen de compra */
-  .cart_resumen {
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    padding: 1rem 0;
-  }
-  
-  .cart_resumen p,
-  .cart_resumen span {
-    margin: 0.2rem 0;
-    font-size: 1.1rem;
-  }
-  
-  .resumen_amount,
-  .resumen_desc,
-  .resumen_total {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.6rem;
-    font-weight: 500;
-  }
-  
-  .resumen_total {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  
-  /* Línea divisoria */
-  .divLine {
-    height: 1px;
-    background-color: #ddd;
-    margin: 1.5rem 0;
-  }
-  
-  /* Formulario */
-  .resumen_form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+
+  .confirmButton {
+    align-self: center;
+    width: 100%;
+    padding: 0.7rem;
     font-size: 1rem;
   }
-  
-  .form_section {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-  
-  .inputField {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  
-  .warningText {
-    font-size: 0.85rem;
-    color: #888;
-    font-style: italic;
-  }
-  
-  /* Botón Confirmar */
-  .confirmButton {
-    align-self: flex-end;
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background-color: #ff6609;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .confirmButton:hover {
-    background-color: #e65c00;
-  }
-  
-  /* Post Confirmación */
-  .postConfirm {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-top: 1rem;
-  }
-  
-  .invoiceButton {
-    padding: 0.6rem;
-    background-color: #f1f1f1;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .invoiceButton:hover {
-    background-color: #e2e2e2;
-  }
-  
+
+  .invoiceButton,
   .timeButton {
-    padding: 0.6rem;
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
+    width: 100%;
+    font-size: 0.9rem;
   }
-  
-  .timeButton:hover {
-    background-color: #27ae60;
+
+  .resumen_form label {
+    font-size: 0.95rem;
   }
-  
+}
