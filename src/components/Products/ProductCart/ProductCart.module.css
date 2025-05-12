@@ -73,7 +73,7 @@
   
   .box_actions > button {
     padding: 0.4rem 0.8rem;
-    background-color: #ff6609;
+    background-color: red;
     color: white;
     border: none;
     border-radius: 6px;
@@ -83,6 +83,6 @@
   }
   
   .box_actions > button:hover {
-    background-color: #e65c00;
+    /* background-color: #e65c00; */
   }
   

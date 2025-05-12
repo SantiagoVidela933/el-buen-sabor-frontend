@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
-import { products } from '../../data/products';
+import { useCart } from '../../hooks/useCart';
 
 interface CartViewProps {
   onClose: () => void;
 }
 
 const CartView = ({ onClose }: CartViewProps) => {
-  const [deliveryMethod, setDeliveryMethod] = useState<"retiro" | "envio" | null>(null);
+
+  // obtiene items del carrito y sus funciones
+  const { cartItems, removeFromCart, updateQuantity, getTotal } = useCart(); 
+
+  const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
 
+  // datos necesarios si elige envio
   const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
   const [departamento, setDepartamento] = useState('');
@@ -22,17 +27,19 @@ const CartView = ({ onClose }: CartViewProps) => {
     );
   };
 
-  // Validación para habilitar botón Confirmar
+
   const isFormValid = () => {
-    if (deliveryMethod === "retiro") {
+    // si es retiro, que haya al menos 1 metodo de pago
+    if (deliveryMethod === 'retiro') {
       return paymentMethod.length > 0;
     }
-    if (deliveryMethod === "envio") {
+    // si es envio, que los campos esten completos y pago con MP
+    if (deliveryMethod === 'envio') {
       return (
         telefono.trim() !== '' &&
         direccion.trim() !== '' &&
         departamento.trim() !== '' &&
-        paymentMethod.includes("mercadoPago")
+        paymentMethod.includes('mercadoPago')
       );
     }
     return false;
@@ -43,18 +50,28 @@ const CartView = ({ onClose }: CartViewProps) => {
       <div className={styles.cartView_title}>
         <h3>CARRITO DE COMPRAS</h3>
       </div>
-
       <div className={styles.cartView_cart}>
         <div className={styles.cart_products}>
-          {products.slice(0, 3).map((product) => (
-            <ProductCart key={product.id} product={product} />
-          ))}
+          {/* Lista de Productos */}
+          {cartItems.length === 0 ? (
+            <p>No hay productos en el carrito</p>
+          ) : (
+            cartItems.map((item) => (
+              <ProductCart
+                key={item.product.id}
+                product={item.product}
+                quantity={item.quantity}
+                removeFromCart={removeFromCart}
+                updateQuantity={updateQuantity}
+              />
+            ))
+          )}
         </div>
 
         <div className={styles.cart_resumen}>
           <div className={styles.resumen_amount}>
-            <p>3 articulos</p>
-            <span>$11.500</span>
+            <p>{cartItems.length} artículo(s)</p>
+            <span>${getTotal()}</span>
           </div>
           <div className={styles.resumen_desc}>
             <p>Descuento</p>
@@ -62,7 +79,7 @@ const CartView = ({ onClose }: CartViewProps) => {
           </div>
           <div className={styles.resumen_total}>
             <p>Total:</p>
-            <span>$11.500</span>
+            <span>${getTotal()}</span>
           </div>
         </div>
 
@@ -70,13 +87,12 @@ const CartView = ({ onClose }: CartViewProps) => {
 
         <form className={styles.resumen_form}>
           <p>Seleccionar:</p>
-
           <label>
             <input
               type="checkbox"
-              checked={deliveryMethod === "retiro"}
+              checked={deliveryMethod === 'retiro'}
               onChange={() => {
-                setDeliveryMethod("retiro");
+                setDeliveryMethod('retiro');
                 setPaymentMethod([]);
                 setTelefono('');
                 setDireccion('');
@@ -85,13 +101,12 @@ const CartView = ({ onClose }: CartViewProps) => {
             />
             Retiro por el local
           </label>
-
           <label>
             <input
               type="checkbox"
-              checked={deliveryMethod === "envio"}
+              checked={deliveryMethod === 'envio'}
               onChange={() => {
-                setDeliveryMethod("envio");
+                setDeliveryMethod('envio');
                 setPaymentMethod([]);
                 setTelefono('');
                 setDireccion('');
@@ -102,22 +117,22 @@ const CartView = ({ onClose }: CartViewProps) => {
           </label>
 
           {/* RETIRO */}
-          {deliveryMethod === "retiro" && (
+          {deliveryMethod === 'retiro' && (
             <div className={styles.form_section}>
               <p>Tipo de pago:</p>
               <label>
                 <input
                   type="checkbox"
-                  checked={paymentMethod.includes("efectivo")}
-                  onChange={() => togglePaymentMethod("efectivo")}
+                  checked={paymentMethod.includes('efectivo')}
+                  onChange={() => togglePaymentMethod('efectivo')}
                 />
                 Efectivo
               </label>
               <label>
                 <input
                   type="checkbox"
-                  checked={paymentMethod.includes("mercadoPago")}
-                  onChange={() => togglePaymentMethod("mercadoPago")}
+                  checked={paymentMethod.includes('mercadoPago')}
+                  onChange={() => togglePaymentMethod('mercadoPago')}
                 />
                 Mercado Pago
               </label>
@@ -125,7 +140,7 @@ const CartView = ({ onClose }: CartViewProps) => {
           )}
 
           {/* ENVÍO */}
-          {deliveryMethod === "envio" && (
+          {deliveryMethod === 'envio' && (
             <div className={styles.form_section}>
               <input
                 type="text"
@@ -153,8 +168,8 @@ const CartView = ({ onClose }: CartViewProps) => {
               <label>
                 <input
                   type="checkbox"
-                  checked={paymentMethod.includes("mercadoPago")}
-                  onChange={() => togglePaymentMethod("mercadoPago")}
+                  checked={paymentMethod.includes('mercadoPago')}
+                  onChange={() => togglePaymentMethod('mercadoPago')}
                 />
                 Mercado Pago
               </label>
@@ -165,10 +180,7 @@ const CartView = ({ onClose }: CartViewProps) => {
 
         {/* BOTÓN CONFIRMAR */}
         {!confirmed && isFormValid() && (
-          <button
-            onClick={() => setConfirmed(true)}
-            className={styles.confirmButton}
-          >
+          <button onClick={() => setConfirmed(true)} className={styles.confirmButton}>
             Confirmar Pedido
           </button>
         )}

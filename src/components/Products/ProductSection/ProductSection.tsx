@@ -61,7 +61,7 @@ const ProductSection = () => {
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
-          <ProductDetail product={selectedProduct} />
+          <ProductDetail product={selectedProduct} onClose={closeModal} />
         </Modal>
       )}
     </div>

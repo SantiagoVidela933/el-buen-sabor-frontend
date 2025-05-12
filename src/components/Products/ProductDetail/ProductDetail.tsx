@@ -1,17 +1,26 @@
 import { useState } from 'react';
 import styles from './ProductDetail.module.css';
 import { Product } from '../../../models/Product';
+import { useCart } from '../../../hooks/useCart';
 
 interface ProductDetailProps {
   product: Product;
+  onClose: () => void;
 }
 
-const ProductDetail = ({ product }: ProductDetailProps) => {
+const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
 
-    const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const handleIncrease = () => setQuantity(prev => prev + 1);
+  const handleDecrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-    const handleIncrease = () => setQuantity(prev => prev + 1);
-    const handleDecrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  // hook para acceder a las funciones del carrito
+  const { addToCart } = useCart();
+
+  const handleAdd = () => {
+    addToCart(product, quantity);
+    onClose(); 
+  };
 
   return (
     <div className={styles.detail_wrapper}>
@@ -30,8 +39,8 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           <span>{quantity}</span>
           <button onClick={handleIncrease}>+</button>
         </div>
-        <span>$2.500</span>
-        <button>Agregar al carrito</button>
+        <span>${product.price * quantity}</span>
+        <button onClick={handleAdd}>Agregar al carrito</button>
       </div>
     </div>
   )
