@@ -4,12 +4,12 @@ import CartButton from './CartButton/CartButton';
 import Modal from '../Modal/Modal';
 import UserData from '../../User/UserData/UserData';
 
-
 interface NavbarProps {
   onCartClick: ()=>void;
+  onViewChange: (view: 'main' | 'cart' | 'orders') => void;
 }
 
-const Navbar = ({onCartClick}: NavbarProps) => {
+const Navbar = ({onCartClick, onViewChange}: NavbarProps) => {
   const isLoggedIn = true;
   const [optionUser, setOptionUser] = useState(false); 
   
@@ -22,7 +22,7 @@ const Navbar = ({onCartClick}: NavbarProps) => {
   return (
     <div className={styles.navbar}>
       {/* Logo App */}
-      <div className={styles.box_logo}>
+      <div className={styles.box_logo} onClick={() => onViewChange('main')}>
         <img className={styles.logo} src='/src/assets/logos/logo_buenSabor.png' />
       </div>
 
@@ -39,11 +39,11 @@ const Navbar = ({onCartClick}: NavbarProps) => {
                 <div className={styles.profile_options}>
                     <button onClick={() => setOpenModal(true)}>Mis datos personales</button>
                     {openModal && (
-                      <Modal onClose={() => setOpenModal(false)}>
+                      <Modal onClose={() => {setOpenModal(false); setOptionUser(false);}}>
                         <UserData />
                       </Modal>
                     )}
-                    <button>Mis pedidos</button>
+                    <button onClick={() => { onViewChange('orders'); setOptionUser(false);}}>Mis pedidos</button>
                     <button>Cerrar sesión</button>
                 </div>
                 

@@ -4,6 +4,7 @@ import Navbar from "../../components/ui/Navbar/Navbar"
 import styles from "./ClientLayout.module.css";
 import CartView from "../../components/Cart/CartView";
 import PhotoLanding from "../../components/LandingPage/PhotoLanding/PhotoLanding";
+import UserOrderList from "../../components/User/UserOrderList/UserOrderList";
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -11,15 +12,16 @@ interface ClientLayoutProps {
 
 const ClientLayout = ({children}: ClientLayoutProps) => {
 
-  const [showCart, setShowCart] = useState(false);
-
+  const [activeView, setActiveView] = useState<'main'|'cart'|'orders'>('main');
 
   return (
     <div className={styles.clientLayout_wrapper}>
-      <Navbar onCartClick={()=>setShowCart(true)}/>
+      <Navbar onCartClick={() => setActiveView('cart')} onViewChange={setActiveView}/>
       <PhotoLanding/>
       <main className={styles.clientLayout_main}>
-        {showCart ? <CartView onClose={()=>setShowCart(false)}/> : children}
+        {activeView === 'cart' && <CartView onClose={() => setActiveView('main')} />}
+        {activeView === 'orders' && <UserOrderList onBack={() => setActiveView('main')} />}
+        {activeView === 'main' && children}
       </main>
       <Footer />
     </div>

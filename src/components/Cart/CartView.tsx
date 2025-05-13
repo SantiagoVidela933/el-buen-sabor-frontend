@@ -2,6 +2,8 @@ import { useState } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
 import { useCart } from '../../hooks/useCart';
+import { Order } from '../../models/Order';
+import { useOrder } from '../../hooks/useOrder';
 
 interface CartViewProps {
   onClose: () => void;
@@ -10,7 +12,9 @@ interface CartViewProps {
 const CartView = ({ onClose }: CartViewProps) => {
 
   // obtiene items del carrito y sus funciones
-  const { cartItems, removeFromCart, updateQuantity, getTotal } = useCart(); 
+  const { cartItems, clearCart, removeFromCart, updateQuantity, getTotal } = useCart(); 
+
+  const { addOrder } = useOrder();
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
@@ -26,7 +30,6 @@ const CartView = ({ onClose }: CartViewProps) => {
       prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method]
     );
   };
-
 
   const isFormValid = () => {
     // si es retiro, que haya al menos 1 metodo de pago
@@ -44,6 +47,20 @@ const CartView = ({ onClose }: CartViewProps) => {
     }
     return false;
   };
+
+const handleConfirmOrder = () => {
+  const newOrder = new Order(
+    Date.now(), // id temporal
+    new Date().toISOString(),
+    getTotal(),
+    "En preparación",
+    paymentMethod.length > 0
+  );
+
+  addOrder(newOrder); // guarda contexto
+  clearCart();         // limpia carrito
+  setConfirmed(true);  // cambia estado local
+};
 
   return (
     <div className={styles.cartView_wrapper}>
@@ -180,7 +197,7 @@ const CartView = ({ onClose }: CartViewProps) => {
 
         {/* BOTÓN CONFIRMAR */}
         {!confirmed && isFormValid() && (
-          <button onClick={() => setConfirmed(true)} className={styles.confirmButton}>
+          <button onClick={handleConfirmOrder} className={styles.confirmButton}>
             Confirmar Pedido
           </button>
         )}
