@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './Empleados.module.css';
-import Empleado from '../../../../models/Empleado';
+import Empleado from '../../../../models/Users/Empleado';
 import Modal from '../../../ui/Modal/Modal';
 import EmpleadoForm from '../../../ui/EmpleadoForm/EmpleadoForm';
 

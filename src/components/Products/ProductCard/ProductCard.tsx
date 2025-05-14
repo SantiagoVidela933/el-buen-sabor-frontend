@@ -1,4 +1,4 @@
-import { Product } from '../../../models/Product';
+import { Product } from '../../../models/Products/Product';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {

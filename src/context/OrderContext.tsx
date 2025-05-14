@@ -1,5 +1,5 @@
 import { createContext, useState, ReactNode } from "react";
-import { Order } from "../models/Order";
+import { Order } from "../models/Orders/Order";
 
 type OrderStatus = "Entregado" | "En preparación" | "En camino" | "Cancelado";
 

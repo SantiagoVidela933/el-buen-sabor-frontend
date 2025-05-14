@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './ProductDetail.module.css';
-import { Product } from '../../../models/Product';
+import { Product } from '../../../models/Products/Product';
 import { useCart } from '../../../hooks/useCart';
 
 interface ProductDetailProps {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { products } from '../../../data/products'; 
 import Category from '../../LandingPage/Category/Category';
 import ProductList from '../ProductList/ProductList';
-import { Product } from '../../../models/Product';
+import { Product } from '../../../models/Products/Product';
 import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';

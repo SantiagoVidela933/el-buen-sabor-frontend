@@ -1,5 +1,5 @@
 import styles from './ProductCart.module.css';
-import { Product } from '../../../models/Product';
+import { Product } from '../../../models/Products/Product';
 
 interface ProductCartProps {
   product: Product;

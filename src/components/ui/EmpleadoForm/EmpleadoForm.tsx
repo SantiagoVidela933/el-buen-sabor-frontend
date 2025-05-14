@@ -1,4 +1,4 @@
-import Empleado from '../../../models/Empleado';
+import Empleado from '../../../models/Users/Empleado';
 import styles from './EmpleadoForm.module.css';
 
 interface EmpleadoFormProps {

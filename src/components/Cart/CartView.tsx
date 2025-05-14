@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
 import { useCart } from '../../hooks/useCart';
-import { Order } from '../../models/Order';
+import { Order } from '../../models/Orders/Order';
 import { useOrder } from '../../hooks/useOrder';
 
 interface CartViewProps {

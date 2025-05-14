@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './Clientes.module.css';
 import Modal from '../../../ui/Modal/Modal';
 import ClienteForm from '../../../ui/ClienteForm/ClienteForm';
-import Cliente from '../../../../models/Cliente';
+import Cliente from '../../../../models/Users/Cliente';
 
 const empleadosIniciales: Cliente[] = [
   new Cliente(1,'JuanCliente', 'Pérez', 'juan.perez@example.com', '123456789', 'Calle Falsa 123', 'Godoy Cruz', 'Alta', '1990-01-01'),

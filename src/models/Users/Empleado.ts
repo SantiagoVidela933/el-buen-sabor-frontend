@@ -1,6 +1,8 @@
-export default class Cliente {
+import Base from "../Base";
+
+export default class Empleado extends Base {
   constructor(
-    public id: number, 
+    id: number,
     public nombre: string,
     public apellido: string,
     public email: string,
@@ -9,5 +11,9 @@ export default class Cliente {
     public departamento: string,
     public estado: 'Alta' | 'Baja',
     public fechaNacimiento: string,
-  ) {}
+    public rol: 'Cajero' | 'Cocinero' | 'Delivery',
+    deleted?: boolean
+  ) {
+    super(id, deleted);
+  }
 }

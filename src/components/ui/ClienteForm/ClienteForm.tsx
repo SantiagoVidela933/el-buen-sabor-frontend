@@ -1,4 +1,4 @@
-import Cliente from '../../../models/Cliente';
+import Cliente from '../../../models/Users/Cliente';
 import styles from './ClienteForm.module.css';
 
 interface ClienteFormProps {
