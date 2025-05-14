@@ -1,0 +1,65 @@
+import { useState } from 'react'
+import styles from './AdminLayout.module.css'
+import PhotoLanding from '../../components/LandingPage/PhotoLanding/PhotoLanding';
+import Footer from '../../components/ui/Footer/Footer';
+import Dashboard from '../../components/ui/Dashboard/Dashboard';
+import Empleados from '../../components/AdminViews/UserView/Empleados/Empleados';
+import Clientes from '../../components/AdminViews/UserView/Clientes/Clientes';
+import StockProducto from '../../components/AdminViews/StockView/Productos/StockProducto';
+import StockIngrediente from '../../components/AdminViews/StockView/Ingredientes/StockIngrediente';
+import RubroProducto from '../../components/AdminViews/RubrosView/Productos/RubroProducto';
+import RubroIngrediente from '../../components/AdminViews/RubrosView/Ingredientes/RubroIngrediente';
+import ClientStats from '../../components/AdminViews/StatsView/ClientStats/ClientStats';
+import Movimientos from '../../components/AdminViews/StatsView/Movimientos/Movimientos';
+import ProductStats from '../../components/AdminViews/StatsView/ProductStats/ProductStats';
+import Facturas from '../../components/AdminViews/Facturacion/Facturas/Facturas';
+import NotasCredito from '../../components/AdminViews/Facturacion/NotasCredito/NotasCredito';
+
+const AdminLayout = () => {
+
+  const [activeView, setActiveView] = useState<string>("clientes");
+
+  const renderActiveView = () => {
+    switch (activeView) {
+      case "userEmpleado":
+        return <Empleados />;
+      case "userCliente":
+        return <Clientes />;
+      case "stockProducto":
+        return <StockProducto />; 
+      case "stockIngrediente":
+        return <StockIngrediente />; 
+      case "rubroProducto":
+        return <RubroProducto />;   
+      case "rubroIngrediente":
+        return <RubroIngrediente />;       
+      case "clientStats":
+        return <ClientStats />;  
+      case "movimientos":
+        return <Movimientos />; 
+      case "productStats":
+        return <ProductStats />;
+      case "facturas":
+        return <Facturas />; 
+      case "notasCredito":
+        return <NotasCredito />;           
+      default:
+        return <div>Selecciona una opción del panel</div>;
+    }
+  };
+
+  return (
+    <div className={styles.adminLayout_wrapper}>
+      <PhotoLanding />
+      <div className={styles.adminLayout_content}>
+        <Dashboard onSelect={setActiveView} />
+        <main className={styles.adminLayout_main}>
+          {renderActiveView()}
+        </main>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+export default AdminLayout

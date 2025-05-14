@@ -6,57 +6,45 @@ interface CategoryProps {
 }
 
 const Category = ({ onCategoryChange }: CategoryProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Estado para categoría seleccionada
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category); // Actualiza la categoría seleccionada
-    onCategoryChange(category); // Notifica al componente padre
+    setSelectedCategory(category);
+    onCategoryChange(category);
   };
+
+  const getButtonClass = (category: string) =>
+    `${styles.category_button} ${selectedCategory === category ? styles.selected : ''}`;
 
   return (
     <div className={styles.category_wrapper}>
       <div className={styles.category_box_title}>
-        <p>Categorías</p>
+        <p className={styles.category_title_text}>Categorías</p>
       </div>
       <div className={styles.category_box_ul}>
         <ul className={styles.category_ul}>
-          <li aria-label='pizza'>
-            <button
-              onClick={() => handleCategoryClick('pizza')}
-              className={selectedCategory === 'pizza' ? styles.selected : ''}
-            >
+          <li className={styles.category_li} aria-label='pizza'>
+            <button onClick={() => handleCategoryClick('pizza')} className={getButtonClass('pizza')}>
               <span className="material-symbols-outlined">local_pizza</span>
             </button>
           </li>
-          <li aria-label='burger'>
-            <button
-              onClick={() => handleCategoryClick('burger')}
-              className={selectedCategory === 'burger' ? styles.selected : ''}
-            >
+          <li className={styles.category_li} aria-label='burger'>
+            <button onClick={() => handleCategoryClick('burger')} className={getButtonClass('burger')}>
               <span className="material-symbols-outlined">lunch_dining</span>
             </button>
           </li>
-          <li aria-label='bebida'>
-            <button
-              onClick={() => handleCategoryClick('bebida')}
-              className={selectedCategory === 'bebida' ? styles.selected : ''}
-            >
+          <li className={styles.category_li} aria-label='bebida'>
+            <button onClick={() => handleCategoryClick('bebida')} className={getButtonClass('bebida')}>
               <span className="material-symbols-outlined">local_bar</span>
             </button>
           </li>
-          <li aria-label='papas'>
-            <button
-              onClick={() => handleCategoryClick('papas')}
-              className={selectedCategory === 'papas' ? styles.selected : ''}
-            >
+          <li className={styles.category_li} aria-label='papas'>
+            <button onClick={() => handleCategoryClick('papas')} className={getButtonClass('papas')}>
               <span className="material-symbols-outlined">fastfood</span>
             </button>
           </li>
-          <li aria-label='panchos'>
-            <button
-              onClick={() => handleCategoryClick('panchos')}
-              className={selectedCategory === 'panchos' ? styles.selected : ''}
-            >
+          <li className={styles.category_li} aria-label='panchos'>
+            <button onClick={() => handleCategoryClick('panchos')} className={getButtonClass('panchos')}>
               <span className="material-symbols-outlined">bakery_dining</span>
             </button>
           </li>

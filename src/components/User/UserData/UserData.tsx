@@ -4,40 +4,40 @@ const UserData = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h3>Mis datos personales</h3>
+        <h3 className={styles.title}>Mis datos personales</h3>
       </div>
       <form className={styles.form}>
-        <label>
+        <label className={styles.label}>
           Nombre
-          <input type="text" />
+          <input type="text" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Apellido
-          <input type="text" />
+          <input type="text" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Teléfono
-          <input type="number" />
+          <input type="number" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Email
-          <input type="email" />
+          <input type="email" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Contraseña
-          <input type="password" />
+          <input type="password" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Fecha de Nacimiento
-          <input type="date" />
+          <input type="date" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Dirección
-          <input type="text" />
+          <input type="text" className={styles.input} />
         </label>
-        <label>
+        <label className={styles.label}>
           Departamento
-          <select>
+          <select className={styles.select}>
             <option value="">-- Selecciona un departamento --</option>
             <option value="capital">Capital</option>
             <option value="general_alvear">General Alvear</option>
@@ -60,7 +60,9 @@ const UserData = () => {
           </select>
         </label>
         <div className={styles.buttonWrapper}>
-          <button type="submit">Guardar cambios</button>
+          <button type="submit" className={styles.button}>
+            Guardar cambios
+          </button>
         </div>
       </form>
     </div>

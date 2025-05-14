@@ -1,10 +1,10 @@
 /* Navbar Container */
 .navbar {
-    width: 100%;
-    height: 5rem;
-    display: flex;
-    background-color: #1a1a1a;
-    justify-content: space-evenly; 
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  background-color: #1a1a1a;
+  justify-content: space-evenly; 
 }
 
 /* Logo App*/
