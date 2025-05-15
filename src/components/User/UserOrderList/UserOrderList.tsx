@@ -1,12 +1,21 @@
 import styles from "./UserOrderList.module.css";
 import { useOrder } from "../../../hooks/useOrder";
+import { useState } from "react";
+import Modal from "../../../components/ui/Modal/Modal"; // asegurate de que esta ruta sea la correcta
+import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
+
 
 interface UserOrderListProps {
   onBack: () => void;
 }
 
 const UserOrderList = ({ onBack }: UserOrderListProps) => {
-  const { orders } = useOrder(); // ✅ Traemos desde el contexto
+  const { orders } = useOrder();
+
+  const [selectedOrder, setSelectedOrder] = useState<(typeof orders)[0] | null>(
+    null
+  );
+  const [showModal, setShowModal] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -15,8 +24,13 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
+  };
+
+  const handleViewOrder = (order: (typeof orders)[0]) => {
+    setSelectedOrder(order);
+    setShowModal(true);
   };
 
   return (
@@ -36,7 +50,9 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={5} className={styles.emptyMessage}>Aún no tenés pedidos</td>
+                <td colSpan={5} className={styles.emptyMessage}>
+                  Aún no tenés pedidos
+                </td>
               </tr>
             ) : (
               orders.map((order) => (
@@ -46,14 +62,25 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                   <td>${order.total}</td>
                   <td>{order.orderStatus}</td>
                   <td className={styles.actions}>
-                    <button onClick={() => alert(`Ver pedido ${order.id}`)}>Ver</button>
-                    {order.paid && (
-                      order.orderStatus === "Cancelado" ? (
-                        <button onClick={() => alert(`Descargar nota de crédito de ${order.id}`)}>Nota de crédito</button>
+                    <button onClick={() => handleViewOrder(order)}>Ver</button>
+                    {order.paid &&
+                      (order.orderStatus === "Cancelado" ? (
+                        <button
+                          onClick={() =>
+                            alert(`Descargar nota de crédito de ${order.id}`)
+                          }
+                        >
+                          Nota de crédito
+                        </button>
                       ) : (
-                        <button onClick={() => alert(`Descargar factura de ${order.id}`)}>Factura</button>
-                      )
-                    )}
+                        <button
+                          onClick={() =>
+                            alert(`Descargar factura de ${order.id}`)
+                          }
+                        >
+                          Factura
+                        </button>
+                      ))}
                   </td>
                 </tr>
               ))
@@ -61,7 +88,18 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
           </tbody>
         </table>
       </div>
-      <button className={styles.backButton} onClick={onBack}>Volver</button>
+      <button className={styles.backButton} onClick={onBack}>
+        Volver
+      </button>
+
+      {showModal && selectedOrder && (
+        <Modal onClose={() => setShowModal(false)}>
+          <UserOrderDetail
+            order={selectedOrder}
+            onClose={() => setShowModal(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 };
