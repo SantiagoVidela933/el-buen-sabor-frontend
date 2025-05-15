@@ -1,4 +1,4 @@
-import styles from '../../User/UserOrderDetail/UserOrderDetail.module.css';
+import styles from '../../User/UserOrdetDetail/UserOrderDetail.module.css';
 import { Order } from '../../../models/Orders/Order';
 import { Product } from '../../../models/Products/Product';
 
