@@ -39,7 +39,7 @@ const ProductSection = () => {
   // filtra productos segun categoria elegida
   const filteredProducts = products.filter(
     (product) =>
-      product.category === selectedCategory &&
+      product.productCategory.description === selectedCategory &&
       product.title.toLowerCase().includes(searchQuery)
   );
 

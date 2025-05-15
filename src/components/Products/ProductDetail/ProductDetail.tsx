@@ -25,7 +25,7 @@ const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
   return (
     <div className={styles.detail_wrapper}>
       <div className={styles.detail_image}>
-        <img src={product.image} alt="Product Image" />
+        <img src={product.image?.path} alt="Product Image" />
       </div>
       <div className={styles.detail_info}>
         <h2>{product.title}</h2>

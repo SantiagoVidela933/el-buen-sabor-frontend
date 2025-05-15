@@ -11,7 +11,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div className={styles.card_wrapper} onClick={onClick}>
       <div className={styles.box_image}>
-        <img src={product.image} alt={product.title} />
+        <img src={product.image?.path} alt={product.title} />
       </div>
       <div className={styles.box_info}>
         <h3 className={styles.card_title}>{product.title}</h3>

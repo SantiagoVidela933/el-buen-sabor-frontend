@@ -27,7 +27,7 @@ const ProductCart = ({
   return (
     <div className={styles.card_wrapper}>
       <div className={styles.box_image}>
-        <img src={product.image} alt={product.title} />
+        <img src={product.image?.path} alt={product.title} />
       </div>
 
       <div className={styles.box_info}>
