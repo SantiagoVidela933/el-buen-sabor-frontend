@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import styles from './AdminLayout.module.css'
+import { useState } from 'react';
+import styles from './AdminLayout.module.css';
 import PhotoLanding from '../../components/LandingPage/PhotoLanding/PhotoLanding';
 import Footer from '../../components/ui/Footer/Footer';
 import Dashboard from '../../components/ui/Dashboard/Dashboard';
-import Empleados from '../../components/AdminViews/UserView/Empleados/Empleados';
-import Clientes from '../../components/AdminViews/UserView/Clientes/Clientes';
+import UserEmpleado from '../../components/AdminViews/UserView/UserEmpleado/UserEmpleado';
+import UserClient from '../../components/AdminViews/UserView/UserClient/UserClient';
 import StockProducto from '../../components/AdminViews/StockView/Productos/StockProducto';
 import StockIngrediente from '../../components/AdminViews/StockView/Ingredientes/StockIngrediente';
 import RubroProducto from '../../components/AdminViews/RubrosView/Productos/RubroProducto';
@@ -22,9 +22,9 @@ const AdminLayout = () => {
   const renderActiveView = () => {
     switch (activeView) {
       case "userEmpleado":
-        return <Empleados />;
+        return <UserEmpleado />;
       case "userCliente":
-        return <Clientes />;
+        return <UserClient />;
       case "stockProducto":
         return <StockProducto />; 
       case "stockIngrediente":

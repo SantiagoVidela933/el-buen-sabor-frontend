@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import styles from './Clientes.module.css';
+import styles from './UserEmpleado.module.css';
+import Empleado from '../../../../models/Users/Empleado';
 import Modal from '../../../ui/Modal/Modal';
-import ClienteForm from '../../../ui/ClienteForm/ClienteForm';
-import Cliente from '../../../../models/Users/Cliente';
+import UserEmpleadoForm from './UserEmpleadoForm/UserEmpleadoForm';
 
-const empleadosIniciales: Cliente[] = [
-  new Cliente(1,'JuanCliente', 'Pérez', 'juan.perez@example.com', '123456789', 'Calle Falsa 123', 'Godoy Cruz', 'Alta', '1990-01-01'),
-  new Cliente(2,'AnaCliente', 'Gómez', 'ana.gomez@example.com', '987654321', 'Av. Siempreviva 742', 'Maipú', 'Baja', '1985-06-15')
+const empleadosIniciales: Empleado[] = [
+  new Empleado(1,'Juan', 'Pérez', 'juan.perez@example.com', '123456789', 'Calle Falsa 123', 'Godoy Cruz', 'Alta', '1990-01-01', 'Cocinero'),
+  new Empleado(2,'Ana', 'Gómez', 'ana.gomez@example.com', '987654321', 'Av. Siempreviva 742', 'Maipú', 'Baja', '1985-06-15', 'Delivery')
 ];
 
-const Clientes = () => {
-  const [empleados, setClientes] = useState<Cliente[]>(empleadosIniciales);
+const UserEmpleado = () => {
+  const [empleados, setEmpleados] = useState<Empleado[]>(empleadosIniciales);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
-  const [empleadoSeleccionado, setClienteSeleccionado] = useState<Cliente | undefined>(undefined);
+  const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState<Empleado | undefined>(undefined);
 
-  const abrirCrearCliente = () => {
+  const abrirCrearEmpleado = () => {
     setModoFormulario('crear');
-    setClienteSeleccionado(undefined);
+    setEmpleadoSeleccionado(undefined);
     setModalAbierto(true);
   };
 
-  const abrirEditarCliente = (empleado: Cliente) => {
+  const abrirEditarEmpleado = (empleado: Empleado) => {
     setModoFormulario('editar');
-    setClienteSeleccionado(empleado);
+    setEmpleadoSeleccionado(empleado);
     setModalAbierto(true);
   };
 
@@ -31,11 +31,11 @@ const Clientes = () => {
     setModalAbierto(false);
   };
 
-  const manejarSubmit = (empleadoActualizado: Cliente) => {
+  const manejarSubmit = (empleadoActualizado: Empleado) => {
     if (modoFormulario === 'crear') {
-      setClientes(prev => [...prev, empleadoActualizado]);
+      setEmpleados(prev => [...prev, empleadoActualizado]);
     } else {
-      setClientes(prev =>
+      setEmpleados(prev =>
         prev.map(emp =>
           emp.email === empleadoSeleccionado?.email ? empleadoActualizado : emp
         )
@@ -47,8 +47,10 @@ const Clientes = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Clientes</h2>
-
+        <h2 className={styles.title}>Empleados</h2>
+        <button className={styles.addBtn} onClick={abrirCrearEmpleado}>
+          <span className="material-symbols-outlined">add</span>
+        </button>
       </div>
 
       <div className={styles.searchBar}>
@@ -59,7 +61,7 @@ const Clientes = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Cliente</th>
+            <th>Empleado</th>
             <th>Email</th>
             <th>Teléfono</th>
             <th>Dirección</th>
@@ -78,10 +80,7 @@ const Clientes = () => {
               <td>{emp.departamento}</td>
               <td>{emp.estado}</td>
               <td>
-                <button className={styles.addBtn} onClick={abrirCrearCliente}>
-                  <span className="material-symbols-outlined">add</span>
-                </button>
-                <button className={styles.editBtn} onClick={() => abrirEditarCliente(emp)}>
+                <button className={styles.editBtn} onClick={() => abrirEditarEmpleado(emp)}>
                   <span className="material-symbols-outlined">edit</span>
                 </button>
                 <button className={styles.deleteBtn}>
@@ -95,7 +94,7 @@ const Clientes = () => {
 
       {modalAbierto && (
         <Modal onClose={cerrarModal}>
-          <ClienteForm  
+          <UserEmpleadoForm
             modo={modoFormulario}
             empleado={empleadoSeleccionado}
             onClose={cerrarModal}
@@ -107,4 +106,4 @@ const Clientes = () => {
   );
 };
 
-export default Clientes;
+export default UserEmpleado;

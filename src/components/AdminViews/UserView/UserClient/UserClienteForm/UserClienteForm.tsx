@@ -1,17 +1,17 @@
-import Empleado from '../../../models/Users/Empleado';
-import styles from './EmpleadoForm.module.css';
+import Cliente from '../../../../../models/Users/Cliente';
+import styles from './UserClienteForm.module.css';
 
-interface EmpleadoFormProps {
+interface UserClienteFormProps {
   modo: 'crear' | 'editar';
-  empleado?: Empleado;
+  empleado?: Cliente;
   onClose: () => void;
-  onSubmit: (empleadoActualizado: Empleado) => void;
+  onSubmit: (empleadoActualizado: Cliente) => void;
 }
 
-const EmpleadoForm = ({ modo, empleado, onClose, onSubmit }: EmpleadoFormProps) => {
+const UserClienteForm = ({ modo, empleado }: UserClienteFormProps) => {
   return (
     <form className={styles.formContainer}>
-      <h2>{modo === 'crear' ? 'Crear Empleado' : 'Modificar Empleado'}</h2>
+      <h2>{modo === 'crear' ? 'Crear Cliente' : 'Modificar Cliente'}</h2>
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>
@@ -64,25 +64,6 @@ const EmpleadoForm = ({ modo, empleado, onClose, onSubmit }: EmpleadoFormProps) 
             </select>
         </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Clave provisoria</label>
-          <input type="password" />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Repetir clave provisoria</label>
-          <input type="password" />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Rol</label>
-          <select defaultValue={empleado?.rol || ''}>
-            <option value="">Seleccionar rol</option>
-            <option value="Cajero">Cajero</option>
-            <option value="Cocinero">Cocinero</option>
-            <option value="Delivery">Delivery</option>
-          </select>
-        </div>
       </div>
 
       <div className={styles.buttonGroup}>
@@ -100,4 +81,4 @@ const EmpleadoForm = ({ modo, empleado, onClose, onSubmit }: EmpleadoFormProps) 
   );
 };
 
-export default EmpleadoForm;
+export default UserClienteForm;
