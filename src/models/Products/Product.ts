@@ -12,7 +12,7 @@ export class Product extends Base {
     public price: number,
     public productCategory: ProductCategory,
     public productDetails?: ProductDetails[],
-    public available?: boolean,
+    public available?: string,
     public cookingTime?: number | "",
     public recipe?: Recipe, 
     public image?: Image,

@@ -6,7 +6,7 @@ export class ProductDetails extends Base {
     id: number,
     public ingredient: Ingredient,
     public quantity: number | "",
-    public measurementUnit: string,
+    public measurementUnit: number,
     deleted?: boolean,
   ) {
     super(id, deleted);
