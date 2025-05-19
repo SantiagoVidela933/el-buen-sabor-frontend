@@ -1,0 +1,9 @@
+.deliveryLayout_wrapper{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.deliveryLayout_main{
+    flex: 1;
+}
