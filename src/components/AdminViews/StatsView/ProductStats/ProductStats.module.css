@@ -1,0 +1,58 @@
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.filtros {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+
+.filtros input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.exportarBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+}
+
+.exportarBtn:hover {
+  background-color: #43a047;
+}
+
+.graficoContainer {
+  margin-bottom: 2rem;
+}
+
+.subtitulo {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
