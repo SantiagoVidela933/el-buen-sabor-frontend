@@ -11,6 +11,7 @@ export class Ingredient extends Base {
     public currentStock: number,
     public measurementUnit: MeasurementUnit,
     public price: number,
+    public available?: string,
     deleted?: boolean
   ) {
     super(id, deleted);

@@ -1,16 +1,17 @@
 import { Product } from '../../../../../models/Products/Product';
-import styles from './StockProductoEditar.module.css';
+import styles from './StockProductoForm.module.css';
 
-interface StockProductoEditarProps {
+interface StockProductoFormProps {
   producto?: Product;
+  modo: 'crear' | 'editar';
   onClose: () => void;
   onSubmit: (productoActualizado: Product) => void;
 }
 
-const StockProductoEditar = ({ producto, onClose }: StockProductoEditarProps) => {
+const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) => {
   return (
     <form className={styles.formContainer}>
-      <h2>Editar Producto</h2>
+      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>
@@ -74,4 +75,4 @@ const StockProductoEditar = ({ producto, onClose }: StockProductoEditarProps) =>
   );
 };
 
-export default StockProductoEditar;
+export default StockProductoForm;

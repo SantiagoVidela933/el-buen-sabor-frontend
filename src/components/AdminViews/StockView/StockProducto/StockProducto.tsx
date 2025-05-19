@@ -3,7 +3,7 @@ import { productosIniciales } from '../../../../data/product2';
 import styles from './StockProductos.module.css';
 import { Product } from '../../../../models/Products/Product';
 import Modal from '../../../ui/Modal/Modal';
-import StockProductoEditar from './StockProductoEditar/StockProductoEditar';
+import StockProductoForm from './StockProductoForm/StockProductoForm';
 
 const StockProducto = () => {
 
@@ -89,7 +89,8 @@ const StockProducto = () => {
       </table>
       {modalAbierto && (
         <Modal onClose={cerrarModal}>
-          <StockProductoEditar
+          <StockProductoForm
+            modo={modoFormulario}
             producto={productoSeleccionado}
             onClose={cerrarModal}
             onSubmit={manejarSubmit}
