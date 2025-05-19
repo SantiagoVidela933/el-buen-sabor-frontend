@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import styles from './AdminLayout.module.css';
 import PhotoLanding from '../../components/LandingPage/PhotoLanding/PhotoLanding';
 import Footer from '../../components/ui/Footer/Footer';
@@ -7,19 +7,15 @@ import UserEmpleado from '../../components/AdminViews/UserView/UserEmpleado/User
 import UserClient from '../../components/AdminViews/UserView/UserClient/UserClient';
 import StockProducto from '../../components/AdminViews/StockView/StockProducto/StockProducto';
 import StockIngrediente from '../../components/AdminViews/StockView/StockIngrediente/StockIngrediente';
-import RubroProducto from '../../components/AdminViews/RubrosView/Productos/RubroProducto';
-import RubroIngrediente from '../../components/AdminViews/RubrosView/Ingredientes/RubroIngrediente';
+import RubroProducto from '../../components/AdminViews/RubrosView/RubroProducto/RubroProducto';
+import RubroIngrediente from '../../components/AdminViews/RubrosView/RubroIngrediente/RubroIngrediente';
 import ClientStats from '../../components/AdminViews/StatsView/ClientStats/ClientStats';
 import Movimientos from '../../components/AdminViews/StatsView/Movimientos/Movimientos';
 import ProductStats from '../../components/AdminViews/StatsView/ProductStats/ProductStats';
 import Facturas from '../../components/AdminViews/Facturacion/Facturas/Facturas';
 import NotasCredito from '../../components/AdminViews/Facturacion/NotasCredito/NotasCredito';
 
-interface AdminLayoutProps {
-  children: ReactNode;
-}
-
-const AdminLayout = ({children}: AdminLayoutProps) => {
+const AdminLayout = () => {
 
   const [activeView, setActiveView] = useState<string>("clientes");
 
