@@ -33,7 +33,7 @@
 }
 
 .exportarBtn {
-  background-color: #4caf50;
+  background-color: #ff6609;
   color: white;
   border: none;
   padding: 0.6rem 1rem;
@@ -46,7 +46,7 @@
 }
 
 .exportarBtn:hover {
-  background-color: #43a047;
+  background-color: #ff6609;
 }
 
 .tabla table {
@@ -63,7 +63,7 @@
 }
 
 .verPedidosBtn {
-  background-color: #2196f3;
+  background-color: #ff6609;
   color: white;
   padding: 0.4rem 0.8rem;
   border: none;

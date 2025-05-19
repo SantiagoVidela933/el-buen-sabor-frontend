@@ -59,8 +59,7 @@ const Dashboard = ({ onSelect }: DashboardProps) => {
         <button onClick={() => toggleSection('facturacion')}>Facturación</button>
         {expanded === 'facturacion' && (
           <div className={styles.subsection}>
-            <button onClick={() => onSelect('facturas')}>Generar facturas</button>
-            <button onClick={() => onSelect('notasCredito')}>Notas de crédito</button>
+            <button onClick={() => onSelect('facturacion')}>Facturación de Pedidos</button>
           </div>
         )}
       </div>

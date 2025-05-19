@@ -12,8 +12,7 @@ import RubroIngrediente from '../../components/AdminViews/RubrosView/RubroIngred
 import ClientStats from '../../components/AdminViews/StatsView/ClientStats/ClientStats';
 import Movimientos from '../../components/AdminViews/StatsView/Movimientos/Movimientos';
 import ProductStats from '../../components/AdminViews/StatsView/ProductStats/ProductStats';
-import Facturas from '../../components/AdminViews/Facturacion/Facturas/Facturas';
-import NotasCredito from '../../components/AdminViews/Facturacion/NotasCredito/NotasCredito';
+import Facturacion from '../../components/AdminViews/Facturacion/Facturacion';
 
 const AdminLayout = () => {
 
@@ -39,10 +38,8 @@ const AdminLayout = () => {
         return <Movimientos />; 
       case "productStats":
         return <ProductStats />;
-      case "facturas":
-        return <Facturas />; 
-      case "notasCredito":
-        return <NotasCredito />;           
+      case "facturacion":
+        return <Facturacion />; 
       default:
         return <div>Selecciona una opción del panel</div>;
     }
