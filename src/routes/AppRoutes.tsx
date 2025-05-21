@@ -8,6 +8,7 @@ import DeliveryLayout from '../layouts/DeliveryLayout/DeliveryLayout'
 import CajeroLayout from '../layouts/CajeroLayout/CajeroLayout'
 import CajeroPage from '../pages/CajeroPage/CajeroPage'
 import CocineroPage from '../pages/CocineroPage/CocineroPage'
+import CocineroLayout from '../layouts/CocineroLayout/CocineroLayout'
 
 const AppRoutes = () => {
   return (

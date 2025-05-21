@@ -1,0 +1,86 @@
+.container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  max-width: 700px; /* Un poco más ancho para las dos columnas */
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Para el botón de cerrar del modal si lo tiene */
+}
+
+.title {
+  font-size: 1.5em;
+  margin-bottom: 25px;
+  text-align: center;
+  color: #333;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas de igual ancho */
+  gap: 20px 40px; /* Espacio entre filas y columnas */
+}
+
+.formGroup {
+  margin-bottom: 0; /* Reinicia el margin-bottom para que el gap funcione */
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end; /* Alinear a la derecha */
+  gap: 15px; /* Espacio entre botones */
+  margin-top: 30px;
+}
+
+.button {
+  padding: 10px 25px; /* Ajustado para botones más grandes */
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.cancelButton {
+  background-color: #dc3545; /* Rojo */
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #c82333;
+}
+
+.saveButton {
+  background-color: #ffc107; /* Amarillo */
+  color: #212529; /* Texto oscuro para contraste */
+}
+
+.saveButton:hover {
+  background-color: #e0a800;
+}

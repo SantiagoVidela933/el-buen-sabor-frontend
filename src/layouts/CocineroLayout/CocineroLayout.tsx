@@ -6,7 +6,7 @@ import PhotoLanding from "../../components/LandingPage/PhotoLanding/PhotoLanding
 
 import PedidosView from "../../components/Views/CocineroViews/PedidosView/PedidosView";
 import { columns, pedidos } from "../../data/pedidosCocinero";
-import Dashboard from "../../components/Views/CocineroViews/Dashborad/DashboardCocinero";
+import Dashboard from "../../components/Views/CocineroViews/DashboardCocinero/DashboardCocinero";
 import ProductosView from "../../components/Views/CocineroViews/StockView/ProductosView/ProductosView";
 import IngredientesView from "../../components/Views/CocineroViews/StockView/IngredientesView/IngredientesView";
 
