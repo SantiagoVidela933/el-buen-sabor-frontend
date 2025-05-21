@@ -1,0 +1,57 @@
+.cocineroLayout_wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.cocineroLayout_content {
+  display: flex;
+  flex: 1;
+  background-color: white;
+}
+
+.cocineroLayout_main {
+  flex: 1;
+  min-width: 0; /* evita overflow horizontal */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Opcional: ajusta ancho del sidebar (Dashboard) */
+.sidebar {
+  width: 250px;
+  min-width: 200px;
+}
+
+.dashboard_and_content {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Sidebar */
+.dashboard_and_content :global(.sidebar) {
+  width: 250px;
+  min-width: 200px;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .dashboard_and_content {
+    flex-direction: column;
+  }
+
+  .dashboard_and_content :global(.sidebar) {
+    width: 100%;
+  }
+
+  .cocineroLayout_main {
+    width: 100%;
+  }
+}
