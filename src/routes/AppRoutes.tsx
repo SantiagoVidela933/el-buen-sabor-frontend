@@ -7,6 +7,7 @@ import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DeliveryLayout from '../layouts/DeliveryLayout/DeliveryLayout'
 import CajeroLayout from '../layouts/CajeroLayout/CajeroLayout'
 import CajeroPage from '../pages/CajeroPage/CajeroPage'
+import CocineroPage from '../pages/CocineroPage/CocineroPage'
 
 const AppRoutes = () => {
   return (
@@ -33,6 +34,14 @@ const AppRoutes = () => {
           <CajeroLayout>
             <CajeroPage />
           </CajeroLayout>
+        }
+      />
+
+      {/* Rol COCINERO */}
+      <Route path="/cocinero" element={
+          <CocineroLayout>
+            <CocineroPage/>
+          </CocineroLayout>
         }
       />
 
