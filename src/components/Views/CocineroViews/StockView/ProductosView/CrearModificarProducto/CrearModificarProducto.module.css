@@ -1,0 +1,142 @@
+.innerWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: stretch;
+  max-height: 80vh; /* Para que no crezca demasiado */
+  overflow-y: auto; /* scroll si es necesario */
+  padding-right: 0.5rem; /* Para evitar que el scroll tape contenido */
+}
+
+.form {
+  width: 100%;
+  max-width: 800px; /* Más ancho para pantallas grandes */
+  margin: 0 auto; /* Centrar horizontalmente */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+h2 {
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1 1 45%;
+  min-width: 280px;
+}
+
+/* Inputs y labels igual */
+
+label, input, select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+input[type="file"] {
+  padding: 0;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Botones */
+.recetaButton {
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  background-color: #228b22;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.recetaButton:hover {
+  background-color: #55991e;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: rem;
+  margin-top: 1rem;
+}
+
+button[type="submit"] {
+  background-color: #28a745;
+  color: white;
+  border: 0px;
+  border-radius: 10px;
+  height: 30px;
+}
+
+button[type="submit"]:hover {
+  background-color: #218838;
+  border: 0px;
+  border-radius: 10px;
+}
+
+button[type="button"] {
+  background-color: #dc3545;
+  color: white;
+  border: 0px;
+  border-radius: 10px;
+  height: 30px;
+}
+
+button[type="button"]:hover {
+  background-color: #c82333;
+  border: 0px;
+  border-radius: 10px;
+}
+
+/* Media Queries mejoradas */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 900px) {
+  .form {
+    max-width: 600px;
+    padding: 1rem;
+  }
+  .columns {
+    gap: 1rem;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 600px) {
+  .form {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  .columns {
+    flex-direction: column;
+  }
+  .column {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+}
