@@ -5,6 +5,8 @@ import LandingPage from '../pages/LandingPage/LandingPage'
 import ClientLayout from '../layouts/ClientLayout/ClientLayout'
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DeliveryLayout from '../layouts/DeliveryLayout/DeliveryLayout'
+import CajeroLayout from '../layouts/CajeroLayout/CajeroLayout'
+import CajeroPage from '../pages/CajeroPage/CajeroPage'
 
 const AppRoutes = () => {
   return (
@@ -25,6 +27,14 @@ const AppRoutes = () => {
 
       {/* Rol DELIVERY */}
       <Route path="/delivery" element={<DeliveryLayout />} />
+
+      {/* Rol CAJERO */}
+      <Route path="/cajero" element={
+          <CajeroLayout>
+            <CajeroPage />
+          </CajeroLayout>
+        }
+      />
 
     </Routes>
   )
