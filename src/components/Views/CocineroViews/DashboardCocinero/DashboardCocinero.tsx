@@ -33,7 +33,7 @@ const Dashboard = ({ onSelect }: DashboardProps) => {
         {expanded === 'rubros' && (
           <div className={styles.subsection}>
             <button onClick={() => onSelect('productosRubro')}>Productos</button>
-            <button onClick={() => onSelect('rubroIngrediente')}>Ingredientes</button>
+            <button onClick={() => onSelect('ingredientesRubro')}>Ingredientes</button>
           </div>
         )}
       </div>

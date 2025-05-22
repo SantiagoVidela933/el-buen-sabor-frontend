@@ -9,6 +9,8 @@ import { columns, pedidos } from "../../data/pedidosCocinero";
 import Dashboard from "../../components/Views/CocineroViews/DashboardCocinero/DashboardCocinero";
 import ProductosView from "../../components/Views/CocineroViews/StockView/ProductosView/ProductosView";
 import IngredientesView from "../../components/Views/CocineroViews/StockView/IngredientesView/IngredientesView";
+import ProductosRubrosView from "../../components/Views/CocineroViews/RubrosView/ProductosRubrosView/ProductosRubrosView";
+import IngredientesRubrosView from "../../components/Views/CocineroViews/RubrosView/IngredientesRubrosView/IngredientesRubrosView";
 
 interface CocineroLayoutProps {
   children: ReactNode;
@@ -38,6 +40,10 @@ const CocineroLayout = ({ children }: CocineroLayoutProps) => {
         return <ProductosView />;
       case "ingredientesStock":
         return <IngredientesView />;
+      case "productosRubro":
+        return <ProductosRubrosView />;
+      case "ingredientesRubro":
+        return <IngredientesRubrosView />;
       default:
         return <div>Selecciona una opción del panel</div>;
     }

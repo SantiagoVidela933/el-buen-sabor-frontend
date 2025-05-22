@@ -4,6 +4,7 @@ import styles from './Modal.module.css';
 interface ModalProps {
     onClose: () => void;
     children: ReactNode;
+    className?: string; // <--- AÑADIR ESTA PROP
 }
 
 const Modal = ({onClose, children}: ModalProps) => {
