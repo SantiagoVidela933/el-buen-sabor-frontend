@@ -62,7 +62,7 @@ const StockProducto = () => {
             <th>Producto</th>
             <th>Rubro</th>
             <th>Precio</th>
-            <th>Tiprodo en cocina</th>
+            <th>Tiempo en cocina</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>

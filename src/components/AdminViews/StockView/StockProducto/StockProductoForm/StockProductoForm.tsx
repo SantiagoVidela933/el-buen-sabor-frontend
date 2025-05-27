@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { Product } from '../../../../../models/Products/Product';
 import styles from './StockProductoForm.module.css';
+import Modal from '../../../../ui/Modal/Modal';
+import CreateRecetaForm from '../../../../ui/CreateRecetaForm/CreateRecetaForm';
 
 interface StockProductoFormProps {
   producto?: Product;
@@ -9,8 +12,14 @@ interface StockProductoFormProps {
 }
 
 const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) => {
+
+  const [openModalReceta, setOpenModalReceta] = useState(false);
+  const openModal = () => setOpenModalReceta(true);
+  const closeModal = () => setOpenModalReceta(false);
+
   return (
-    <form className={styles.formContainer}>
+    <>
+      <form className={styles.formContainer}>
       <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
 
       <div className={styles.fieldsGrid}>
@@ -56,8 +65,8 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
 
         <div className={styles.fieldGroupFull}>
           <label>Receta</label>
-          <button type="button" className={styles.recipeButton}>
-            Crear / Modificar receta
+          <button type="button" className={styles.recipeButton} onClick={openModal}>
+            Crear receta
           </button>
         </div>
 
@@ -72,6 +81,13 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
         <button type="submit" className={styles.saveBtn}>Guardar</button>
       </div>
     </form>
+      {openModalReceta && (
+        <Modal onClose={closeModal}>
+          <CreateRecetaForm />
+        </Modal>
+      )}
+
+    </>
   );
 };
 
