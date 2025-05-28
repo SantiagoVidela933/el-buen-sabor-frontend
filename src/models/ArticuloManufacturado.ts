@@ -55,14 +55,10 @@ export class ArticuloManufacturado extends Articulo {
       json.precioVenta,
       json.tiempoEstimadoMinutos,
       json.descripcion,
-      new UnidadMedida(json.unidadMedida.denominacion || ''),
-      {} as any, // Sucursal
+      new UnidadMedida(json.unidadMedida?.denominacion || ''),
+      {} as any, // Sucursal (por completar más adelante)
       json.imagenes || [],
-      new CategoriaArticulo(
-        json.categoria.id,
-        json.categoria.denominacion || '',
-        json.categoria.imagen || null
-      ),
+      CategoriaArticulo.fromJson(json.categoria), // ✅ Uso correcto del método
       (json.detalles || []).map((detalle: any) =>
         new ArticuloManufacturadoDetalle(
           detalle.id,
@@ -72,7 +68,7 @@ export class ArticuloManufacturado extends Articulo {
             precioCompra: detalle.articuloInsumo.precioCompra,
             stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
           } as any : {} as any,
-          {} as any
+          {} as any // faltaría SucursalEmpresa si es necesario
         )
       ),
       json.margenGanancia ?? 0,
@@ -82,6 +78,7 @@ export class ArticuloManufacturado extends Articulo {
       json.fechaBaja ?? null
     );
   }
+
 
 
   
