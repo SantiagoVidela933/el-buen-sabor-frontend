@@ -14,6 +14,7 @@ export class ArticuloManufacturado extends Articulo {
 
   constructor(
     denominacion: string,
+    precioVenta: number,
     tiempoEstimadoMinutos: number,
     descripcion: string,
     unidadMedida: UnidadMedida,
@@ -33,9 +34,9 @@ export class ArticuloManufacturado extends Articulo {
       sucursal,
       imagenes,
       categoria,
-      margenGanancia,
-      undefined,
       id,
+      precioVenta,
+      margenGanancia,
       fechaAlta,
       fechaModificacion,
       fechaBaja,
@@ -48,22 +49,42 @@ export class ArticuloManufacturado extends Articulo {
     this.precioCalculado();
   }
 
-
   static fromJson(json: any): ArticuloManufacturado {
-    // Según tu modelo actual, podés parsear lo necesario acá
     return new ArticuloManufacturado(
       json.denominacion,
+      json.precioVenta,
       json.tiempoEstimadoMinutos,
       json.descripcion,
-      json.unidadMedida,  // Podés hacer UnidadMedida.fromJson(json.unidadMedida) si tiene lógica
-      json.sucursal ?? {}, // SucursalEmpresa.fromJson si aplica
+      new UnidadMedida(json.unidadMedida.denominacion || ''),
+      {} as any, // Sucursal
       json.imagenes || [],
-      json.categoria, // CategoriaArticulo.fromJson si aplica
-      json.detalles || [],
-      json.margenGanancia ?? 0
+      new CategoriaArticulo(
+        json.categoria.id,
+        json.categoria.denominacion || '',
+        json.categoria.imagen || null
+      ),
+      (json.detalles || []).map((detalle: any) =>
+        new ArticuloManufacturadoDetalle(
+          detalle.id,
+          detalle.cantidad,
+          detalle.articuloInsumo ? {
+            id: detalle.articuloInsumo.id,
+            precioCompra: detalle.articuloInsumo.precioCompra,
+            stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
+          } as any : {} as any,
+          {} as any
+        )
+      ),
+      json.margenGanancia ?? 0,
+      json.id ?? 0,
+      json.fechaAlta ?? null,
+      json.fechaModificacion ?? null,
+      json.fechaBaja ?? null
     );
   }
 
+
+  
   protected override obtenerCostoBase(): number {
     return this.precioCosto;
   }
@@ -102,7 +123,7 @@ export class ArticuloManufacturado extends Articulo {
       }
 
       const stockSucursalInsumo = insumo.stockPorSucursal.find(
-        (stock) => stock.sucursal === this.sucursal
+        (stock) => stock.sucursal?.id === this.sucursal.id
       );
 
       if (!stockSucursalInsumo || stockSucursalInsumo.stockActual == null) {

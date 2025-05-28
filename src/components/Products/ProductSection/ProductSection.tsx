@@ -5,16 +5,16 @@ import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
-import { getArticulosManufacturados } from '../../../api/articuloManufacturado';
+import { getAllArticulosManufacturados } from '../../../api/articuloManufacturado';
 
 const ProductSection = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('pizza');
+  const [selectedCategory, setSelectedCategory] = useState<number>(0); // o null si querés sin filtro por defecto
   const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleCategoryChange = (category: string) => {
+  const handleCategoryChange = (category: number) => {
     setSelectedCategory(category);
     setSearchQuery('');
   };
@@ -30,9 +30,9 @@ const ProductSection = () => {
   };
 
   useEffect(() => {
-    getArticulosManufacturados()
+    getAllArticulosManufacturados()
       .then(data => {
-        console.log('Articulos cargados:', data);
+        // console.log('Articulos cargados:', data);
         setArticulos(data);
       })
       .catch(error => {
@@ -41,14 +41,13 @@ const ProductSection = () => {
   }, []);
 
   const filteredProducts = articulos.filter((product) => {
-  const categoriaId = product.categoria?.id ?? 0;
-  // Suponiendo que selectedCategory sea un string, pero ahora debería ser un id numérico
-  // O mapearlo a un id antes de filtrar
-  return (
-    categoriaId === parseInt(selectedCategory) &&
-    product.denominacion?.toLowerCase().includes(searchQuery)
-  );
-});
+    const categoriaId = product.categoria?.id ?? 0;
+    return (
+      categoriaId === selectedCategory &&
+      product.denominacion?.toLowerCase().includes(searchQuery)
+    );
+  });
+
 
   const handleSearch = (query: string) => {
     setSearchQuery(query.toLowerCase());

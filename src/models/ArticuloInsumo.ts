@@ -35,10 +35,10 @@ export class ArticuloInsumo extends Articulo {
       json.denominacion,
       json.precioCompra,
       json.esParaElaborar,
-      json.unidadMedida as UnidadMedida,
-      json.sucursal as SucursalEmpresa,
-      json.imagenes || [],
-      json.categoria as CategoriaArticulo,
+      UnidadMedida.fromJson(json.unidadMedida),
+      SucursalEmpresa.fromJson(json.sucursal),
+      (json.imagenes || []).map((img: any) => Imagen.fromJson(img)),
+      CategoriaArticulo.fromJson(json.categoria),
       json.stockPorSucursal || [],
       json.margenGanancia
     );

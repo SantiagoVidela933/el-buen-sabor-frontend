@@ -8,6 +8,11 @@ interface ProductCardProps {
 
 // componente propio de cada producto
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+
+  console.log('Precio de venta:', product.precioVenta);
+  console.log('Precio costo:', product.precioCosto);
+
+
   return (
     <div className={styles.card_wrapper} onClick={onClick}>
       <div className={styles.box_image}>
@@ -16,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className={styles.box_info}>
         <h3 className={styles.card_title}>{product.denominacion}</h3>
         <p className={styles.card_description}>{product.descripcion}</p>
-        <p className={styles.card_price}>${product.precioCosto}</p>
+        <p className={styles.card_price}>${product.precioVenta}</p>
       </div>
     </div>
   );

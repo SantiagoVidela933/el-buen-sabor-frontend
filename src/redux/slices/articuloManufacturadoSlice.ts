@@ -1,5 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { ArticuloManufacturado } from '../../models/ArticuloManufacturado';
+import { AppDispatch } from '../store';
+import { getAllArticulosManufacturados } from '../../api/articuloManufacturado';
 
 interface ArticuloManufacturadoState {
   items: ArticuloManufacturado[];
@@ -17,40 +19,30 @@ const articuloManufacturadoSlice = createSlice({
   name: 'articuloManufacturado',
   initialState,
   reducers: {
-    fetchStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    fetchSuccess(state, action: PayloadAction<ArticuloManufacturado[]>) {
+    setArticulosManufacturados: (state, action) => {
       state.items = action.payload;
-      state.loading = false;
     },
-    fetchFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action) => {
       state.error = action.payload;
-    },
-    addArticulo(state, action: PayloadAction<ArticuloManufacturado>) {
-      state.items.push(action.payload);
-    },
-    updateArticulo(state, action: PayloadAction<ArticuloManufacturado>) {
-      const index = state.items.findIndex(a => a.id === action.payload.id);
-      if (index !== -1) {
-        state.items[index] = action.payload;
-      }
-    },
-    removeArticulo(state, action: PayloadAction<number>) {
-      state.items = state.items.filter(a => a.id !== action.payload);
     },
   },
 });
 
-export const {
-  fetchStart,
-  fetchSuccess,
-  fetchFailure,
-  addArticulo,
-  updateArticulo,
-  removeArticulo,
-} = articuloManufacturadoSlice.actions;
-
+export const { setArticulosManufacturados, setLoading, setError  } = articuloManufacturadoSlice.actions;
 export default articuloManufacturadoSlice.reducer;
+
+// thunk que usa el service
+export const fetchArticulosManufacturados = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const articulosManufacturados = await getAllArticulosManufacturados();
+    dispatch(setArticulosManufacturados(articulosManufacturados));
+  } catch (error) {
+    dispatch(setError('Error al cargar artículos manufacturados'));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
