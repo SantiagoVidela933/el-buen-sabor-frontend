@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Reemplazar esto luego con tus modelos reales
 const ingredientesDisponibles = [
