@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
-import { useCart } from '../../hooks/useCart';
-import { Order } from '../../models/Orders/Order';
-import { useOrder } from '../../hooks/useOrder';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import {
+  clearCart,
+  removeFromCart,
+  updateQuantity
+} from '../../redux/slices/cartSlice';
+import { usePedidoVenta } from '../../hooks/usePedidoVenta';
+import { Estado } from '../../models/enums/Estado';
+import { TipoEnvio } from '../../models/enums/TipoEnvio';
+import { FormaPago } from '../../models/enums/FormaPago';
+import { PedidoVenta } from '../../models/PedidoVenta';
 
 interface CartViewProps {
   onClose: () => void;
@@ -12,9 +22,18 @@ interface CartViewProps {
 const CartView = ({ onClose }: CartViewProps) => {
 
   // obtiene items del carrito y sus funciones
-  const { cartItems, clearCart, removeFromCart, updateQuantity, getTotal } = useCart(); 
+  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const dispatch = useDispatch();
 
-  const { addOrder } = useOrder();
+  // Calcula el total
+  const getTotal = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.articuloManufacturado.precioCosto * item.quantity,
+      0
+    );
+  };
+  
+  const { agregarPedido } = usePedidoVenta();
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
@@ -48,19 +67,24 @@ const CartView = ({ onClose }: CartViewProps) => {
     return false;
   };
 
-const handleConfirmOrder = () => {
-  const newOrder = new Order(
-    Date.now(), // id temporal
-    new Date().toISOString(),
-    getTotal(),
-    "En preparación",
-    paymentMethod.length > 0
-  );
+  const handleConfirmOrder = () => {
+    const newPedido = new PedidoVenta(
+      new Date(),                    // fechaPedido
+      new Date().toTimeString().slice(0, 8), // horaPedido HH:MM:SS
+      Estado.PREPARACION,         // enum Estado, asumí que tienes esos enums
+      deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY, // enum TipoEnvio
+      deliveryMethod === 'envio' ? 150 : 0, // gastoEnvio (ejemplo fijo)
+      paymentMethod.includes('mercadoPago') ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO, // enum FormaPago
+      0, // descuento
+      0, // totalCosto (si querés podés calcularlo)
+      getTotal(), // totalVenta
+      [] // pedidosVentaDetalle vacíos por ahora
+    );
 
-  addOrder(newOrder); // guarda contexto
-  clearCart();         // limpia carrito
-  setConfirmed(true);  // cambia estado local
-};
+    agregarPedido(newPedido);  // guarda en redux
+    dispatch(clearCart()); // limpia carrito
+    setConfirmed(true);
+  };
 
   return (
     <div className={styles.cartView_wrapper}>
@@ -75,12 +99,13 @@ const handleConfirmOrder = () => {
           ) : (
             cartItems.map((item) => (
               <ProductCart
-                key={item.product.id}
-                product={item.product}
+                key={item.articuloManufacturado.id}
+                articuloManufacturado={item.articuloManufacturado}
                 quantity={item.quantity}
-                removeFromCart={removeFromCart}
-                updateQuantity={updateQuantity}
+                removeFromCart={(productId) => dispatch(removeFromCart(productId))}
+                updateQuantity={(productId, quantity) => dispatch(updateQuantity({ productId, quantity }))}
               />
+
             ))
           )}
         </div>

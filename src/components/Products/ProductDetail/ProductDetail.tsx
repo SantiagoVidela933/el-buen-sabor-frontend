@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';  // importamos dispatch de redux
 import styles from './ProductDetail.module.css';
-import { useCart } from '../../../hooks/useCart';
 import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { addToCart } from '../../../redux/slices/cartSlice';
 
 interface ProductDetailProps {
   articuloManufacturado: ArticuloManufacturado;
@@ -9,17 +10,15 @@ interface ProductDetailProps {
 }
 
 const ProductDetail = ({ articuloManufacturado, onClose }: ProductDetailProps) => {
-
   const [quantity, setQuantity] = useState(1);
   const handleIncrease = () => setQuantity(prev => prev + 1);
   const handleDecrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  // hook para acceder a las funciones del carrito
-  const { addToCart } = useCart();
+  const dispatch = useDispatch();
 
   const handleAdd = () => {
-    addToCart(articuloManufacturado, quantity);
-    onClose(); 
+    dispatch(addToCart({ articuloManufacturado, quantity }));
+    onClose();
   };
 
   return (
@@ -43,7 +42,7 @@ const ProductDetail = ({ articuloManufacturado, onClose }: ProductDetailProps) =
         <button onClick={handleAdd}>Agregar al carrito</button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetail
+export default ProductDetail;

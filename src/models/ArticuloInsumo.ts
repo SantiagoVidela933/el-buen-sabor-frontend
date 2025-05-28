@@ -30,7 +30,23 @@ export class ArticuloInsumo extends Articulo {
     this.precioCalculado(); // Calcula precioVenta al construir
   }
 
+  static fromJson(json: any): ArticuloInsumo {
+    return new ArticuloInsumo(
+      json.denominacion,
+      json.precioCompra,
+      json.esParaElaborar,
+      json.unidadMedida as UnidadMedida,
+      json.sucursal as SucursalEmpresa,
+      json.imagenes || [],
+      json.categoria as CategoriaArticulo,
+      json.stockPorSucursal || [],
+      json.margenGanancia
+    );
+  }
+
   protected override obtenerCostoBase(): number {
     return this.precioCompra;
   }
+
+  
 }

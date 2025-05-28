@@ -51,4 +51,15 @@ export class SucursalEmpresa {
     this.sucursalInsumos = sucursalInsumos;
     this.categoriasArticulo = categoriasArticulo;
   }
+
+  static fromJson(json: any): SucursalEmpresa {
+    return new SucursalEmpresa(
+      json.nombre,
+      json.horaApertura,
+      json.horaCierre,
+      json.empresa, // Si necesitás parsearlo: Empresa.fromJson(json.empresa)
+      json.domicilio, // idem: Domicilio.fromJson(json.domicilio)
+      [], [], [], [], [], [], []
+    );
+  }
 }

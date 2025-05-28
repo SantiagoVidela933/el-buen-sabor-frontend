@@ -24,4 +24,11 @@ export class CategoriaArticulo extends BaseEntity {
     this.sucursal = sucursal;
     this.articulo = articulo;
   }
+
+  static fromJson(json: any): CategoriaArticulo {
+    return new CategoriaArticulo(
+      json.denominacion,
+      Imagen.fromJson(json.imagen) // Asumimos que siempre tiene una imagen
+    );
+  }
 }

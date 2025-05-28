@@ -18,4 +18,12 @@ export class ArticuloManufacturadoDetalle extends BaseEntity {
     this.articuloInsumo = articuloInsumo;
     this.articuloManufacturado = articuloManufacturado;
   }
+
+  static fromJson(json: any): ArticuloManufacturadoDetalle {
+    return new ArticuloManufacturadoDetalle(
+      json.cantidad,
+      ArticuloInsumo.fromJson(json.articuloInsumo),
+      {} as any // Esto se completa manualmente después si hace falta
+    );
+  }
 }

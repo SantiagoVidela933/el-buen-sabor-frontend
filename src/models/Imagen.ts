@@ -21,4 +21,13 @@ export class Imagen extends BaseEntity {
     this.articuloInsumo = articuloInsumo ?? null;
     this.promocion = promocion ?? null;
   }
+
+  static fromJson(json: any): Imagen {
+    return new Imagen(
+      json.nombre,
+      null, // Ignoramos relaciones inversas (articuloManufacturado, etc.)
+      null,
+      null
+    );
+  }
 }

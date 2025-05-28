@@ -1,29 +1,26 @@
-import { Route, Routes } from 'react-router-dom'
-import { CartProvider } from '../context/CartContext'
-import { OrderProvider } from '../context/OrderContext'
-import LandingPage from '../pages/LandingPage/LandingPage'
-import ClientLayout from '../layouts/ClientLayout/ClientLayout'
-import AdminLayout from '../layouts/AdminLayout/AdminLayout'
-import DeliveryLayout from '../layouts/DeliveryLayout/DeliveryLayout'
-import CajeroLayout from '../layouts/CajeroLayout/CajeroLayout'
-import CajeroPage from '../pages/CajeroPage/CajeroPage'
-import CocineroPage from '../pages/CocineroPage/CocineroPage'
-import CocineroLayout from '../layouts/CocineroLayout/CocineroLayout'
+import { Route, Routes } from 'react-router-dom';
+import LandingPage from '../pages/LandingPage/LandingPage';
+import ClientLayout from '../layouts/ClientLayout/ClientLayout';
+import AdminLayout from '../layouts/AdminLayout/AdminLayout';
+import DeliveryLayout from '../layouts/DeliveryLayout/DeliveryLayout';
+import CajeroLayout from '../layouts/CajeroLayout/CajeroLayout';
+import CajeroPage from '../pages/CajeroPage/CajeroPage';
+import CocineroPage from '../pages/CocineroPage/CocineroPage';
+import CocineroLayout from '../layouts/CocineroLayout/CocineroLayout';
 
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Rol CLIENTE */}
-      <Route path="/" element={
-          <CartProvider>
-            <OrderProvider>
-              <ClientLayout>
-                <LandingPage />
-            </ClientLayout>
-            </OrderProvider>
-          </CartProvider>
+      <Route
+        path="/"
+        element={
+          <ClientLayout>
+            <LandingPage />
+          </ClientLayout>
         }
       />
+
       {/* Rol ADMINISTRADOR */}
       <Route path="/admin" element={<AdminLayout />} />
 
@@ -31,7 +28,9 @@ const AppRoutes = () => {
       <Route path="/delivery" element={<DeliveryLayout />} />
 
       {/* Rol CAJERO */}
-      <Route path="/cajero" element={
+      <Route
+        path="/cajero"
+        element={
           <CajeroLayout>
             <CajeroPage />
           </CajeroLayout>
@@ -39,15 +38,16 @@ const AppRoutes = () => {
       />
 
       {/* Rol COCINERO */}
-      <Route path="/cocinero" element={
+      <Route
+        path="/cocinero"
+        element={
           <CocineroLayout>
-            <CocineroPage/>
+            <CocineroPage />
           </CocineroLayout>
         }
       />
-
     </Routes>
-  )
-}
+  );
+};
 
-export default AppRoutes
+export default AppRoutes;
