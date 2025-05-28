@@ -1,8 +1,8 @@
-import { Product } from '../../../models/Products/Product';
+import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
-  product: Product;
+  product: ArticuloManufacturado;
   onClick?: () => void;
 }
 
@@ -11,12 +11,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div className={styles.card_wrapper} onClick={onClick}>
       <div className={styles.box_image}>
-        <img src={product.image?.path} alt={product.title} />
+        <img src="/src/assets/images/burger_example.jpg" alt={product.denominacion} />
       </div>
       <div className={styles.box_info}>
-        <h3 className={styles.card_title}>{product.title}</h3>
-        <p className={styles.card_description}>{product.description}</p>
-        <p className={styles.card_price}>${product.price}</p>
+        <h3 className={styles.card_title}>{product.denominacion}</h3>
+        <p className={styles.card_description}>{product.descripcion}</p>
+        <p className={styles.card_price}>${product.precioCosto}</p>
       </div>
     </div>
   );

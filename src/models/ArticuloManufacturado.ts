@@ -22,14 +22,46 @@ export class ArticuloManufacturado extends Articulo {
     categoria: CategoriaArticulo,
     detalles: ArticuloManufacturadoDetalle[] = [],
     margenGanancia?: number,
+    id: number = 0,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
   ) {
-    super(denominacion, unidadMedida, sucursal, imagenes, categoria, margenGanancia);
+    super(
+      denominacion,
+      unidadMedida,
+      sucursal,
+      imagenes,
+      categoria,
+      margenGanancia,
+      undefined,
+      id,
+      fechaAlta,
+      fechaModificacion,
+      fechaBaja,
+    );
     this.tiempoEstimadoMinutos = tiempoEstimadoMinutos;
     this.descripcion = descripcion;
     this.detalles = detalles;
     this.precioCosto = 0;
     this.costoCalculado();
     this.precioCalculado();
+  }
+
+
+  static fromJson(json: any): ArticuloManufacturado {
+    // Según tu modelo actual, podés parsear lo necesario acá
+    return new ArticuloManufacturado(
+      json.denominacion,
+      json.tiempoEstimadoMinutos,
+      json.descripcion,
+      json.unidadMedida,  // Podés hacer UnidadMedida.fromJson(json.unidadMedida) si tiene lógica
+      json.sucursal ?? {}, // SucursalEmpresa.fromJson si aplica
+      json.imagenes || [],
+      json.categoria, // CategoriaArticulo.fromJson si aplica
+      json.detalles || [],
+      json.margenGanancia ?? 0
+    );
   }
 
   protected override obtenerCostoBase(): number {

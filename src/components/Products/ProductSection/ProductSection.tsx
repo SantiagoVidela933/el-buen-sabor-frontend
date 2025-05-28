@@ -1,32 +1,25 @@
-import { useState } from 'react';
-import { products } from '../../../data/products'; 
+import { useEffect, useState } from 'react';
 import Category from '../../LandingPage/Category/Category';
 import ProductList from '../ProductList/ProductList';
-import { Product } from '../../../models/Products/Product';
 import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';
+import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { getArticulosManufacturados } from '../../../api/articuloManufacturado';
 
 const ProductSection = () => {
-  // categoria que se muestra al renderizar
-  const [selectedCategory, setSelectedCategory] = useState<string>('pizza'); 
-
-  // producto seleccionado
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  // estado del modal
+  const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('pizza');
+  const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // estado busqueda
   const [searchQuery, setSearchQuery] = useState('');
 
-  // actualiza categoria seleccionada
   const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category); 
+    setSelectedCategory(category);
     setSearchQuery('');
   };
 
-  const handleProductClick = (product: Product) => {
+  const handleProductClick = (product: ArticuloManufacturado) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -36,12 +29,26 @@ const ProductSection = () => {
     setIsModalOpen(false);
   };
 
-  // filtra productos segun categoria elegida
-  const filteredProducts = products.filter(
-    (product) =>
-      product.productCategory.description === selectedCategory &&
-      product.title.toLowerCase().includes(searchQuery)
+  useEffect(() => {
+    getArticulosManufacturados()
+      .then(data => {
+        console.log('Articulos cargados:', data);
+        setArticulos(data);
+      })
+      .catch(error => {
+        console.error('Error cargando artículos manufacturados:', error);
+      });
+  }, []);
+
+  const filteredProducts = articulos.filter((product) => {
+  const categoriaId = product.categoria?.id ?? 0;
+  // Suponiendo que selectedCategory sea un string, pero ahora debería ser un id numérico
+  // O mapearlo a un id antes de filtrar
+  return (
+    categoriaId === parseInt(selectedCategory) &&
+    product.denominacion?.toLowerCase().includes(searchQuery)
   );
+});
 
   const handleSearch = (query: string) => {
     setSearchQuery(query.toLowerCase());
@@ -57,11 +64,11 @@ const ProductSection = () => {
         onSearch={handleSearch}
       />
 
-      <ProductList products={filteredProducts} onProductClick={handleProductClick}/>
+      <ProductList articulosManufacturados={filteredProducts} onProductClick={handleProductClick} />
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
-          <ProductDetail product={selectedProduct} onClose={closeModal} />
+          <ProductDetail articuloManufacturado={selectedProduct} onClose={closeModal} />
         </Modal>
       )}
     </div>

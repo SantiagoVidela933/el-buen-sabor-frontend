@@ -1,22 +1,21 @@
-import { Product } from '../../../models/Products/Product';
+import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
 import ProductCard from '../ProductCard/ProductCard';
 import styles from './ProductList.module.css';
 
 interface ProductListProps {
-  products: Product[];
-  onProductClick: (product: Product) => void;
+  articulosManufacturados: ArticuloManufacturado[];
+  onProductClick: (product: ArticuloManufacturado) => void;
 }
 
-// este componente muestra los productos filtrados por Category
-const ProductList: React.FC<ProductListProps> = ({ products, onProductClick }) => {
+const ProductList: React.FC<ProductListProps> = ({ articulosManufacturados, onProductClick }) => {
   return (
     <div className={styles.productList_wrapper}>
-      {products.map((product) => (
+      {articulosManufacturados.map((artManu) => (
         <ProductCard 
-          key={product.id} 
-          product={product} 
-          onClick={() => onProductClick(product)}
-        /> 
+          key={artManu.id} 
+          product={artManu} 
+          onClick={() => onProductClick(artManu)}
+        />
       ))}
     </div>
   );
