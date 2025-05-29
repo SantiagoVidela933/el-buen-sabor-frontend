@@ -6,6 +6,7 @@ import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
 import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
 import { createArticuloManufacturado } from '../../../../../api/articuloManufacturado';
+import { ArticuloManufacturadoDetalle } from '../../../../../models/ArticuloManufacturadoDetalle';
 
 interface StockProductoFormProps {
   producto?: ArticuloManufacturado;
@@ -15,18 +16,16 @@ interface StockProductoFormProps {
 }
 
 const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) => {
-
-  // estado que contiene las cat. de articulos manufacturados
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [openModalReceta, setOpenModalReceta] = useState(false);
 
-  // CAPTURA DE DATOS DEL FORM
   const [nombre, setNombre] = useState(producto?.denominacion || '');
   const [descripcion, setDescripcion] = useState(producto?.descripcion || '');
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
   const [precio, setPrecio] = useState(producto?.precioCalculado() || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
-  // const [estado, setEstado] = useState(producto?.es ? 'Alta' : 'Baja');
+  const [imagen, setImagen] = useState<File | null>(null);
+  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
   const openModal = () => setOpenModalReceta(true);
   const closeModal = () => setOpenModalReceta(false);
@@ -39,17 +38,46 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
     fetchCategorias();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!nombre || !descripcion || !imagen || detalles.length === 0) {
+      alert('Por favor completá todos los campos obligatorios y agregá al menos un ingrediente.');
+      return;
+    }
+
     try {
-      const nuevoArticulo = new ArticuloManufacturado(/* ... */);
-      await createArticuloManufacturado(nuevoArticulo);
-      onClose(); // cerrar modal si todo sale bien
+      const categoriaSeleccionada = categorias.find((c) => c.id === Number(categoriaId));
+      if (!categoriaSeleccionada) {
+        alert('Seleccioná una categoría válida.');
+        return;
+      }
+
+      // Armás el payload según el formato que requiere el backend
+      const articuloPayload = {
+        denominacion: nombre,
+        margenGanancia: precio, // precio de venta
+        tiempoEstimadoMinutos: tiempoCocina,
+        descripcion,
+        detalles: detalles.map(d => ({
+          cantidad: d.cantidad,
+          articuloInsumo: { id: d.articuloInsumo.id }
+        })),
+        unidadMedida: { id: 3 }, // fijo
+        categoria: { id: categoriaSeleccionada.id }
+      };
+
+      const response = await createArticuloManufacturado(articuloPayload, imagen);
+
+      console.log('[SUCCESS] Artículo creado exitosamente:', response);
+      alert('Artículo creado correctamente');
+      onClose(); // cerrar modal o formulario luego de crear
+
     } catch (error) {
-      console.error('Error al crear producto:', error);
+      console.error('[ERROR] Fallo al crear el artículo manufacturado:', error);
+      alert('Hubo un error al crear el artículo. Revisá la consola para más detalles.');
     }
   };
-
 
   return (
     <>
@@ -107,7 +135,18 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
 
         <div className={styles.fieldGroupFull}>
           <label htmlFor="imagen">Imágen</label>
-          <input type="file" id="imagen" className={styles.imageInput} />
+          <input
+            type="file"
+            id="imagen"
+            className={styles.imageInput}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setImagen(file);
+                console.log('[DEBUG] Imagen seleccionada:', file);
+              }
+            }}
+          />
         </div>
       </div>
 
@@ -118,7 +157,7 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
     </form>
       {openModalReceta && (
         <Modal onClose={closeModal}>
-          <CreateRecetaForm />
+          <CreateRecetaForm onChange={setDetalles}/>
         </Modal>
       )}
 

@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import { getInsumosBySucursalId } from '../../../api/articuloInsumo';
 import { ArticuloInsumo } from '../../../models/ArticuloInsumo';
+import { ArticuloManufacturadoDetalle } from '../../../models/ArticuloManufacturadoDetalle';
 
 interface IngredienteReceta {
   insumo: ArticuloInsumo;
   cantidad: number;
 }
 
-const CreateRecetaForm = () => {
+interface CreateRecetaFormProps {
+  onChange: (detalles: ArticuloManufacturadoDetalle[]) => void;
+}
+
+const CreateRecetaForm = ({onChange}: CreateRecetaFormProps) => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
   const [cantidad, setCantidad] = useState<number>(0);
@@ -20,6 +25,14 @@ const CreateRecetaForm = () => {
     };
     fetchInsumos();
   }, []);
+
+  useEffect(() => {
+    const detalles = ingredientes.map(({ insumo, cantidad }) =>
+      new ArticuloManufacturadoDetalle(cantidad, insumo, {} as any)
+    );
+    onChange(detalles);
+  }, [ingredientes]);
+
 
   const handleAgregarIngrediente = () => {
     if (selectedInsumoId === 0) return alert('Seleccioná un ingrediente');

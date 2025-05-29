@@ -10,14 +10,31 @@ export const getAllArticulosManufacturados = async (): Promise<ArticuloManufactu
   return data.map((item: any) => ArticuloManufacturado.fromJson(item));
 };
 
-// POST Articulo Manufacturado
-export const createArticuloManufacturado = async (articulo: ArticuloManufacturado) => {
+// POST Articulo Manufacturado con imagen
+export const createArticuloManufacturado = async (
+  articuloPayload: object,
+  imagen: File
+) => {
+  const formData = new FormData();
+  const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
+    type: 'application/json',
+  });
+  formData.append('articuloManufacturado', articuloBlob);
+  formData.append('file', imagen);
+
   const res = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(articulo),
+    body: formData,
   });
-  if (!res.ok) throw new Error('Error al crear artículo manufacturado');
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al crear artículo manufacturado');
+  }
+
   return res.json();
 };
+
+
 
