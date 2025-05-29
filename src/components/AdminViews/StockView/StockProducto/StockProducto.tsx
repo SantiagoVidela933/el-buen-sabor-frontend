@@ -1,26 +1,39 @@
-import { useState } from 'react';
-import { productosIniciales } from '../../../../data/product2';
+import { useEffect, useState } from 'react';
 import styles from './StockProductos.module.css';
-import { Product } from '../../../../models/Products/Product';
 import Modal from '../../../ui/Modal/Modal';
 import StockProductoForm from './StockProductoForm/StockProductoForm';
+import { getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
+import { ArticuloManufacturado } from '../../../../models/ArticuloManufacturado';
 
 const StockProducto = () => {
 
-  const [productos, setProductos] = useState<Product[]>(productosIniciales);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
-  const [productoSeleccionado, setProductoSeleccionado] = useState<Product | undefined>(undefined);
+  const [productoSeleccionado, setArticuloseleccionado] = useState<ArticuloManufacturado | undefined>(undefined);
+  
+  const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
+  
+  useEffect(() => {
+    getAllArticulosManufacturados()
+      .then(data => {
+        console.log('Articulos cargados:', data);
+        setArticulos(data);
+      })
+      .catch(error => {
+        console.error('Error cargando artículos manufacturados:', error);
+      });
+  }, []);
+  
 
   const abrirCrearProducto = () => {
     setModoFormulario('crear');
-    setProductoSeleccionado(undefined);
+    setArticuloseleccionado(undefined);
     setModalAbierto(true);
   };
 
-  const abrirEditarProducto = (producto: Product) => {
+  const abrirEditarProducto = (producto: ArticuloManufacturado) => {
     setModoFormulario('editar');
-    setProductoSeleccionado(producto);
+    setArticuloseleccionado(producto);
     setModalAbierto(true);
   };
 
@@ -28,13 +41,13 @@ const StockProducto = () => {
     setModalAbierto(false);
   };
 
-  const manejarSubmit = (productoActualizado: Product) => {
+  const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
     if (modoFormulario === 'crear') {
-      setProductos(prev => [...prev, productoActualizado]);
+      setArticulos(prev => [...prev, productoActualizado]);
     } else {
-      setProductos(prev =>
+      setArticulos(prev =>
         prev.map(prod =>
-          prod.title === productoSeleccionado?.title ? productoActualizado : prod
+          prod.denominacion === productoSeleccionado?.denominacion ? productoActualizado : prod
         )
       );
     }
@@ -68,13 +81,13 @@ const StockProducto = () => {
           </tr>
         </thead>
         <tbody>
-        {productos.map((producto, index) => (
+        {articulos.map((producto, index) => (
           <tr key={index}>
-            <td>{producto.title}</td>
-            <td>{producto.productCategory.description}</td>
-            <td>{producto.price}</td>  
-            <td>{producto.cookingTime}</td>  
-            <td>{producto.available}</td>  
+            <td>{producto.denominacion}</td>
+            <td>{producto.categoria.denominacion}</td>
+            <td>{producto.precioCosto}</td>  
+            <td>{producto.tiempoEstimadoMinutos}</td>  
+            <td>Alta o Baja</td>  
             <td>
               <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
                 <span className="material-symbols-outlined">edit</span>

@@ -52,14 +52,29 @@ export class SucursalEmpresa {
     this.categoriasArticulo = categoriasArticulo;
   }
 
-  static fromJson(json: any): SucursalEmpresa {
+static fromJson(json: any): SucursalEmpresa {
+  if (!json) {
+    // Devuelve una sucursal vacía o un throw, según el contexto de tu app
     return new SucursalEmpresa(
-      json.nombre,
-      json.horaApertura,
-      json.horaCierre,
-      json.empresa, // Si necesitás parsearlo: Empresa.fromJson(json.empresa)
-      json.domicilio, // idem: Domicilio.fromJson(json.domicilio)
-      [], [], [], [], [], [], []
+      '', '', '',
+      {} as any, // Empresa
+      {} as any, // Domicilio
     );
   }
+
+  return new SucursalEmpresa(
+    json.nombre,
+    json.horaApertura,
+    json.horaCierre,
+    json.empresa, // o Empresa.fromJson(json.empresa) si lo necesitás completo
+    json.domicilio, // lo mismo para domicilio
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  );
+}
 }
