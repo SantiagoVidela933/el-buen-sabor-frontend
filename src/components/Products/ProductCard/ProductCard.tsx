@@ -8,10 +8,6 @@ interface ProductCardProps {
 
 // componente propio de cada producto
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
-
-  console.log("Categoria muestra esto:", product)
-
-
   return (
     <div className={styles.card_wrapper} onClick={onClick}>
       <div className={styles.box_image}>

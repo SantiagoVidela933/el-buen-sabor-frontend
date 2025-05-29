@@ -14,18 +14,17 @@ import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
 const ProductSection = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number>(0); // 0 para mostrar "Todas"
+  const [selectedCategory, setSelectedCategory] = useState<number>(0); 
   const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const idSucursal = 1; // Podés parametrizar esto si se elige sucursal en otra parte de tu app
+  const idSucursal = 1; 
 
   // Cargar productos manufacturados
   useEffect(() => {
     getAllArticulosManufacturados()
       .then(data => {
-        console.log('Articulos cargados:', data);
         setArticulos(data);
       })
       .catch(error => {
@@ -37,7 +36,6 @@ const ProductSection = () => {
   useEffect(() => {
     getCategoriasMenuBySucursalId(idSucursal)
       .then(data => {
-        console.log('Categorías cargadas:', data);
         setCategorias(data);
       })
       .catch(error => {

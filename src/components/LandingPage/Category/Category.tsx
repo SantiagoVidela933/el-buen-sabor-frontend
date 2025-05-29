@@ -13,10 +13,10 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
 
+  // fetch - obtengo categorias de articulos manufacturados
   useEffect(() => {
     const fetchCategorias = async () => {
       const data = await getCategoriasMenuBySucursalId(1);
-      console.log("Cateogrias: ", data)
       setCategorias(data);
     };
     fetchCategorias();
@@ -32,7 +32,7 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
 
   const getIconByDenominacion = (denominacion: string): string => {
     switch (denominacion.toLowerCase()) {
-      case 'pizza':
+      case 'pizzas':
         return 'local_pizza';
       case 'hamburguesa':
         return 'lunch_dining';
