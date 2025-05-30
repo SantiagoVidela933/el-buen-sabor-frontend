@@ -123,7 +123,7 @@ const StockProducto = () => {
         {articulos.map((producto, index) => (
           <tr key={index}>
             <td>{producto.denominacion}</td>
-            <td>{producto.categoria.denominacion}</td>
+            <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
             <td>{producto.precioVenta}</td>  
             <td>{producto.tiempoEstimadoMinutos}</td>  
             <td>{producto.estado ? "Alta" : "Baja"}</td>

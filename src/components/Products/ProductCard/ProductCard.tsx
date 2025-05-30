@@ -13,7 +13,7 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
         <img
           src={
             product.imagenes && product.imagenes.length > 0
-              ? `http://localhost:8080/api/imagenes/file/${product.imagenes[0].nombre}`
+              ? `http://localhost:8080/api/imagenes/file/${product.imagenes[0].denominacion}`
               : '/src/assets/images/pizza_example.jpg'
           }
           alt={product.denominacion}
