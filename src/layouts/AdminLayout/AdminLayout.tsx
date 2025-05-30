@@ -13,6 +13,7 @@ import ClientStats from '../../components/AdminViews/StatsView/ClientStats/Clien
 import Movimientos from '../../components/AdminViews/StatsView/Movimientos/Movimientos';
 import ProductStats from '../../components/AdminViews/StatsView/ProductStats/ProductStats';
 import Facturacion from '../../components/AdminViews/Facturacion/Facturacion';
+import Navbar from '../../components/ui/Navbar/Navbar';
 
 const AdminLayout = () => {
 
@@ -47,6 +48,7 @@ const AdminLayout = () => {
 
   return (
     <div className={styles.adminLayout_wrapper}>
+      <Navbar onCartClick={() => setActiveView('cart')} onViewChange={setActiveView}/>
       <PhotoLanding />
       <div className={styles.adminLayout_content}>
         <Dashboard onSelect={setActiveView} />
