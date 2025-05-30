@@ -7,72 +7,81 @@ import { ArticuloManufacturado } from '../../../../models/ArticuloManufacturado'
 import { deleteArticuloManufacturado } from '../../../../api/articuloManufacturado';
 
 const StockProducto = () => {
-
+  // Estados de control de modales y formularios
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
+
+  // Estados de producto seleccionado y a eliminar
   const [productoSeleccionado, setArticuloseleccionado] = useState<ArticuloManufacturado | undefined>(undefined);
   const [productoAEliminar, setProductoAEliminar] = useState<ArticuloManufacturado | null>(null);
-  const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
 
+  // Lista de producto
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
   
+  // Carga inicial de productos
   useEffect(() => {
     getAllArticulosManufacturados()
       .then(data => {
-        console.log('Articulos cargados:', data);
         setArticulos(data);
       })
       .catch(error => {
         console.error('Error cargando artículos manufacturados:', error);
       });
   }, []);
-  
 
+  // Abrir modal POST
   const abrirCrearProducto = () => {
     setModoFormulario('crear');
     setArticuloseleccionado(undefined);
     setModalAbierto(true);
   };
 
+  // Abrir modal PUT
   const abrirEditarProducto = (producto: ArticuloManufacturado) => {
     setModoFormulario('editar');
     setArticuloseleccionado(producto);
     setModalAbierto(true);
   };
+
+  // Abrir modal DELETE
   const abrirModalEliminar = (producto: ArticuloManufacturado) => {
     setProductoAEliminar(producto);
     setModalConfirmacionAbierto(true);
   };
 
-    const eliminarProducto = async () => {
+  // Confirmar DELETE
+  const eliminarProducto = async () => {
     if (productoAEliminar) {
       try {
-        console.log("ID a eliminar:", productoAEliminar.id);
-
         await deleteArticuloManufacturado(productoAEliminar.id);
-
         setArticulos((prev) =>
           prev.filter((prod) => prod.id !== productoAEliminar.id)
         );
         setProductoAEliminar(null);
         setModalConfirmacionAbierto(false);
-      } catch (error: any) {
-        console.error(error);
-        alert(`Error al eliminar el producto: ${error.message}`);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error);
+          alert(`Error al eliminar el producto: ${error.message}`);
+        } else {
+          console.error('Error desconocido', error);
+          alert('Ocurrió un error al eliminar el producto.');
+        }
       }
     }
   };
 
-
+  // Cancelar DELETE
   const cancelarEliminacion = () => {
   setProductoAEliminar(null);
   setModalConfirmacionAbierto(false);
   };
 
-  const cerrarModal = () => {
-    setModalAbierto(false);
-  };
-  
+  // Cerrar modal general
+  const cerrarModal = () => setModalAbierto(false);
+
+  // Guardar cambios del formulario (crear o editar)
   const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
     if (modoFormulario === 'crear') {
       setArticulos(prev => [...prev, productoActualizado]);

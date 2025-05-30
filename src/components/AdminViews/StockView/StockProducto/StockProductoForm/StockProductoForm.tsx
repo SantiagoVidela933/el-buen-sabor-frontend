@@ -19,6 +19,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [openModalReceta, setOpenModalReceta] = useState(false);
 
+  // Estado para campos del formulario
   const [nombre, setNombre] = useState(producto?.denominacion || '');
   const [descripcion, setDescripcion] = useState(producto?.descripcion || '');
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
@@ -27,9 +28,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [imagen, setImagen] = useState<File | null>(null);
   const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
+  // Abrir / Cerrar modal de receta
   const openModal = () => setOpenModalReceta(true);
   const closeModal = () => setOpenModalReceta(false);
 
+  // Cargar categorias de articulos manufacturados
   useEffect(() => {
     const fetchCategorias = async () => {
       const data = await getCategoriasMenuBySucursalId(1);
@@ -38,6 +41,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     fetchCategorias();
   }, []);
 
+  // Submit del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,6 +57,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         return;
       }
 
+      // payload segun modelo back
       const articuloPayload = {
         denominacion: nombre,
         margenGanancia: precio,
@@ -62,24 +67,21 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           cantidad: d.cantidad,
           articuloInsumo: { id: d.articuloInsumo.id }
         })),
-        unidadMedida: { id: 3 },
+        unidadMedida: { id: 3 }, // hardcodeo 'Unidad'
         categoria: { id: categoriaSeleccionada.id }
       };
 
       if (modo === 'crear') {
         const response = await createArticuloManufacturado(articuloPayload, imagen!);
-        console.log('[SUCCESS] Artículo creado:', response);
         alert('Artículo creado correctamente');
-        onSubmit(response); // avisar al padre
+        onSubmit(response);
         onClose();
       } else {
         if (!producto) {
           alert('Error: producto a editar no definido');
           return;
         }
-        // Actualizar: pasar el id para el PUT, la imagen puede ser null si no se cambia
-        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen);
-        console.log('[SUCCESS] Artículo actualizado:', response);
+        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
         alert('Artículo actualizado correctamente');
         onSubmit(response);
         onClose();
@@ -89,81 +91,78 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
       alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
     }
   };
-
-
   return (
     <>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
-      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
+        <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
 
-      <div className={styles.fieldsGrid}>
-        <div className={styles.fieldGroup}>
-          <label>Nombre</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+        <div className={styles.fieldsGrid}>
+          <div className={styles.fieldGroup}>
+            <label>Nombre</label>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label>Descripción</label>
+            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label>Tiempo en cocina</label>
+            <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label>Precio de Venta</label>
+            <input type="number" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label>Rubro</label>
+            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+              <option value="">-- Selecciona un rubro --</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.fieldGroupFull}>
+            <label>Receta</label>
+            <button type="button" className={styles.recipeButton} onClick={openModal}>
+              Crear receta
+            </button>
+          </div>
+
+          <div className={styles.fieldGroupFull}>
+            <label htmlFor="imagen">Imágen</label>
+            <input
+              type="file"
+              id="imagen"
+              className={styles.imageInput}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImagen(file);
+                  console.log('[DEBUG] Imagen seleccionada:', file);
+                }
+              }}
+            />
+          </div>
         </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Descripción</label>
-          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        <div className={styles.buttonActions}>
+          <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
+          <button type="submit" className={styles.saveBtn}>Guardar</button>
         </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Tiempo en cocina</label>
-          <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Precio de Venta</label>
-          <input type="number" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Rubro</label>
-          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-            <option value="">-- Selecciona un rubro --</option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.fieldGroupFull}>
-          <label>Receta</label>
-          <button type="button" className={styles.recipeButton} onClick={openModal}>
-            Crear receta
-          </button>
-        </div>
-
-        <div className={styles.fieldGroupFull}>
-          <label htmlFor="imagen">Imágen</label>
-          <input
-            type="file"
-            id="imagen"
-            className={styles.imageInput}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setImagen(file);
-                console.log('[DEBUG] Imagen seleccionada:', file);
-              }
-            }}
-          />
-        </div>
-      </div>
-
-      <div className={styles.buttonActions}>
-        <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
-        <button type="submit" className={styles.saveBtn}>Guardar</button>
-      </div>
-    </form>
+      </form>
       {openModalReceta && (
         <Modal onClose={closeModal}>
           <CreateRecetaForm onChange={setDetalles}/>
         </Modal>
       )}
-
     </>
   );
 };
