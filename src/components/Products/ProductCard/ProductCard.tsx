@@ -23,6 +23,9 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
         <h3 className={styles.card_title}>{product.denominacion}</h3>
         <p className={styles.card_description}>{product.descripcion}</p>
         <p className={styles.card_price}>${product.precioVenta}</p>
+        {product.estado === false && (
+          <span className={styles.outOfStock}>Sin Stock</span>
+        )}
       </div>
     </div>
   );

@@ -55,6 +55,14 @@
   margin-top: 0.5rem;
 }
 
+.outOfStock {
+  color: red;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+
 @media (max-width: 768px) {
   .card_wrapper {
     max-width: 100%;

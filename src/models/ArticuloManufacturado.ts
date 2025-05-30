@@ -11,7 +11,8 @@ export class ArticuloManufacturado extends Articulo {
   descripcion: string;
   precioCosto: number;
   detalles: ArticuloManufacturadoDetalle[];
-
+  estado: boolean;
+  
   constructor(
     denominacion: string,
     unidadMedida: UnidadMedida,
@@ -19,7 +20,7 @@ export class ArticuloManufacturado extends Articulo {
     imagenes: Imagen[],
     categoria: CategoriaArticulo,
     margenGanancia: number = 0,
-    precioVenta: number = 0,
+    precioVenta: number,
     id: number = 0,
     fechaAlta: string | null = null,
     fechaModificacion: string | null = null,
@@ -27,6 +28,7 @@ export class ArticuloManufacturado extends Articulo {
     tiempoEstimadoMinutos: number = 0,
     descripcion: string = '',
     detalles: ArticuloManufacturadoDetalle[] = [],
+    estado: boolean = true
   ) {
     super(
       denominacion,
@@ -45,13 +47,14 @@ export class ArticuloManufacturado extends Articulo {
     this.descripcion = descripcion;
     this.detalles = detalles;
     this.precioCosto = 0;
+    this.estado = estado;
   }
 
   static fromJson(json: any): ArticuloManufacturado {
   return new ArticuloManufacturado(
     json.denominacion,
     new UnidadMedida(json.unidadMedida?.denominacion || ''),
-    {} as any, // Sucursal (por completar más adelante)
+    {} as any, 
     json.imagenes || [],
     CategoriaArticulo.fromJson(json.categoria),
     json.margenGanancia ?? 0,
@@ -71,9 +74,10 @@ export class ArticuloManufacturado extends Articulo {
           precioCompra: detalle.articuloInsumo.precioCompra,
           stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
           } as any : {} as any,
-          {} as any // faltaría SucursalEmpresa si es necesario
+          {} as any 
         )
-      )
+      ),
+      json.estado ?? true
     );
   }
   

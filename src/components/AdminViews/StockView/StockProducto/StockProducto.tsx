@@ -126,7 +126,7 @@ const StockProducto = () => {
             <td>{producto.categoria.denominacion}</td>
             <td>{producto.precioVenta}</td>  
             <td>{producto.tiempoEstimadoMinutos}</td>  
-            <td>Alta o Baja</td>  
+            <td>{producto.estado ? "Alta" : "Baja"}</td>
             <td>
               <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
                 <span className="material-symbols-outlined">edit</span>
