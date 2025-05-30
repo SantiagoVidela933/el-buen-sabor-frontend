@@ -45,8 +45,6 @@ export class ArticuloManufacturado extends Articulo {
     this.descripcion = descripcion;
     this.detalles = detalles;
     this.precioCosto = 0;
-    this.costoCalculado();
-    this.precioCalculado();
   }
 
   static fromJson(json: any): ArticuloManufacturado {

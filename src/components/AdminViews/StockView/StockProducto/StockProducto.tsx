@@ -117,7 +117,7 @@ const StockProducto = () => {
           <tr key={index}>
             <td>{producto.denominacion}</td>
             <td>{producto.categoria.denominacion}</td>
-            <td>{producto.precioCosto}</td>  
+            <td>{producto.precioVenta}</td>  
             <td>{producto.tiempoEstimadoMinutos}</td>  
             <td>Alta o Baja</td>  
             <td>
