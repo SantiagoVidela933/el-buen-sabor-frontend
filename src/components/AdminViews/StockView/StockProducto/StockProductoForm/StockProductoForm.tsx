@@ -4,7 +4,6 @@ import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
 import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
 import { createArticuloManufacturado, updateArticuloManufacturado } from '../../../../../api/articuloManufacturado';
-import { ArticuloManufacturadoDetalle } from '../../../../../models/ArticuloManufacturadoDetalle';
 import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
 import { ArticuloInsumo } from '../../../../../models/ArticuloInsumo';
 import { IngredienteReceta } from '../../../../../models/IngredienteReceta';
@@ -23,7 +22,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [nombre, setNombre] = useState(producto?.denominacion || '');
   const [descripcion, setDescripcion] = useState(producto?.descripcion || '');
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
-  const [precio, setPrecio] = useState(producto?.precioVenta || 0);
+  const [margenGanancia, setMargenGanancia] = useState(producto?.margenGanancia || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [imagen, setImagen] = useState<File | null>(null);
 
@@ -33,7 +32,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     setNombre(producto.denominacion || '');
     setDescripcion(producto.descripcion || '');
     setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
-    setPrecio(producto.precioVenta || 0);
+    setMargenGanancia(producto.margenGanancia || 0);
     setCategoriaId(producto.categoria?.id?.toString() || '');
     setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
     setImagenPreview(null); // Limpia el preview si cambia el producto
@@ -72,7 +71,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     setNombre('');
     setDescripcion('');
     setTiempoCocina(0);
-    setPrecio(0);
+    setMargenGanancia(0);
     setCategoriaId('');
     setIngredientes([]);
     setImagen(null);
@@ -159,7 +158,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
       // payload segun modelo back
       const articuloPayload = {
         denominacion: nombre,
-        margenGanancia: precio,
+        margenGanancia: margenGanancia,
         tiempoEstimadoMinutos: tiempoCocina,
         descripcion,
         detalles: detallesConvertidos,
@@ -226,8 +225,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </div>
 
           <div className={styles.fieldGroup}>
-            <label>Precio de Venta</label>
-            <input type="number" value={precio} onChange={(e) => setPrecio(Number(e.target.value))} />
+            <label>Margen Ganancia</label>
+            <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
           </div>
 
           <div className={styles.fieldGroup}>

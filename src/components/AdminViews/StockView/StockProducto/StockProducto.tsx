@@ -11,6 +11,7 @@ const StockProducto = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
+  const [busqueda, setBusqueda] = useState('');
 
   // Estados de producto seleccionado y a eliminar
   const [productoSeleccionado, setArticuloseleccionado] = useState<ArticuloManufacturado | undefined>(undefined);
@@ -81,6 +82,10 @@ const StockProducto = () => {
   // Cerrar modal general
   const cerrarModal = () => setModalAbierto(false);
 
+  const articulosFiltrados = articulos.filter((producto)=>
+    producto.denominacion.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
   // Guardar cambios del formulario (crear o editar)
   const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
     if (modoFormulario === 'crear') {
@@ -105,7 +110,10 @@ const StockProducto = () => {
 
       <div className={styles.searchBar}>
         <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder='Buscar por nombre...' />
+        <input 
+          type="text" 
+          placeholder='Buscar por nombre...' 
+          value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
       </div>
 
       <table className={styles.table}>
@@ -120,7 +128,7 @@ const StockProducto = () => {
           </tr>
         </thead>
         <tbody>
-        {articulos.map((producto, index) => (
+        {articulosFiltrados.map((producto, index) => (
           <tr key={index}>
             <td>{producto.denominacion}</td>
             <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
