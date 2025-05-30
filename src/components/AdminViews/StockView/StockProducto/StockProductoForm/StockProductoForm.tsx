@@ -27,6 +27,20 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [imagen, setImagen] = useState<File | null>(null);
 
+  // Escuchar cambios en artManu
+  useEffect(() => {
+  if (producto) {
+    setNombre(producto.denominacion || '');
+    setDescripcion(producto.descripcion || '');
+    setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
+    setPrecio(producto.precioVenta || 0);
+    setCategoriaId(producto.categoria?.id?.toString() || '');
+    setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
+    setImagenPreview(null); // Limpia el preview si cambia el producto
+  }
+}, [producto]);
+
+
   // Lista de insumos obtenidos
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   // Estado de insumo seleccionado en formulario
@@ -52,19 +66,38 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     fetchInsumos();
   }, []);
 
-
-  // ** NUEVO: cargar ingredientes si es modo editar y producto tiene detalles **
+  //limpiar form
   useEffect(() => {
-    if (modo === 'editar' && producto?.detalles?.length) {
-      console.log(insumos)
-      // Mapear detalles a ingredientes con insumo y cantidad
-      const ingredientesIniciales: IngredienteReceta[] = producto.detalles.map(detalle => ({
-        insumo: detalle.articuloInsumo,
-        cantidad: detalle.cantidad
-      }));
+  if (modo === 'crear') {
+    setNombre('');
+    setDescripcion('');
+    setTiempoCocina(0);
+    setPrecio(0);
+    setCategoriaId('');
+    setIngredientes([]);
+    setImagen(null);
+    setImagenPreview(null);
+    setNombreImagenActual(null);
+  }
+}, [modo]);
+
+  console.log('producto.detalles completos:', producto?.detalles);
+
+  // cargar ingredientes si es modo editar y producto tiene detalles **
+  useEffect(() => {
+    if (modo === 'editar' && producto?.detalles?.length && insumos.length > 0) {
+    const ingredientesIniciales: IngredienteReceta[] = producto.detalles.map((detalle) => {
+      const insumoCompleto = insumos.find((i) => i.id === detalle.articuloInsumo.id);
+      console.log('detalle.articuloInsumo:', detalle.articuloInsumo);
+      console.log('insumoCompleto:', insumoCompleto);
+      return {
+        insumo: insumoCompleto ?? detalle.articuloInsumo,
+        cantidad: detalle.cantidad,
+      };
+    });
       setIngredientes(ingredientesIniciales);
     }
-  }, [modo, producto]);
+  }, [modo, producto, insumos]);
 
   // Agregar ingrediente a lista
   const handleAgregarIngrediente = () => {
@@ -89,7 +122,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     setCantidad(0);
   };
 
-  const detallesConvertidos: ArticuloManufacturadoDetalle[] = ingredientes.map((i) => ({
+  const detallesConvertidos = ingredientes.map((i) => ({
     cantidad: i.cantidad,
     articuloInsumo: i.insumo
   }));
@@ -170,6 +203,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   };
 
 
+
   return (
     <>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -238,7 +272,10 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
             <h4>Ingredientes Agregados:</h4>
               <ul style={{ paddingLeft: '1.25rem' }}>
                 {ingredientes.map(({ insumo, cantidad }) => (
-                  <li key={insumo.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <li
+                    key={`${insumo.id}-${cantidad}`}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
                     <span>
                       {insumo?.denominacion} — {cantidad} {insumo?.unidadMedida?.denominacion ?? ''}
                     </span>
@@ -267,11 +304,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           <button type="submit" className={styles.saveBtn}>Guardar</button>
         </div>
       </form>
-      {/* {openModalReceta && (
-        <Modal onClose={closeModal}>
-          <CreateRecetaForm onChange={setDetalles}/>
-        </Modal>
-      )} */}
     </>
   );
 };

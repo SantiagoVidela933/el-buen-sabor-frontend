@@ -51,35 +51,34 @@ export class ArticuloManufacturado extends Articulo {
   }
 
   static fromJson(json: any): ArticuloManufacturado {
-  return new ArticuloManufacturado(
-    json.denominacion,
-    new UnidadMedida(json.unidadMedida?.denominacion || ''),
-    {} as any, 
-    json.imagenes || [],
-    CategoriaArticulo.fromJson(json.categoria),
-    json.margenGanancia ?? 0,
-    json.precioVenta ?? 0,
-    json.id ?? 0,
-    json.fechaAlta ?? null,
-    json.fechaModificacion ?? null,
-    json.fechaBaja ?? null,
-    json.tiempoEstimadoMinutos ?? 0,
-    json.descripcion ?? '',
-    (json.detalles || []).map((detalle: any) =>
-      new ArticuloManufacturadoDetalle(
-        detalle.id,
-        detalle.cantidad,
-        detalle.articuloInsumo ? {
-          id: detalle.articuloInsumo.id,
-          precioCompra: detalle.articuloInsumo.precioCompra,
-          stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
-          } as any : {} as any,
-          {} as any 
-        )
-      ),
+    const articulo = new ArticuloManufacturado(
+      json.denominacion,
+      UnidadMedida.fromJson(json.unidadMedida || {}),
+      {} as any, // acá completamos más abajo para evitar referencia circular
+      json.imagenes || [],
+      CategoriaArticulo.fromJson(json.categoria || {}),
+      json.margenGanancia ?? 0,
+      json.precioVenta ?? 0,
+      json.id ?? 0,
+      json.fechaAlta ?? null,
+      json.fechaModificacion ?? null,
+      json.fechaBaja ?? null,
+      json.tiempoEstimadoMinutos ?? 0,
+      json.descripcion ?? '',
+      [], // inicializamos detalles vacío, lo completamos abajo
       json.estado ?? true
     );
+
+    // Ahora que ya tenemos el articulo creado, parseamos los detalles y asignamos la referencia padre
+    articulo.detalles = (json.detalles || []).map((detalleJson: any) => {
+      const detalle = ArticuloManufacturadoDetalle.fromJson(detalleJson);
+      detalle.articuloManufacturado = articulo; // asignamos referencia al padre
+      return detalle;
+    });
+
+    return articulo;
   }
+
   
   protected override obtenerCostoBase(): number {
     return this.precioCosto;

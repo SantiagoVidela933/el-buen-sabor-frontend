@@ -1,17 +1,16 @@
-// models/ArticuloManufacturadoDetalle.ts
-import { BaseEntity } from './BaseEntity';
-import { ArticuloInsumo } from './ArticuloInsumo';
-import { ArticuloManufacturado } from './ArticuloManufacturado';
+import { ArticuloInsumo } from "./ArticuloInsumo";
+import { ArticuloManufacturado } from "./ArticuloManufacturado";
+import { BaseEntity } from "./BaseEntity";
 
 export class ArticuloManufacturadoDetalle extends BaseEntity {
   cantidad: number;
   articuloInsumo: ArticuloInsumo;
-  articuloManufacturado: ArticuloManufacturado;
+  articuloManufacturado: ArticuloManufacturado | null;
 
   constructor(
     cantidad: number,
     articuloInsumo: ArticuloInsumo,
-    articuloManufacturado: ArticuloManufacturado
+    articuloManufacturado: ArticuloManufacturado | null = null
   ) {
     super();
     this.cantidad = cantidad;
@@ -23,7 +22,8 @@ export class ArticuloManufacturadoDetalle extends BaseEntity {
     return new ArticuloManufacturadoDetalle(
       json.cantidad,
       ArticuloInsumo.fromJson(json.articuloInsumo),
-      {} as any // Esto se completa manualmente después si hace falta
+      null
     );
   }
 }
+
