@@ -91,6 +91,21 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
       alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
     }
   };
+
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
+    producto?.imagenes?.length ? producto.imagenes[0].denominacion : null
+  );
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagen(file);
+      setNombreImagenActual(file.name); // mostrar nombre archivo nuevo
+      setImagenPreview(URL.createObjectURL(file)); // opcional: mostrar preview
+    }
+  };
+
   return (
     <>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -142,14 +157,10 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
               type="file"
               id="imagen"
               className={styles.imageInput}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setImagen(file);
-                  console.log('[DEBUG] Imagen seleccionada:', file);
-                }
-              }}
+              onChange={handleImageChange}
             />
+            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+            {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
           </div>
         </div>
 
