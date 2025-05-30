@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import styles from './StockProductoForm.module.css';
-import Modal from '../../../../ui/Modal/Modal';
-import CreateRecetaForm from '../../../../ui/CreateRecetaForm/CreateRecetaForm';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
 import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
 import { createArticuloManufacturado, updateArticuloManufacturado } from '../../../../../api/articuloManufacturado';
 import { ArticuloManufacturadoDetalle } from '../../../../../models/ArticuloManufacturadoDetalle';
+import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
+import { ArticuloInsumo } from '../../../../../models/ArticuloInsumo';
+import { IngredienteReceta } from '../../../../../models/IngredienteReceta';
 
 interface StockProductoFormProps {
   producto?: ArticuloManufacturado;
@@ -17,7 +18,6 @@ interface StockProductoFormProps {
 
 const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoFormProps) => {
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
-  const [openModalReceta, setOpenModalReceta] = useState(false);
 
   // Estado para campos del formulario
   const [nombre, setNombre] = useState(producto?.denominacion || '');
@@ -26,11 +26,77 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [precio, setPrecio] = useState(producto?.precioVenta || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [imagen, setImagen] = useState<File | null>(null);
-  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
-  // Abrir / Cerrar modal de receta
-  const openModal = () => setOpenModalReceta(true);
-  const closeModal = () => setOpenModalReceta(false);
+  // Lista de insumos obtenidos
+  const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
+  // Estado de insumo seleccionado en formulario
+  const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
+  // Estado de cantidad de insumo
+  const [cantidad, setCantidad] = useState<number>(0);
+  // Estado de ingredientes agregados ( insumo y cantidad )
+  const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
+  // GET insumos disponibles
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      const data = await getCategoriasMenuBySucursalId(1);
+      setCategorias(data);
+    };
+    fetchCategorias();
+  }, []);
+
+  useEffect(() => {
+    const fetchInsumos = async () => {
+      const data = await getInsumosBySucursalId(1);
+      setInsumos(data);
+    };
+    fetchInsumos();
+  }, []);
+
+
+  // ** NUEVO: cargar ingredientes si es modo editar y producto tiene detalles **
+  useEffect(() => {
+    if (modo === 'editar' && producto?.detalles?.length) {
+      console.log(insumos)
+      // Mapear detalles a ingredientes con insumo y cantidad
+      const ingredientesIniciales: IngredienteReceta[] = producto.detalles.map(detalle => ({
+        insumo: detalle.articuloInsumo,
+        cantidad: detalle.cantidad
+      }));
+      setIngredientes(ingredientesIniciales);
+    }
+  }, [modo, producto]);
+
+  // Agregar ingrediente a lista
+  const handleAgregarIngrediente = () => {
+    if (selectedInsumoId === 0) return alert('Seleccioná un ingrediente');
+    if (cantidad <= 0) return alert('Ingresá una cantidad válida');
+
+    const insumo = insumos.find(i => i.id === selectedInsumoId);
+    if (!insumo) return alert('Ingrediente no encontrado');
+
+    setIngredientes((prev) => {
+      const existe = prev.find(i => i.insumo.id === selectedInsumoId);
+      if (existe) {
+        return prev.map(i =>
+          i.insumo.id === selectedInsumoId
+            ? { ...i, cantidad: i.cantidad + cantidad }
+            : i
+        );
+      }
+      return [...prev, { insumo, cantidad }];
+    });
+    setSelectedInsumoId(0);
+    setCantidad(0);
+  };
+
+  const detallesConvertidos: ArticuloManufacturadoDetalle[] = ingredientes.map((i) => ({
+    cantidad: i.cantidad,
+    articuloInsumo: i.insumo
+  }));
+
+  const handleEliminarIngrediente = (idInsumo: number) => {
+    setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
+  };
 
   // Cargar categorias de articulos manufacturados
   useEffect(() => {
@@ -63,10 +129,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         margenGanancia: precio,
         tiempoEstimadoMinutos: tiempoCocina,
         descripcion,
-        detalles: detalles.map(d => ({
-          cantidad: d.cantidad,
-          articuloInsumo: { id: d.articuloInsumo.id }
-        })),
+        detalles: detallesConvertidos,
         unidadMedida: { id: 3 }, // hardcodeo 'Unidad'
         categoria: { id: categoriaSeleccionada.id }
       };
@@ -92,19 +155,20 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   };
 
+  // Muestro imagen (img, nombre) a editar en form
   const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
     producto?.imagenes?.length ? producto.imagenes[0].denominacion : null
   );
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImagen(file);
-      setNombreImagenActual(file.name); // mostrar nombre archivo nuevo
-      setImagenPreview(URL.createObjectURL(file)); // opcional: mostrar preview
+      setNombreImagenActual(file.name); 
+      setImagenPreview(URL.createObjectURL(file)); 
     }
   };
+
 
   return (
     <>
@@ -146,9 +210,43 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
           <div className={styles.fieldGroupFull}>
             <label>Receta</label>
-            <button type="button" className={styles.recipeButton} onClick={openModal}>
-              Crear receta
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+              <select
+                value={selectedInsumoId}
+                onChange={(e) => setSelectedInsumoId(Number(e.target.value))}
+              >
+                <option value={0}>-- Seleccionar ingrediente --</option>
+                {insumos.map((insumo) => (
+                  <option key={insumo.id} value={insumo.id}>
+                    {insumo.denominacion}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                type="number"
+                placeholder="Cantidad"
+                value={cantidad}
+                min={0}
+                step={0.1}
+                onChange={(e) => setCantidad(Number(e.target.value))}
+              />
+
+              <button type="button" onClick={handleAgregarIngrediente}>Agregar</button>
+            </div>
+
+            <h4>Ingredientes Agregados:</h4>
+              <ul style={{ paddingLeft: '1.25rem' }}>
+                {ingredientes.map(({ insumo, cantidad }) => (
+                  <li key={insumo.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>
+                      {insumo?.denominacion} — {cantidad} {insumo?.unidadMedida?.denominacion ?? ''}
+                    </span>
+
+                    <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+                  </li>
+                ))}
+              </ul>
           </div>
 
           <div className={styles.fieldGroupFull}>
@@ -169,11 +267,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           <button type="submit" className={styles.saveBtn}>Guardar</button>
         </div>
       </form>
-      {openModalReceta && (
+      {/* {openModalReceta && (
         <Modal onClose={closeModal}>
           <CreateRecetaForm onChange={setDetalles}/>
         </Modal>
-      )}
+      )} */}
     </>
   );
 };

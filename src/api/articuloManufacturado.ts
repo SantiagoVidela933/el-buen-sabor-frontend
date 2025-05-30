@@ -16,7 +16,6 @@ export const createArticuloManufacturado = async (
   imagen: File
 ) => {
   const formData = new FormData();
-  console.log('[DEBUG] Payload a enviar:', articuloPayload);
   const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
     type: 'application/json',
   });
@@ -62,9 +61,6 @@ export const updateArticuloManufacturado = async (
   }
   return res.json();
 };
-
-
-
 
 // DELETE Articulo Manufacturado por ID
 export const deleteArticuloManufacturado = async (id: number): Promise<void> => {

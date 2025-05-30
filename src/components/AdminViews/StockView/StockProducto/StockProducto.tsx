@@ -93,6 +93,9 @@ const StockProducto = () => {
     cerrarModal();
   };
 
+  console.log({ modoFormulario, productoSeleccionado, modalAbierto });
+
+
   return (
     <div className={styles.container}>
 

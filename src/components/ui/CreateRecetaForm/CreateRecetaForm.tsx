@@ -36,7 +36,7 @@ const CreateRecetaForm = ({onChange}: CreateRecetaFormProps) => {
       new ArticuloManufacturadoDetalle(cantidad, insumo, {} as any)
     );
     onChange(detalles);
-  }, [ingredientes]);
+  }, [ingredientes, onChange]);
 
   // Agregar ingrediente a lista
   const handleAgregarIngrediente = () => {
