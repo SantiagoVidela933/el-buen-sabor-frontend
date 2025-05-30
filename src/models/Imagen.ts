@@ -4,19 +4,19 @@ import { ArticuloInsumo } from "./ArticuloInsumo";
 import { Promocion } from "./Promocion";
 
 export class Imagen extends BaseEntity {
-  nombre: string;
+  denominacion: string;
   articuloManufacturado?: ArticuloManufacturado | null;
   articuloInsumo?: ArticuloInsumo | null;
   promocion?: Promocion | null;
 
   constructor(
-    nombre: string,
+    denominacion: string,
     articuloManufacturado?: ArticuloManufacturado | null,
     articuloInsumo?: ArticuloInsumo | null,
     promocion?: Promocion | null
   ) {
     super();
-    this.nombre = nombre;
+    this.denominacion = denominacion;
     this.articuloManufacturado = articuloManufacturado ?? null;
     this.articuloInsumo = articuloInsumo ?? null;
     this.promocion = promocion ?? null;
@@ -24,7 +24,7 @@ export class Imagen extends BaseEntity {
 
   static fromJson(json: any): Imagen {
     return new Imagen(
-      json.nombre,
+      json.denominacion,
       null, // Ignoramos relaciones inversas (articuloManufacturado, etc.)
       null,
       null

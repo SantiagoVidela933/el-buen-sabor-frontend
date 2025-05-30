@@ -16,7 +16,6 @@ const StockProducto = () => {
   useEffect(() => {
     getAllArticulosManufacturados()
       .then(data => {
-        console.log('Articulos cargados:', data);
         setArticulos(data);
       })
       .catch(error => {

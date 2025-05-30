@@ -67,6 +67,10 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
         categoria: { id: categoriaSeleccionada.id }
       };
 
+      console.log("Payload final:", articuloPayload);
+      console.log("Imagen a enviar:", imagen.name);
+
+
       const response = await createArticuloManufacturado(articuloPayload, imagen);
 
       console.log('[SUCCESS] Artículo creado exitosamente:', response);
@@ -114,15 +118,6 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
                 {categoria.denominacion}
               </option>
             ))}
-          </select>
-        </div>
-
-
-        <div className={styles.fieldGroup}>
-          <label>Estado</label>
-          <select defaultValue="Estado">
-            <option value="Alta">Alta</option>
-            <option value="Baja">Baja</option>
           </select>
         </div>
 

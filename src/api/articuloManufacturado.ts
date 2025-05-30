@@ -16,25 +16,26 @@ export const createArticuloManufacturado = async (
   imagen: File
 ) => {
   const formData = new FormData();
+  console.log('[DEBUG] Payload a enviar:', articuloPayload);
   const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
     type: 'application/json',
   });
   formData.append('articuloManufacturado', articuloBlob);
-  formData.append('file', imagen);
-
+  if (imagen) {
+    formData.append('imagenes', imagen);
+  }
   const res = await fetch(API_URL, {
     method: 'POST',
     body: formData,
   });
-
   if (!res.ok) {
     const errorText = await res.text();
     console.error('[ERROR] Backend response:', errorText);
     throw new Error('Error al crear artículo manufacturado');
   }
-
   return res.json();
 };
+
 
 
 

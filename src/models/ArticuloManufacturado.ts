@@ -57,7 +57,7 @@ export class ArticuloManufacturado extends Articulo {
       json.descripcion,
       new UnidadMedida(json.unidadMedida?.denominacion || ''),
       {} as any, // Sucursal (por completar más adelante)
-      json.imagenes || [],
+      (json.imagenes || []).map((img: any) => Imagen.fromJson(img)),
       CategoriaArticulo.fromJson(json.categoria), // ✅ Uso correcto del método
       (json.detalles || []).map((detalle: any) =>
         new ArticuloManufacturadoDetalle(
@@ -78,9 +78,6 @@ export class ArticuloManufacturado extends Articulo {
       json.fechaBaja ?? null
     );
   }
-
-
-
   
   protected override obtenerCostoBase(): number {
     return this.precioCosto;
