@@ -4,18 +4,22 @@ import Modal from '../../../ui/Modal/Modal';
 import StockProductoForm from './StockProductoForm/StockProductoForm';
 import { getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
 import { ArticuloManufacturado } from '../../../../models/ArticuloManufacturado';
+import { deleteArticuloManufacturado } from '../../../../api/articuloManufacturado';
 
 const StockProducto = () => {
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
   const [productoSeleccionado, setArticuloseleccionado] = useState<ArticuloManufacturado | undefined>(undefined);
-  
+  const [productoAEliminar, setProductoAEliminar] = useState<ArticuloManufacturado | null>(null);
+  const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
+
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
   
   useEffect(() => {
     getAllArticulosManufacturados()
       .then(data => {
+        console.log('Articulos cargados:', data);
         setArticulos(data);
       })
       .catch(error => {
@@ -34,6 +38,35 @@ const StockProducto = () => {
     setModoFormulario('editar');
     setArticuloseleccionado(producto);
     setModalAbierto(true);
+  };
+  const abrirModalEliminar = (producto: ArticuloManufacturado) => {
+    setProductoAEliminar(producto);
+    setModalConfirmacionAbierto(true);
+  };
+
+    const eliminarProducto = async () => {
+    if (productoAEliminar) {
+      try {
+        console.log("ID a eliminar:", productoAEliminar.id);
+
+        await deleteArticuloManufacturado(productoAEliminar.id);
+
+        setArticulos((prev) =>
+          prev.filter((prod) => prod.id !== productoAEliminar.id)
+        );
+        setProductoAEliminar(null);
+        setModalConfirmacionAbierto(false);
+      } catch (error: any) {
+        console.error(error);
+        alert(`Error al eliminar el producto: ${error.message}`);
+      }
+    }
+  };
+
+
+  const cancelarEliminacion = () => {
+  setProductoAEliminar(null);
+  setModalConfirmacionAbierto(false);
   };
 
   const cerrarModal = () => {
@@ -91,9 +124,13 @@ const StockProducto = () => {
               <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
                 <span className="material-symbols-outlined">edit</span>
               </button>
-              <button className={styles.deleteBtn}>
-                <span className="material-symbols-outlined">delete</span>
+              <button
+                className={styles.deleteBtn}
+                onClick={() => abrirModalEliminar(producto)}
+              >
+              <span className="material-symbols-outlined">delete</span>
               </button>
+              
             </td>  
           </tr>
         ))}
@@ -107,6 +144,28 @@ const StockProducto = () => {
             onClose={cerrarModal}
             onSubmit={manejarSubmit}
           />
+        </Modal>
+      )}
+      {modalConfirmacionAbierto && (
+        <Modal onClose={cancelarEliminacion}>
+          <div className={styles.confirmation}>
+            <h3>¿Estás seguro?</h3>
+            <p>
+              ¿Deseás eliminar el producto{" "}
+              <strong>{productoAEliminar?.denominacion}</strong>?
+            </p>
+            <div className={styles.confirmationButtons}>
+              <button className={styles.confirmBtn} onClick={eliminarProducto}>
+                Aceptar
+              </button>
+              <button
+                className={styles.cancelBtn}
+                onClick={cancelarEliminacion}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

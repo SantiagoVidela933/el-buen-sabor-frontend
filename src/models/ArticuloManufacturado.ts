@@ -14,19 +14,19 @@ export class ArticuloManufacturado extends Articulo {
 
   constructor(
     denominacion: string,
-    precioVenta: number,
-    tiempoEstimadoMinutos: number,
-    descripcion: string,
     unidadMedida: UnidadMedida,
     sucursal: SucursalEmpresa,
     imagenes: Imagen[],
     categoria: CategoriaArticulo,
-    detalles: ArticuloManufacturadoDetalle[] = [],
-    margenGanancia?: number,
+    margenGanancia: number = 0,
+    precioVenta: number = 0,
     id: number = 0,
     fechaAlta: string | null = null,
     fechaModificacion: string | null = null,
     fechaBaja: string | null = null,
+    tiempoEstimadoMinutos: number = 0,
+    descripcion: string = '',
+    detalles: ArticuloManufacturadoDetalle[] = [],
   ) {
     super(
       denominacion,
@@ -34,9 +34,9 @@ export class ArticuloManufacturado extends Articulo {
       sucursal,
       imagenes,
       categoria,
-      id,
-      precioVenta,
       margenGanancia,
+      precioVenta,
+      id,
       fechaAlta,
       fechaModificacion,
       fechaBaja,
@@ -50,32 +50,32 @@ export class ArticuloManufacturado extends Articulo {
   }
 
   static fromJson(json: any): ArticuloManufacturado {
-    return new ArticuloManufacturado(
-      json.denominacion,
-      json.precioVenta,
-      json.tiempoEstimadoMinutos,
-      json.descripcion,
-      new UnidadMedida(json.unidadMedida?.denominacion || ''),
-      {} as any, // Sucursal (por completar más adelante)
-      (json.imagenes || []).map((img: any) => Imagen.fromJson(img)),
-      CategoriaArticulo.fromJson(json.categoria), // ✅ Uso correcto del método
-      (json.detalles || []).map((detalle: any) =>
-        new ArticuloManufacturadoDetalle(
-          detalle.id,
-          detalle.cantidad,
-          detalle.articuloInsumo ? {
-            id: detalle.articuloInsumo.id,
-            precioCompra: detalle.articuloInsumo.precioCompra,
-            stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
+  return new ArticuloManufacturado(
+    json.denominacion,
+    new UnidadMedida(json.unidadMedida?.denominacion || ''),
+    {} as any, // Sucursal (por completar más adelante)
+    json.imagenes || [],
+    CategoriaArticulo.fromJson(json.categoria),
+    json.margenGanancia ?? 0,
+    json.precioVenta ?? 0,
+    json.id ?? 0,
+    json.fechaAlta ?? null,
+    json.fechaModificacion ?? null,
+    json.fechaBaja ?? null,
+    json.tiempoEstimadoMinutos ?? 0,
+    json.descripcion ?? '',
+    (json.detalles || []).map((detalle: any) =>
+      new ArticuloManufacturadoDetalle(
+        detalle.id,
+        detalle.cantidad,
+        detalle.articuloInsumo ? {
+          id: detalle.articuloInsumo.id,
+          precioCompra: detalle.articuloInsumo.precioCompra,
+          stockPorSucursal: detalle.articuloInsumo.stockPorSucursal,
           } as any : {} as any,
           {} as any // faltaría SucursalEmpresa si es necesario
         )
-      ),
-      json.margenGanancia ?? 0,
-      json.id ?? 0,
-      json.fechaAlta ?? null,
-      json.fechaModificacion ?? null,
-      json.fechaBaja ?? null
+      )
     );
   }
   

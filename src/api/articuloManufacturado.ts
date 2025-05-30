@@ -36,6 +36,44 @@ export const createArticuloManufacturado = async (
   return res.json();
 };
 
+// PUT 
+export const updateArticuloManufacturado = async (
+  id: number,
+  articuloPayload: object,
+  imagen?: File
+) => {
+  const formData = new FormData();
+  const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
+    type: 'application/json',
+  });
+  formData.append('articuloManufacturado', articuloBlob);
+  if (imagen) {
+    formData.append('imagenes', imagen);
+  }
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: 'PUT',
+    body: formData,
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al actualizar artículo manufacturado');
+  }
+  return res.json();
+};
 
+
+
+// DELETE Articulo Manufacturado por ID
+export const deleteArticuloManufacturado = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al eliminar artículo manufacturado');
+  }
+};
 
 

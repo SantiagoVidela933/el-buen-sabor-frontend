@@ -66,3 +66,41 @@
 .deleteBtn span {
   color: #e63946;
 }
+.confirmation {
+  text-align: center;
+}
+
+.confirmationButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.confirmBtn {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmBtn:hover {
+  background-color: #b71c1c;
+}
+
+.cancelBtn {
+  background-color: #888;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancelBtn:hover {
+  background-color: #666;
+}

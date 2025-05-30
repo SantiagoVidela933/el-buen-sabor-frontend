@@ -5,7 +5,7 @@ import CreateRecetaForm from '../../../../ui/CreateRecetaForm/CreateRecetaForm';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
 import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
-import { createArticuloManufacturado } from '../../../../../api/articuloManufacturado';
+import { createArticuloManufacturado, updateArticuloManufacturado } from '../../../../../api/articuloManufacturado';
 import { ArticuloManufacturadoDetalle } from '../../../../../models/ArticuloManufacturadoDetalle';
 
 interface StockProductoFormProps {
