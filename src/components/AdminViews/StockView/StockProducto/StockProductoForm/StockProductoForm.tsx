@@ -15,14 +15,14 @@ interface StockProductoFormProps {
   onSubmit: (productoActualizado: ArticuloManufacturado) => void;
 }
 
-const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) => {
+const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoFormProps) => {
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [openModalReceta, setOpenModalReceta] = useState(false);
 
   const [nombre, setNombre] = useState(producto?.denominacion || '');
   const [descripcion, setDescripcion] = useState(producto?.descripcion || '');
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
-  const [precio, setPrecio] = useState(producto?.precioCalculado() || 0);
+  const [precio, setPrecio] = useState(producto?.precioVenta || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [imagen, setImagen] = useState<File | null>(null);
   const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
@@ -41,7 +41,7 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!nombre || !descripcion || !imagen || detalles.length === 0) {
+    if (!nombre || !descripcion) {
       alert('Por favor completá todos los campos obligatorios y agregá al menos un ingrediente.');
       return;
     }
@@ -53,35 +53,43 @@ const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) 
         return;
       }
 
-      // Armás el payload según el formato que requiere el backend
       const articuloPayload = {
         denominacion: nombre,
-        margenGanancia: precio, // precio de venta
+        margenGanancia: precio,
         tiempoEstimadoMinutos: tiempoCocina,
         descripcion,
         detalles: detalles.map(d => ({
           cantidad: d.cantidad,
           articuloInsumo: { id: d.articuloInsumo.id }
         })),
-        unidadMedida: { id: 3 }, // fijo
+        unidadMedida: { id: 3 },
         categoria: { id: categoriaSeleccionada.id }
       };
 
-      console.log("Payload final:", articuloPayload);
-      console.log("Imagen a enviar:", imagen.name);
-
-
-      const response = await createArticuloManufacturado(articuloPayload, imagen);
-
-      console.log('[SUCCESS] Artículo creado exitosamente:', response);
-      alert('Artículo creado correctamente');
-      onClose(); // cerrar modal o formulario luego de crear
-
+      if (modo === 'crear') {
+        const response = await createArticuloManufacturado(articuloPayload, imagen!);
+        console.log('[SUCCESS] Artículo creado:', response);
+        alert('Artículo creado correctamente');
+        onSubmit(response); // avisar al padre
+        onClose();
+      } else {
+        if (!producto) {
+          alert('Error: producto a editar no definido');
+          return;
+        }
+        // Actualizar: pasar el id para el PUT, la imagen puede ser null si no se cambia
+        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen);
+        console.log('[SUCCESS] Artículo actualizado:', response);
+        alert('Artículo actualizado correctamente');
+        onSubmit(response);
+        onClose();
+      }
     } catch (error) {
-      console.error('[ERROR] Fallo al crear el artículo manufacturado:', error);
-      alert('Hubo un error al crear el artículo. Revisá la consola para más detalles.');
+      console.error('[ERROR] Error al guardar artículo:', error);
+      alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
     }
   };
+
 
   return (
     <>

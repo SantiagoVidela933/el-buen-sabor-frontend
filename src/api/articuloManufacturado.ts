@@ -36,13 +36,14 @@ export const createArticuloManufacturado = async (
   return res.json();
 };
 
-// PUT 
+// PUT Articulo Manufacturado con imagen
 export const updateArticuloManufacturado = async (
-  id: number,
+  id: number | string,
   articuloPayload: object,
   imagen?: File
 ) => {
   const formData = new FormData();
+  console.log('[DEBUG] Payload a enviar:', articuloPayload);
   const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
     type: 'application/json',
   });
@@ -61,6 +62,7 @@ export const updateArticuloManufacturado = async (
   }
   return res.json();
 };
+
 
 
 

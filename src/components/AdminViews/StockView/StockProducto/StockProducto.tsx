@@ -72,15 +72,13 @@ const StockProducto = () => {
   const cerrarModal = () => {
     setModalAbierto(false);
   };
-
+  
   const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
     if (modoFormulario === 'crear') {
       setArticulos(prev => [...prev, productoActualizado]);
     } else {
       setArticulos(prev =>
-        prev.map(prod =>
-          prod.denominacion === productoSeleccionado?.denominacion ? productoActualizado : prod
-        )
+        prev.map(prod => prod.id === productoActualizado.id ? productoActualizado : prod)
       );
     }
     cerrarModal();
