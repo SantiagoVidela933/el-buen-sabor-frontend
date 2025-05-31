@@ -1,4 +1,3 @@
-// models/ArticuloManufacturado.ts
 import { Articulo } from './Articulo';
 import { ArticuloManufacturadoDetalle } from './ArticuloManufacturadoDetalle';
 import { SucursalEmpresa } from './SucursalEmpresa';
@@ -54,7 +53,7 @@ export class ArticuloManufacturado extends Articulo {
     const articulo = new ArticuloManufacturado(
       json.denominacion,
       UnidadMedida.fromJson(json.unidadMedida || {}),
-      {} as any, // acá completamos más abajo para evitar referencia circular
+      {} as any, 
       json.imagenes || [],
       CategoriaArticulo.fromJson(json.categoria || {}),
       json.margenGanancia ?? 0,
@@ -65,20 +64,18 @@ export class ArticuloManufacturado extends Articulo {
       json.fechaBaja ?? null,
       json.tiempoEstimadoMinutos ?? 0,
       json.descripcion ?? '',
-      [], // inicializamos detalles vacío, lo completamos abajo
+      [], 
       json.estado ?? true
     );
 
-    // Ahora que ya tenemos el articulo creado, parseamos los detalles y asignamos la referencia padre
     articulo.detalles = (json.detalles || []).map((detalleJson: any) => {
       const detalle = ArticuloManufacturadoDetalle.fromJson(detalleJson);
-      detalle.articuloManufacturado = articulo; // asignamos referencia al padre
+      detalle.articuloManufacturado = articulo;
       return detalle;
     });
 
     return articulo;
   }
-
   
   protected override obtenerCostoBase(): number {
     return this.precioCosto;

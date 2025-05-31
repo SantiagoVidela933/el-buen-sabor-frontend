@@ -2,9 +2,9 @@ import { ReactNode, useEffect } from "react";
 import styles from './Modal.module.css';
 
 interface ModalProps {
-    onClose: () => void;
-    children: ReactNode;
-    className?: string; // <--- AÑADIR ESTA PROP
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
 }
 
 const Modal = ({onClose, children}: ModalProps) => {
@@ -21,7 +21,7 @@ const Modal = ({onClose, children}: ModalProps) => {
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
         className={styles.modalContent}
-        onClick={(e) => e.stopPropagation()} // evita que cierre si se clickea dentro
+        onClick={(e) => e.stopPropagation()} 
       >
         <button className={styles.closeButton} onClick={onClose}>
             <span className="material-symbols-outlined">close</span>

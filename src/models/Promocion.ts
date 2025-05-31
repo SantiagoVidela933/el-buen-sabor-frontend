@@ -9,7 +9,6 @@ export class Promocion extends BaseEntity {
   fechaDesde?: Date;
   fechaHasta?: Date;
   descuento: number;
-
   sucursal?: SucursalEmpresa;
   promocionesDetalle: PromocionDetalle[];
   pedidosVentaDetalle: PedidoVentaDetalle[];

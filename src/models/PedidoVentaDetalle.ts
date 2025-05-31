@@ -7,7 +7,6 @@ export class PedidoVentaDetalle extends BaseEntity {
   cantidad: number;
   subtotal: number;
   subtotalCosto: number;
-
   promocion?: Promocion;
   pedidoVenta?: PedidoVenta;
   articulo?: Articulo;

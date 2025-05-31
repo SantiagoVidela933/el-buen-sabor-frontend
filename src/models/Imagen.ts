@@ -25,7 +25,7 @@ export class Imagen extends BaseEntity {
   static fromJson(json: any): Imagen {
     return new Imagen(
       json.denominacion,
-      null, // Ignoramos relaciones inversas (articuloManufacturado, etc.)
+      null,
       null,
       null
     );

@@ -33,7 +33,7 @@ export class ArticuloInsumo extends Articulo {
       categoria,
       margenGanancia,
       undefined,
-      id,                    // <- id aquí
+      id,                 
       fechaAlta,
       fechaModificacion,
       fechaBaja
@@ -47,14 +47,14 @@ export class ArticuloInsumo extends Articulo {
   static fromJson(json: any): ArticuloInsumo {
     return new ArticuloInsumo(
       json.denominacion,
-      json.precioCompra ?? 0,  // si no viene, 0
+      json.precioCompra ?? 0, 
       json.esParaElaborar ?? false,
       UnidadMedida.fromJson(json.unidadMedida),
       SucursalEmpresa.fromJson(json.sucursal || {}),
       (json.imagenes || []).map((img: any) => Imagen.fromJson(img)),
       CategoriaArticulo.fromJson(json.categoria || {}),
       json.stockPorSucursal || [],
-      json.margenGanancia ?? 0, // si no viene, 0
+      json.margenGanancia ?? 0, 
       json.id,
       json.fechaAlta,
       json.fechaModificacion,

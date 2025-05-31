@@ -1,5 +1,4 @@
-// models/Articulo.ts
-import { BaseEntity } from './BaseEntity'; // importa BaseEntity
+import { BaseEntity } from './BaseEntity';
 import { UnidadMedida } from './UnidadMedida';
 import { SucursalEmpresa } from './SucursalEmpresa';
 import { Imagen } from './Imagen';

@@ -13,7 +13,6 @@ export class Factura extends BaseEntity {
   descuento: number | null;
   gastoEnvio: number | null;
   totalVenta: number | null;
-
   pedidoVenta: PedidoVenta | null;
   facturaDetalles: Set<FacturaDetalle>;
   datoMercadoPago: DatoMercadoPago | null;
