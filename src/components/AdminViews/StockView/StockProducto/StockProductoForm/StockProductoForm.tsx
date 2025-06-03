@@ -242,48 +242,71 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </div>
 
           <div className={styles.fieldGroupFull}>
-            <label>Receta</label>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-              <select
-                value={selectedInsumoId}
-                onChange={(e) => setSelectedInsumoId(Number(e.target.value))}
-              >
-                <option value={0}>-- Seleccionar ingrediente --</option>
-                {insumos.map((insumo) => (
-                  <option key={insumo.id} value={insumo.id}>
-                    {insumo.denominacion}
-                  </option>
-                ))}
-              </select>
+          <label>Receta</label>
 
-              <input
-                type="number"
-                placeholder="Cantidad"
-                value={cantidad}
-                min={0}
-                step={0.1}
-                onChange={(e) => setCantidad(Number(e.target.value))}
-              />
-
-              <button type="button" onClick={handleAgregarIngrediente}>Agregar</button>
-            </div>
-
-            <h4>Ingredientes Agregados:</h4>
-              <ul style={{ paddingLeft: '1.25rem' }}>
-                {ingredientes.map(({ insumo, cantidad }) => (
-                  <li
-                    key={`${insumo.id}-${cantidad}`}
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <span>
-                      {insumo?.denominacion} — {cantidad} {insumo?.unidadMedida?.denominacion ?? ''}
-                    </span>
-
-                    <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-                  </li>
-                ))}
-              </ul>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <select
+              value={selectedInsumoId}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                if (id !== 0 && !insumoYaAgregado) {
+                  const insumo = insumos.find(i => i.id === id);
+                  if (insumo) {
+                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                  }
+                }
+                setSelectedInsumoId(0); // Reset select
+              }}
+            >
+              <option value={0}>-- Seleccionar ingrediente --</option>
+              {insumos.map((insumo) => (
+                <option
+                  key={insumo.id}
+                  value={insumo.id}
+                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                >
+                  {insumo.denominacion}
+                </option>
+              ))}
+            </select>
           </div>
+
+          <h4>Ingredientes Agregados:</h4>
+          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {ingredientes.map(({ insumo, cantidad }, index) => (
+              <li
+                key={insumo.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem'
+                }}
+              >
+                <span style={{ flex: 1 }}>
+                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+                </span>
+
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={cantidad}
+                  onChange={(e) => {
+                    const nuevaCantidad = Number(e.target.value);
+                    setIngredientes((prev) =>
+                      prev.map((ing, i) =>
+                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                      )
+                    );
+                  }}
+                />
+
+                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
           <div className={styles.fieldGroupFull}>
             <label htmlFor="imagen">Imágen</label>
