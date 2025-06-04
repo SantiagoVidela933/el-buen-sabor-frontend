@@ -28,24 +28,22 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
   // Escuchar cambios en artManu
   useEffect(() => {
-  if (producto) {
-    setNombre(producto.denominacion || '');
-    setDescripcion(producto.descripcion || '');
-    setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
-    setMargenGanancia(producto.margenGanancia || 0);
-    setCategoriaId(producto.categoria?.id?.toString() || '');
-    setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
-    setImagenPreview(null); // Limpia el preview si cambia el producto
-  }
-}, [producto]);
+    if (producto) {
+      setNombre(producto.denominacion || '');
+      setDescripcion(producto.descripcion || '');
+      setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
+      setMargenGanancia(producto.margenGanancia || 0);
+      setCategoriaId(producto.categoria?.id?.toString() || '');
+      setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
+      setImagenPreview(null); // Limpia el preview si cambia el producto
+    }
+  }, [producto]);
 
 
   // Lista de insumos obtenidos
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   // Estado de insumo seleccionado en formulario
   const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
-  // Estado de cantidad de insumo
-  const [cantidad, setCantidad] = useState<number>(0);
   // Estado de ingredientes agregados ( insumo y cantidad )
   const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
   // GET insumos disponibles
@@ -98,29 +96,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   }, [modo, producto, insumos]);
 
-  // Agregar ingrediente a lista
-  const handleAgregarIngrediente = () => {
-    if (selectedInsumoId === 0) return alert('Seleccioná un ingrediente');
-    if (cantidad <= 0) return alert('Ingresá una cantidad válida');
-
-    const insumo = insumos.find(i => i.id === selectedInsumoId);
-    if (!insumo) return alert('Ingrediente no encontrado');
-
-    setIngredientes((prev) => {
-      const existe = prev.find(i => i.insumo.id === selectedInsumoId);
-      if (existe) {
-        return prev.map(i =>
-          i.insumo.id === selectedInsumoId
-            ? { ...i, cantidad: i.cantidad + cantidad }
-            : i
-        );
-      }
-      return [...prev, { insumo, cantidad }];
-    });
-    setSelectedInsumoId(0);
-    setCantidad(0);
-  };
-
   const detallesConvertidos = ingredientes.map((i) => ({
     cantidad: i.cantidad,
     articuloInsumo: i.insumo
@@ -162,14 +137,18 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         tiempoEstimadoMinutos: tiempoCocina,
         descripcion,
         detalles: detallesConvertidos,
-        unidadMedida: { id: 3 }, // hardcodeo 'Unidad'
+        unidadMedida: { id: 3 }, 
         categoria: { id: categoriaSeleccionada.id }
       };
 
       if (modo === 'crear') {
         const response = await createArticuloManufacturado(articuloPayload, imagen!);
         alert('Artículo creado correctamente');
-        onSubmit(response);
+        const productoCompleto = ArticuloManufacturado.fromJson({
+          ...response,
+          categoria: categoriaSeleccionada,
+        });
+        onSubmit(productoCompleto);
         onClose();
       } else {
         if (!producto) {
@@ -178,7 +157,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         }
         const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
         alert('Artículo actualizado correctamente');
-        onSubmit(response);
+        const productoActualizado = ArticuloManufacturado.fromJson({
+          ...response,
+          categoria: categoriaSeleccionada,
+        });
+        onSubmit(productoActualizado);
         onClose();
       }
     } catch (error) {

@@ -104,3 +104,8 @@
 .cancelBtn:hover {
   background-color: #666;
 }
+
+.filaBaja {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #a00;
+}

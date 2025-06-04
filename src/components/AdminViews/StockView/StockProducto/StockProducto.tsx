@@ -82,9 +82,11 @@ const StockProducto = () => {
   // Cerrar modal general
   const cerrarModal = () => setModalAbierto(false);
 
-  const articulosFiltrados = articulos.filter((producto)=>
+  const articulosFiltrados = articulos.filter((producto)=> 
     producto.denominacion.toLowerCase().includes(busqueda.toLowerCase())
   );
+
+  console.log(articulos)
 
   // Guardar cambios del formulario (crear o editar)
   const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
@@ -97,6 +99,7 @@ const StockProducto = () => {
     }
     cerrarModal();
   };
+
 
   return (
     <div className={styles.container}>
@@ -128,27 +131,29 @@ const StockProducto = () => {
           </tr>
         </thead>
         <tbody>
-        {articulosFiltrados.map((producto, index) => (
-          <tr key={index}>
-            <td>{producto.denominacion}</td>
-            <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
-            <td>{producto.precioVenta}</td>  
-            <td>{producto.tiempoEstimadoMinutos}</td>  
-            <td>{producto.estado ? "Alta" : "Baja"}</td>
-            <td>
-              <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
-                <span className="material-symbols-outlined">edit</span>
-              </button>
-              <button
-                className={styles.deleteBtn}
-                onClick={() => abrirModalEliminar(producto)}
-              >
-              <span className="material-symbols-outlined">delete</span>
-              </button>
-              
-            </td>  
-          </tr>
-        ))}
+          {articulosFiltrados.map((producto, index) => (
+            <tr
+              key={index}
+              className={producto.fechaBaja ? styles.filaBaja : ''}
+            >
+              <td>{producto.denominacion}</td>
+              <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
+              <td>{producto.precioVenta}</td>  
+              <td>{producto.tiempoEstimadoMinutos}</td>  
+              <td>{producto.fechaBaja ? "Baja" : "Alta"}</td>
+              <td>
+                <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
+                  <span className="material-symbols-outlined">edit</span>
+                </button>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => abrirModalEliminar(producto)}
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
+              </td>  
+            </tr>
+          ))}
         </tbody>
       </table>
       {modalAbierto && (
