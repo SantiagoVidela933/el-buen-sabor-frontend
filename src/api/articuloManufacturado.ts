@@ -62,6 +62,20 @@ export const updateArticuloManufacturado = async (
   return res.json();
 };
 
+// PUT Dar de alta Articulo Manufacturado
+export const darDeAltaArticuloManufacturado = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/alta/${id}`, {
+    method: 'PUT',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al dar de alta el artículo manufacturado');
+  }
+};
+
+
+
 // DELETE Articulo Manufacturado por ID
 export const deleteArticuloManufacturado = async (id: number): Promise<void> => {
   const res = await fetch(`${API_URL}/${id}`, {
@@ -73,5 +87,6 @@ export const deleteArticuloManufacturado = async (id: number): Promise<void> => 
     throw new Error('Error al eliminar artículo manufacturado');
   }
 };
+
 
 

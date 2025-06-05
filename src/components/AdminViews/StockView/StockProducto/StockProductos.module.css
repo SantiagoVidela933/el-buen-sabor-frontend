@@ -109,3 +109,18 @@
   background-color: rgba(255, 0, 0, 0.1);
   color: #a00;
 }
+
+.reactivarBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px;
+  margin: 0 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reactivarBtn:hover {
+  background-color: #45a049;
+}

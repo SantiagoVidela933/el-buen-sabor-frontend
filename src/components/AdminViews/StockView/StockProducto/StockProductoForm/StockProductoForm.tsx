@@ -184,8 +184,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   };
 
-
-
   return (
     <>
       <form className={styles.formContainer} onSubmit={handleSubmit}>

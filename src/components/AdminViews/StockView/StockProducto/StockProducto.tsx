@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './StockProductos.module.css';
 import Modal from '../../../ui/Modal/Modal';
 import StockProductoForm from './StockProductoForm/StockProductoForm';
-import { getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
+import { darDeAltaArticuloManufacturado, getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
 import { ArticuloManufacturado } from '../../../../models/ArticuloManufacturado';
 import { deleteArticuloManufacturado } from '../../../../api/articuloManufacturado';
 
@@ -56,9 +56,15 @@ const StockProducto = () => {
     if (productoAEliminar) {
       try {
         await deleteArticuloManufacturado(productoAEliminar.id);
-        setArticulos((prev) =>
-          prev.filter((prod) => prod.id !== productoAEliminar.id)
+
+        setArticulos(prev =>
+          prev.map(prod =>
+            prod.id === productoAEliminar.id
+              ? ArticuloManufacturado.fromJson({ ...prod, fechaBaja: new Date().toISOString() })
+              : prod
+          )
         );
+
         setProductoAEliminar(null);
         setModalConfirmacionAbierto(false);
       } catch (error) {
@@ -86,8 +92,6 @@ const StockProducto = () => {
     producto.denominacion.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  console.log(articulos)
-
   // Guardar cambios del formulario (crear o editar)
   const manejarSubmit = (productoActualizado: ArticuloManufacturado) => {
     if (modoFormulario === 'crear') {
@@ -100,6 +104,23 @@ const StockProducto = () => {
     cerrarModal();
   };
 
+  // Dar de alta un articulo manufacturado
+  const handleDarDeAlta = async (id: number) => {
+    try {
+      await darDeAltaArticuloManufacturado(id);
+
+      setArticulos(prev =>
+        prev.map(prod =>
+          prod.id === id
+            ? ArticuloManufacturado.fromJson({ ...prod, fechaBaja: null })
+            : prod
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      alert('Error al dar de alta el artículo');
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -142,16 +163,30 @@ const StockProducto = () => {
               <td>{producto.tiempoEstimadoMinutos}</td>  
               <td>{producto.fechaBaja ? "Baja" : "Alta"}</td>
               <td>
-                <button className={styles.editBtn} onClick={() => abrirEditarProducto(producto)}>
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => abrirModalEliminar(producto)}
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </td>  
+              {producto.fechaBaja ? (
+                  <button
+                    className={styles.reactivarBtn}
+                    onClick={() => handleDarDeAlta(producto.id)}
+                  >
+                    <span className="material-symbols-outlined">restart_alt</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => abrirEditarProducto(producto)}
+                    >
+                      <span className="material-symbols-outlined">edit</span>
+                    </button>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => abrirModalEliminar(producto)}
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
