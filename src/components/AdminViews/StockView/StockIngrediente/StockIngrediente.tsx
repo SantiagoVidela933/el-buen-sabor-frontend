@@ -1,32 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Ingredient } from '../../../../models/Products/Ingredient/Ingredient';
 import styles from './StockIngrediente.module.css';
 import Modal from '../../../ui/Modal/Modal';
-import {
-  tomate,
-  mozzarella,
-  albahaca,
-  carneVacuna,
-  lechuga,
-  quesoCheddar,
-  panHamburguesa,
-} from "../../../../data/ingredient";
+
 import StockIngredienteForm from './StockIngredienteForm/StockIngredienteForm';
 import { MeasurementUnit } from '../../../../models/Products/Ingredient/MeasurementUnit';
-
-const ingredientesIniciales: Ingredient[] = [
-  tomate,
-  mozzarella,
-  albahaca,
-  carneVacuna,
-  lechuga,
-  quesoCheddar,
-  panHamburguesa
-];
+import { getInsumosBySucursalId } from '../../../../api/articuloInsumo';
+import { ArticuloInsumo } from '../../../../models/ArticuloInsumo';
+import { mapArticuloInsumoToIngredient } from '../../../../utils/mappers/articuloInsumoMapper';
 
 const StockIngrediente = () => {
 
-  const [ingredientes, setIngredientos] = useState<Ingredient[]>(ingredientesIniciales);
+  const [ingredientes, setIngredientos] = useState<Ingredient[]>([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
   const [ingredienteSeleccionado, setIngredientoSeleccionado] = useState<Ingredient | undefined>(undefined);
@@ -59,6 +44,16 @@ const StockIngrediente = () => {
     }
     cerrarModal();
   };
+
+  useEffect(() => {
+  async function fetchIngredientes() {
+    const data: ArticuloInsumo[] = await getInsumosBySucursalId(1); // o la sucursal que corresponda
+    const ingredientes: Ingredient[] = data.map(mapArticuloInsumoToIngredient);
+    setIngredientos(ingredientes);
+  }
+
+  fetchIngredientes();
+}, []);
 
   return (
     <div className={styles.container}>
