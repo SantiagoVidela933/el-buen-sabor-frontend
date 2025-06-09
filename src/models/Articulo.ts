@@ -1,10 +1,10 @@
-// models/Articulo.ts
+import { BaseEntity } from './BaseEntity';
 import { UnidadMedida } from './UnidadMedida';
 import { SucursalEmpresa } from './SucursalEmpresa';
 import { Imagen } from './Imagen';
 import { CategoriaArticulo } from './CategoriaArticulo';
 
-export abstract class Articulo {
+export abstract class Articulo extends BaseEntity {
   denominacion: string;
   precioVenta?: number;
   margenGanancia?: number;
@@ -20,8 +20,13 @@ export abstract class Articulo {
     imagenes: Imagen[],
     categoria: CategoriaArticulo,
     margenGanancia?: number,
-    precioVenta?: number
+    precioVenta?: number,
+    id: number = 0,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
   ) {
+    super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.denominacion = denominacion;
     this.unidadMedida = unidadMedida;
     this.sucursal = sucursal;
@@ -31,7 +36,6 @@ export abstract class Articulo {
     this.precioVenta = precioVenta;
   }
 
-  // método abstracto que deben implementar las subclases
   protected abstract obtenerCostoBase(): number;
 
   precioCalculado(): void {

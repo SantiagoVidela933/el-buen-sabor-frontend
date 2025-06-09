@@ -1,92 +1,312 @@
-import { useState } from 'react';
-import { Product } from '../../../../../models/Products/Product';
+import { useEffect, useState } from 'react';
 import styles from './StockProductoForm.module.css';
-import Modal from '../../../../ui/Modal/Modal';
-import CreateRecetaForm from '../../../../ui/CreateRecetaForm/CreateRecetaForm';
+import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
+import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
+import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
+import { createArticuloManufacturado, updateArticuloManufacturado } from '../../../../../api/articuloManufacturado';
+import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
+import { ArticuloInsumo } from '../../../../../models/ArticuloInsumo';
+import { IngredienteReceta } from '../../../../../models/IngredienteReceta';
 
 interface StockProductoFormProps {
-  producto?: Product;
+  producto?: ArticuloManufacturado;
   modo: 'crear' | 'editar';
   onClose: () => void;
-  onSubmit: (productoActualizado: Product) => void;
+  onSubmit: (productoActualizado: ArticuloManufacturado) => void;
 }
 
-const StockProductoForm = ({ producto, onClose, modo }: StockProductoFormProps) => {
+const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoFormProps) => {
+  const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
 
-  const [openModalReceta, setOpenModalReceta] = useState(false);
-  const openModal = () => setOpenModalReceta(true);
-  const closeModal = () => setOpenModalReceta(false);
+  // Estado para campos del formulario
+  const [nombre, setNombre] = useState(producto?.denominacion || '');
+  const [descripcion, setDescripcion] = useState(producto?.descripcion || '');
+  const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
+  const [margenGanancia, setMargenGanancia] = useState(producto?.margenGanancia || 0);
+  const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
+  const [imagen, setImagen] = useState<File | null>(null);
+
+  // Escuchar cambios en artManu
+  useEffect(() => {
+    if (producto) {
+      setNombre(producto.denominacion || '');
+      setDescripcion(producto.descripcion || '');
+      setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
+      setMargenGanancia(producto.margenGanancia || 0);
+      setCategoriaId(producto.categoria?.id?.toString() || '');
+      setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
+      setImagenPreview(null); // Limpia el preview si cambia el producto
+    }
+  }, [producto]);
+
+
+  // Lista de insumos obtenidos
+  const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
+  // Estado de insumo seleccionado en formulario
+  const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
+  // Estado de ingredientes agregados ( insumo y cantidad )
+  const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
+  // GET insumos disponibles
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      const data = await getCategoriasMenuBySucursalId(1);
+      setCategorias(data);
+    };
+    fetchCategorias();
+  }, []);
+
+  useEffect(() => {
+    const fetchInsumos = async () => {
+      const data = await getInsumosBySucursalId(1);
+      setInsumos(data);
+    };
+    fetchInsumos();
+  }, []);
+
+  //limpiar form
+  useEffect(() => {
+  if (modo === 'crear') {
+    setNombre('');
+    setDescripcion('');
+    setTiempoCocina(0);
+    setMargenGanancia(0);
+    setCategoriaId('');
+    setIngredientes([]);
+    setImagen(null);
+    setImagenPreview(null);
+    setNombreImagenActual(null);
+  }
+}, [modo]);
+
+  console.log('producto.detalles completos:', producto?.detalles);
+
+  // cargar ingredientes si es modo editar y producto tiene detalles **
+  useEffect(() => {
+    if (modo === 'editar' && producto?.detalles?.length && insumos.length > 0) {
+    const ingredientesIniciales: IngredienteReceta[] = producto.detalles.map((detalle) => {
+      const insumoCompleto = insumos.find((i) => i.id === detalle.articuloInsumo.id);
+      console.log('detalle.articuloInsumo:', detalle.articuloInsumo);
+      console.log('insumoCompleto:', insumoCompleto);
+      return {
+        insumo: insumoCompleto ?? detalle.articuloInsumo,
+        cantidad: detalle.cantidad,
+      };
+    });
+      setIngredientes(ingredientesIniciales);
+    }
+  }, [modo, producto, insumos]);
+
+  const detallesConvertidos = ingredientes.map((i) => ({
+    cantidad: i.cantidad,
+    articuloInsumo: i.insumo
+  }));
+
+  const handleEliminarIngrediente = (idInsumo: number) => {
+    setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
+  };
+
+  // Cargar categorias de articulos manufacturados
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      const data = await getCategoriasMenuBySucursalId(1);
+      setCategorias(data);
+    };
+    fetchCategorias();
+  }, []);
+
+  // Submit del formulario
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!nombre || !descripcion) {
+      alert('Por favor completá todos los campos obligatorios y agregá al menos un ingrediente.');
+      return;
+    }
+
+    try {
+      const categoriaSeleccionada = categorias.find((c) => c.id === Number(categoriaId));
+      if (!categoriaSeleccionada) {
+        alert('Seleccioná una categoría válida.');
+        return;
+      }
+
+      // payload segun modelo back
+      const articuloPayload = {
+        denominacion: nombre,
+        margenGanancia: margenGanancia,
+        tiempoEstimadoMinutos: tiempoCocina,
+        descripcion,
+        detalles: detallesConvertidos,
+        unidadMedida: { id: 3 }, 
+        categoria: { id: categoriaSeleccionada.id }
+      };
+
+      if (modo === 'crear') {
+        const response = await createArticuloManufacturado(articuloPayload, imagen!);
+        alert('Artículo creado correctamente');
+        const productoCompleto = ArticuloManufacturado.fromJson({
+          ...response,
+          categoria: categoriaSeleccionada,
+        });
+        onSubmit(productoCompleto);
+        onClose();
+      } else {
+        if (!producto) {
+          alert('Error: producto a editar no definido');
+          return;
+        }
+        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
+        alert('Artículo actualizado correctamente');
+        const productoActualizado = ArticuloManufacturado.fromJson({
+          ...response,
+          categoria: categoriaSeleccionada,
+        });
+        onSubmit(productoActualizado);
+        onClose();
+      }
+    } catch (error) {
+      console.error('[ERROR] Error al guardar artículo:', error);
+      alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
+    }
+  };
+
+  // Muestro imagen (img, nombre) a editar en form
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
+    producto?.imagenes?.length ? producto.imagenes[0].denominacion : null
+  );
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagen(file);
+      setNombreImagenActual(file.name); 
+      setImagenPreview(URL.createObjectURL(file)); 
+    }
+  };
 
   return (
     <>
-      <form className={styles.formContainer}>
-      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
 
-      <div className={styles.fieldsGrid}>
-        <div className={styles.fieldGroup}>
-          <label>Nombre</label>
-          <input type="text" defaultValue={producto?.title || ''} />
-        </div>
+        <div className={styles.fieldsGrid}>
+          <div className={styles.fieldGroup}>
+            <label>Nombre</label>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Descripción</label>
-          <input type="text" defaultValue={producto?.description || ''} />
-        </div>
+          <div className={styles.fieldGroup}>
+            <label>Descripción</label>
+            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Tiempo en cocina</label>
-          <input type="number" defaultValue={producto?.cookingTime || ''} />
-        </div>
+          <div className={styles.fieldGroup}>
+            <label>Tiempo en cocina</label>
+            <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
+          </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Precio de Venta</label>
-          <input type="number" defaultValue={producto?.price || ''} />
-        </div>
+          <div className={styles.fieldGroup}>
+            <label>Margen Ganancia</label>
+            <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
+          </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Rubro</label>
-          <select defaultValue={producto?.productCategory.description || ''}>
-            <option value="">-- Selecciona un rubro --</option>
-            <option value="">Hamburguesa</option>
-            <option value="">Pancho</option>
-            <option value="">Bebida</option>
-            <option value="">Papas Fritas</option>
-            <option value="">Pizza</option>
-          </select>
-        </div>
+          <div className={styles.fieldGroup}>
+            <label>Rubro</label>
+            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+              <option value="">-- Selecciona un rubro --</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className={styles.fieldGroup}>
-          <label>Estado</label>
-          <select defaultValue={producto?.available ? "Alta" : "Baja"}>
-            <option value="Alta">Alta</option>
-            <option value="Baja">Baja</option>
-          </select>
-        </div>
-
-        <div className={styles.fieldGroupFull}>
+          <div className={styles.fieldGroupFull}>
           <label>Receta</label>
-          <button type="button" className={styles.recipeButton} onClick={openModal}>
-            Crear receta
-          </button>
+
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <select
+              value={selectedInsumoId}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                if (id !== 0 && !insumoYaAgregado) {
+                  const insumo = insumos.find(i => i.id === id);
+                  if (insumo) {
+                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                  }
+                }
+                setSelectedInsumoId(0); // Reset select
+              }}
+            >
+              <option value={0}>-- Seleccionar ingrediente --</option>
+              {insumos.map((insumo) => (
+                <option
+                  key={insumo.id}
+                  value={insumo.id}
+                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                >
+                  {insumo.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <h4>Ingredientes Agregados:</h4>
+          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {ingredientes.map(({ insumo, cantidad }, index) => (
+              <li
+                key={insumo.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem'
+                }}
+              >
+                <span style={{ flex: 1 }}>
+                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+                </span>
+
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={cantidad}
+                  onChange={(e) => {
+                    const nuevaCantidad = Number(e.target.value);
+                    setIngredientes((prev) =>
+                      prev.map((ing, i) =>
+                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                      )
+                    );
+                  }}
+                />
+
+                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className={styles.fieldGroupFull}>
-          <label htmlFor="imagen">Imágen</label>
-          <input type="file" id="imagen" className={styles.imageInput} />
+          <div className={styles.fieldGroupFull}>
+            <label htmlFor="imagen">Imágen</label>
+            <input
+              type="file"
+              id="imagen"
+              className={styles.imageInput}
+              onChange={handleImageChange}
+            />
+            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+            {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+          </div>
         </div>
-      </div>
 
-      <div className={styles.buttonActions}>
-        <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
-        <button type="submit" className={styles.saveBtn}>Guardar</button>
-      </div>
-    </form>
-      {openModalReceta && (
-        <Modal onClose={closeModal}>
-          <CreateRecetaForm />
-        </Modal>
-      )}
-
+        <div className={styles.buttonActions}>
+          <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
+          <button type="submit" className={styles.saveBtn}>Guardar</button>
+        </div>
+      </form>
     </>
   );
 };

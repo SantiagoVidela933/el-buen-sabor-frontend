@@ -1,8 +1,10 @@
 import styles from "./UserOrderList.module.css";
-import { useOrder } from "../../../hooks/useOrder";
 import { useState } from "react";
 import Modal from "../../../components/ui/Modal/Modal"; // asegurate de que esta ruta sea la correcta
 import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
+import { usePedidoVenta } from "../../../hooks/usePedidoVenta";
+import { PedidoVenta } from "../../../models/PedidoVenta";
+import { Estado } from "../../../models/enums/Estado";
 
 
 interface UserOrderListProps {
@@ -10,25 +12,12 @@ interface UserOrderListProps {
 }
 
 const UserOrderList = ({ onBack }: UserOrderListProps) => {
-  const { orders } = useOrder();
+  const { pedidos } = usePedidoVenta();
 
-  const [selectedOrder, setSelectedOrder] = useState<(typeof orders)[0] | null>(
-    null
-  );
+  const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleViewOrder = (order: (typeof orders)[0]) => {
+  const handleViewOrder = (order: PedidoVenta) => {
     setSelectedOrder(order);
     setShowModal(true);
   };
@@ -48,23 +37,32 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
             </tr>
           </thead>
           <tbody>
-            {orders.length === 0 ? (
+            {pedidos.length === 0 ? (
               <tr>
                 <td colSpan={5} className={styles.emptyMessage}>
                   Aún no tenés pedidos
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
+              pedidos.map((order) => (
                 <tr key={order.id}>
-                  <td>{formatDate(order.date)}</td>
+                  <td>
+                    {order.fechaPedido.toLocaleDateString("es-AR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}{" "}
+                    {order.horaPedido}
+                  </td>
                   <td>#{order.id}</td>
-                  <td>${order.total}</td>
-                  <td>{order.orderStatus}</td>
+                  <td>${order.totalVenta.toFixed(2)}</td>
+                  <td>{Estado[order.estado]}</td>
                   <td className={styles.actions}>
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
-                    {order.paid &&
-                      (order.orderStatus === "Cancelado" ? (
+
+                    {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
+                    {order.facturas.length > 0 &&
+                      (order.estado === Estado.CANCELADO ? (
                         <button
                           onClick={() =>
                             alert(`Descargar nota de crédito de ${order.id}`)
@@ -95,13 +93,14 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
           <UserOrderDetail
-            order={selectedOrder}
+            pedidoVenta={selectedOrder}
             onClose={() => setShowModal(false)}
           />
         </Modal>
       )}
-    </div>
+  </div>
   );
+
 };
 
 export default UserOrderList;

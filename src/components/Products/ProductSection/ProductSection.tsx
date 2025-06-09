@@ -1,32 +1,54 @@
-import { useState } from 'react';
-import { products } from '../../../data/products'; 
+import { useEffect, useState } from 'react';
 import Category from '../../LandingPage/Category/Category';
 import ProductList from '../ProductList/ProductList';
-import { Product } from '../../../models/Products/Product';
 import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 
+import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { CategoriaArticulo } from '../../../models/CategoriaArticulo';
+
+import { getAllArticulosManufacturados } from '../../../api/articuloManufacturado';
+import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
+
 const ProductSection = () => {
-  // categoria que se muestra al renderizar
-  const [selectedCategory, setSelectedCategory] = useState<string>('pizza'); 
-
-  // producto seleccionado
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  // estado del modal
+  const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0); 
+  const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // estado busqueda
   const [searchQuery, setSearchQuery] = useState('');
 
-  // actualiza categoria seleccionada
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category); 
+  const idSucursal = 1; 
+
+  // Cargar productos manufacturados
+  useEffect(() => {
+    getAllArticulosManufacturados()
+      .then(data => {
+        setArticulos(data);
+      })
+      .catch(error => {
+        console.error('Error cargando artículos manufacturados:', error);
+      });
+  }, []);
+
+  // Cargar categorías activas para la sucursal
+  useEffect(() => {
+    getCategoriasMenuBySucursalId(idSucursal)
+      .then(data => {
+        setCategorias(data);
+      })
+      .catch(error => {
+        console.error('Error cargando categorías del menú:', error);
+      });
+  }, []);
+
+  const handleCategoryChange = (categoryId: number) => {
+    setSelectedCategory(categoryId);
     setSearchQuery('');
   };
 
-  const handleProductClick = (product: Product) => {
+  const handleProductClick = (product: ArticuloManufacturado) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -36,20 +58,25 @@ const ProductSection = () => {
     setIsModalOpen(false);
   };
 
-  // filtra productos segun categoria elegida
-  const filteredProducts = products.filter(
-    (product) =>
-      product.productCategory.description === selectedCategory &&
-      product.title.toLowerCase().includes(searchQuery)
-  );
-
   const handleSearch = (query: string) => {
     setSearchQuery(query.toLowerCase());
   };
 
+  // Filtrar productos por categoría y búsqueda
+  const filteredProducts = articulos.filter((product) => {
+    const categoriaId = product.categoria?.id ?? 0;
+    const coincideCategoria = selectedCategory === 0 || categoriaId === selectedCategory;
+    const coincideBusqueda = product.denominacion?.toLowerCase().includes(searchQuery);
+    return coincideCategoria && coincideBusqueda;
+  });
+
   return (
     <div>
-      <Category onCategoryChange={handleCategoryChange} />
+      <Category
+        categorias={categorias}
+        onCategoryChange={handleCategoryChange}
+        selectedCategory={selectedCategory}
+      />
 
       <SearchBar
         value={searchQuery}
@@ -57,11 +84,14 @@ const ProductSection = () => {
         onSearch={handleSearch}
       />
 
-      <ProductList products={filteredProducts} onProductClick={handleProductClick}/>
+      <ProductList
+        articulosManufacturados={filteredProducts}
+        onProductClick={handleProductClick}
+      />
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
-          <ProductDetail product={selectedProduct} onClose={closeModal} />
+          <ProductDetail articuloManufacturado={selectedProduct} onClose={closeModal} />
         </Modal>
       )}
     </div>

@@ -5,4 +5,8 @@ export class UnidadMedida {
   constructor(denominacion: string) {
     this.denominacion = denominacion;
   }
+
+  static fromJson(json: any): UnidadMedida {
+    return new UnidadMedida(json.denominacion);
+  }
 }

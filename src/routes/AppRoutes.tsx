@@ -1,17 +1,16 @@
 // src/routes/AppRoutes.tsx
 import { Routes, Route } from "react-router-dom";
-import { CartProvider } from "../context/CartContext";
-import { OrderProvider } from "../context/OrderContext";
 import LandingPage from "../pages/LandingPage/LandingPage";
-import LoginPage from "../../src/pages/LoginPage/LoginPage";
+import LoginPage from "../pages/LoginPage/LoginPage";
 import AdminLayout from "../layouts/AdminLayout/AdminLayout";
 import DeliveryLayout from "../layouts/DeliveryLayout/DeliveryLayout";
 import CajeroLayout from "../layouts/CajeroLayout/CajeroLayout";
 import CajeroPage from "../pages/CajeroPage/CajeroPage";
 import CocineroPage from "../pages/CocineroPage/CocineroPage";
 import CocineroLayout from "../layouts/CocineroLayout/CocineroLayout";
-import { PrivateRoute } from "./PrivateRoute";
 import ClientLayout from "../layouts/ClientLayout/ClientLayout";
+import { PrivateRoute } from "./PrivateRoute";
+
 
 const AppRoutes = () => {
   return (
@@ -26,13 +25,9 @@ const AppRoutes = () => {
       <Route
         path="/"
         element={
-          <CartProvider>
-            <OrderProvider>
               <ClientLayout>
                 <LandingPage />
-            </ClientLayout>
-            </OrderProvider>
-          </CartProvider>
+              </ClientLayout>
         }
       />
 

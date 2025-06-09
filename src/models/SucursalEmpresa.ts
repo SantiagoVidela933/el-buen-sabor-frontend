@@ -1,4 +1,3 @@
-// models/SucursalEmpresa.ts
 import { Empresa } from './Empresa';
 import { Empleado } from './Empleado';
 import { Domicilio } from './Domicilio';
@@ -50,5 +49,30 @@ export class SucursalEmpresa {
     this.articulos = articulos;
     this.sucursalInsumos = sucursalInsumos;
     this.categoriasArticulo = categoriasArticulo;
+  }
+
+  static fromJson(json: any): SucursalEmpresa {
+    if (!json) {
+      return new SucursalEmpresa(
+        '', '', '',
+        {} as any,
+        {} as any,
+      );
+    }
+
+    return new SucursalEmpresa(
+      json.nombre,
+      json.horaApertura,
+      json.horaCierre,
+      json.empresa,
+      json.domicilio,
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    );
   }
 }

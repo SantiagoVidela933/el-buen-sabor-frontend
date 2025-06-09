@@ -8,7 +8,7 @@ export class CategoriaArticulo extends BaseEntity {
   categoriaPadre?: CategoriaArticulo;
   articulo: Articulo[];
   sucursal?: SucursalEmpresa;
-  imagen: Imagen;
+  imagen?: Imagen;
 
   constructor(
     denominacion: string,
@@ -23,5 +23,17 @@ export class CategoriaArticulo extends BaseEntity {
     this.categoriaPadre = categoriaPadre;
     this.sucursal = sucursal;
     this.articulo = articulo;
+  }
+
+  static fromJson(json: any): CategoriaArticulo {
+    const categoria = new CategoriaArticulo(
+      json.denominacion,
+      json.imagen ? new Imagen(json.imagen) : {} as Imagen
+    );
+    categoria.id = json.id;
+    categoria.fechaAlta = json.fechaAlta;
+    categoria.fechaModificacion = json.fechaModificacion;
+    categoria.fechaBaja = json.fechaBaja;
+    return categoria;
   }
 }

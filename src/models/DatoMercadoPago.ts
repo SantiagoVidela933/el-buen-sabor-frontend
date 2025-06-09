@@ -2,15 +2,14 @@ import { BaseEntity } from "./BaseEntity";
 import { Factura } from "./Factura";
 
 export class DatoMercadoPago extends BaseEntity {
-  date_created: string; // LocalDate → string ("YYYY-MM-DD")
+  date_created: string; 
   date_approved: string;
   date_last_updated: string;
   payment_type_id: string;
   payment_method_id: string;
   status: string;
   status_detail: string;
-
-  factura?: Factura; // opcional
+  factura?: Factura;
 
   constructor(
     date_created: string,

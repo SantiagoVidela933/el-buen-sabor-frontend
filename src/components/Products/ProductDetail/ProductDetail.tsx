@@ -1,36 +1,42 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styles from './ProductDetail.module.css';
-import { Product } from '../../../models/Products/Product';
-import { useCart } from '../../../hooks/useCart';
+import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { addToCart } from '../../../redux/slices/cartSlice';
 
 interface ProductDetailProps {
-  product: Product;
+  articuloManufacturado: ArticuloManufacturado;
   onClose: () => void;
 }
 
-const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
-
+const ProductDetail = ({ articuloManufacturado, onClose }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(1);
   const handleIncrease = () => setQuantity(prev => prev + 1);
   const handleDecrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  // hook para acceder a las funciones del carrito
-  const { addToCart } = useCart();
+  const dispatch = useDispatch();
 
   const handleAdd = () => {
-    addToCart(product, quantity);
-    onClose(); 
+    dispatch(addToCart({ articuloManufacturado, quantity }));
+    onClose();
   };
 
   return (
     <div className={styles.detail_wrapper}>
       <div className={styles.detail_image}>
-        <img src={product.image?.path} alt="Product Image" />
+        <img 
+          src={
+            articuloManufacturado.imagenes && articuloManufacturado.imagenes.length > 0
+              ? `http://localhost:8080/api/imagenes/file/${articuloManufacturado.imagenes[0].denominacion}`
+              : '/src/assets/images/pizza_example.jpg'
+            }
+          alt="Product Image" 
+        />
       </div>
       <div className={styles.detail_info}>
-        <h2>{product.title}</h2>
-        <p>{product.description}</p>
-        <p>Precio: ${product.price}</p>
+        <h2>{articuloManufacturado.denominacion}</h2>
+        <p>{articuloManufacturado.descripcion}</p>
+        <p>Precio: ${articuloManufacturado.precioVenta}</p>
         <span>STOCK</span>
       </div>
       <div className={styles.detail_actions}>
@@ -39,11 +45,11 @@ const ProductDetail = ({ product, onClose }: ProductDetailProps) => {
           <span>{quantity}</span>
           <button onClick={handleIncrease}>+</button>
         </div>
-        <span>${product.price * quantity}</span>
+        <span>${articuloManufacturado.precioCosto * quantity}</span>
         <button onClick={handleAdd}>Agregar al carrito</button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetail
+export default ProductDetail;

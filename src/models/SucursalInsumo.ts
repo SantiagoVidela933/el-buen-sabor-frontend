@@ -1,4 +1,3 @@
-// models/SucursalInsumo.ts
 import { BaseEntity } from './BaseEntity';
 import { ArticuloInsumo } from './ArticuloInsumo';
 import { SucursalEmpresa } from './SucursalEmpresa';

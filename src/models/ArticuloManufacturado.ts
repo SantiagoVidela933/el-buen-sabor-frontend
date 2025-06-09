@@ -1,4 +1,3 @@
-// models/ArticuloManufacturado.ts
 import { Articulo } from './Articulo';
 import { ArticuloManufacturadoDetalle } from './ArticuloManufacturadoDetalle';
 import { SucursalEmpresa } from './SucursalEmpresa';
@@ -11,27 +10,73 @@ export class ArticuloManufacturado extends Articulo {
   descripcion: string;
   precioCosto: number;
   detalles: ArticuloManufacturadoDetalle[];
-
+  estado: boolean;
+  
   constructor(
     denominacion: string,
-    tiempoEstimadoMinutos: number,
-    descripcion: string,
     unidadMedida: UnidadMedida,
     sucursal: SucursalEmpresa,
     imagenes: Imagen[],
     categoria: CategoriaArticulo,
+    margenGanancia: number = 0,
+    precioVenta: number,
+    id: number = 0,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
+    tiempoEstimadoMinutos: number = 0,
+    descripcion: string = '',
     detalles: ArticuloManufacturadoDetalle[] = [],
-    margenGanancia?: number,
+    estado: boolean = true
   ) {
-    super(denominacion, unidadMedida, sucursal, imagenes, categoria, margenGanancia);
+    super(
+      denominacion,
+      unidadMedida,
+      sucursal,
+      imagenes,
+      categoria,
+      margenGanancia,
+      precioVenta,
+      id,
+      fechaAlta,
+      fechaModificacion,
+      fechaBaja,
+    );
     this.tiempoEstimadoMinutos = tiempoEstimadoMinutos;
     this.descripcion = descripcion;
     this.detalles = detalles;
     this.precioCosto = 0;
-    this.costoCalculado();
-    this.precioCalculado();
+    this.estado = estado;
   }
 
+  static fromJson(json: any): ArticuloManufacturado {
+    const articulo = new ArticuloManufacturado(
+      json.denominacion,
+      UnidadMedida.fromJson(json.unidadMedida || {}),
+      {} as any, 
+      json.imagenes || [],
+      CategoriaArticulo.fromJson(json.categoria || {}),
+      json.margenGanancia ?? 0,
+      json.precioVenta ?? 0,
+      json.id ?? 0,
+      json.fechaAlta ?? null,
+      json.fechaModificacion ?? null,
+      json.fechaBaja ?? null,
+      json.tiempoEstimadoMinutos ?? 0,
+      json.descripcion ?? '',
+      [], 
+      json.estado ?? true
+    );
+
+    articulo.detalles = (json.detalles || []).map((detalleJson: any) => {
+      const detalle = ArticuloManufacturadoDetalle.fromJson(detalleJson);
+      detalle.articuloManufacturado = articulo;
+      return detalle;
+    });
+
+    return articulo;
+  }
+  
   protected override obtenerCostoBase(): number {
     return this.precioCosto;
   }
@@ -70,7 +115,7 @@ export class ArticuloManufacturado extends Articulo {
       }
 
       const stockSucursalInsumo = insumo.stockPorSucursal.find(
-        (stock) => stock.sucursal === this.sucursal
+        (stock) => stock.sucursal?.id === this.sucursal.id
       );
 
       if (!stockSucursalInsumo || stockSucursalInsumo.stockActual == null) {
