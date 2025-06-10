@@ -8,6 +8,7 @@ import CocineroPage from "../pages/CocineroPage/CocineroPage";
 import CocineroLayout from "../layouts/CocineroLayout/CocineroLayout";
 import ClientLayout from "../layouts/ClientLayout/ClientLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import Unauthorized from "../pages/Unauthorized/Unauthorized";
 
 const AppRoutes = () => {
   return (
@@ -68,7 +69,7 @@ const AppRoutes = () => {
       />
 
       {/* Ruta comodín */}
-      <Route path="*" element={<div>404 - Página no encontrada</div>} />
+      <Route path="/unauthorized" element={<Unauthorized/>} />
     </Routes>
   );
 };
