@@ -16,8 +16,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
     currency: "ARS",
   });
 
-  console.log(pedidoVenta.pedidosVentaDetalle)
-
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Pedido : {pedidoVenta.id}</h2>
@@ -26,7 +24,7 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
         <div>
           <p>
             <strong>Fecha:</strong>{" "}
-            {pedidoVenta.fechaPedido.toLocaleDateString("es-AR", {
+            {new Date(pedidoVenta.fechaPedido).toLocaleDateString("es-AR", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",

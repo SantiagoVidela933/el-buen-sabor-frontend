@@ -1,10 +1,10 @@
 import styles from "./UserOrderList.module.css";
-import { useState } from "react";
-import Modal from "../../../components/ui/Modal/Modal"; // asegurate de que esta ruta sea la correcta
+import { useEffect, useState } from "react";
+import Modal from "../../../components/ui/Modal/Modal";
 import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
-import { usePedidoVenta } from "../../../hooks/usePedidoVenta";
 import { PedidoVenta } from "../../../models/PedidoVenta";
 import { Estado } from "../../../models/enums/Estado";
+import { getPedidosVentas } from "../../../api/pedidoVenta";
 
 
 interface UserOrderListProps {
@@ -12,10 +12,24 @@ interface UserOrderListProps {
 }
 
 const UserOrderList = ({ onBack }: UserOrderListProps) => {
-  const { pedidos } = usePedidoVenta();
-
+  
+  const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
+
+  // fetch - obtengo categorias de articulos manufacturados
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      try {
+        const data = await getPedidosVentas();
+        console.log(data)
+        setPedidos(data);
+      } catch (error) {
+        console.error("Error al cargar pedidos:", error);
+      }
+    };
+    fetchPedidos();
+  }, []);
 
   const handleViewOrder = (order: PedidoVenta) => {
     setSelectedOrder(order);
@@ -63,7 +77,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
               pedidos.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    {order.fechaPedido.toLocaleDateString("es-AR", {
+                    {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
