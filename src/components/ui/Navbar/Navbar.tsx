@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./Navbar.module.css";
 import CartButton from "./CartButton/CartButton";
 import Modal from "../Modal/Modal";
 import UserData from "../../User/UserData/UserData";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface NavbarProps {
   onCartClick: () => void;
@@ -13,29 +14,25 @@ interface NavbarProps {
 const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const [optionUser, setOptionUser] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Chequear si hay usuario en localStorage
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    setIsLoggedIn(!!user); // true si hay usuario, false si no
-  }, []);
+  const {
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+    user,
+    isLoading,
+  } = useAuth0();
 
   const handleOptionUser = () => {
     setOptionUser((prev) => !prev);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setOptionUser(false);
-    navigate("/"); // <-- redirigir a landing page
+    logout({ logoutParams: { returnTo: "http://localhost:5173" } });
   };
 
-  const handleLoginRedirect = () => {
-    navigate("/login");
-  };
+  if (isLoading) return null;
 
   return (
     <div className={styles.navbar}>
@@ -44,20 +41,23 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
         <img
           className={styles.logo}
           src="/src/assets/logos/logo_buenSabor.png"
+          alt="Logo BuenSabor"
         />
       </div>
 
       {/* Perfil Usuario */}
       <div className={styles.box_user}>
-        {isLoggedIn ? (
-          // ✅ LOGUEADO
+        {isAuthenticated ? (
           <div className={styles.user_actions}>
             <div
               className={styles.user_actions_profile}
               onClick={handleOptionUser}
             >
               <span className="material-symbols-outlined">person</span>
-              <button>Mi Cuenta</button>
+              <span style={{ marginLeft: "8px", fontSize:"11px"}}>
+                Bienvenido {user?.name ?? user?.email ?? "Usuario"}
+              </span>
+              <button style={{ marginLeft: "10px" }}>Mi Cuenta</button>
             </div>
             {optionUser && (
               <div className={styles.profile_options}>
@@ -89,11 +89,10 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
             <CartButton onClick={onCartClick} />
           </div>
         ) : (
-          // ❌ NO LOGUEADO
           <>
             <div
               className={styles.user_actions_profile}
-              onClick={handleLoginRedirect}
+              onClick={() => loginWithRedirect()}
             >
               <span className="material-symbols-outlined">person</span>
               <button>Iniciar sesión</button>
