@@ -28,6 +28,22 @@ export class PedidoVentaDetalle extends BaseEntity {
     this.articulo = articulo;
   }
 
+  static fromJson(json: any): PedidoVentaDetalle {
+    if (!json) return null;
+
+    const promocion = json.promocion ? Promocion.fromJson(json.promocion) : undefined;
+    const articulo = json.articulo ? Articulo.fromJson(json.articulo) : undefined;
+
+    return new PedidoVentaDetalle(
+      json.cantidad,
+      json.subtotal,
+      json.subtotalCosto,
+      promocion,
+      undefined, // No seteamos pedidoVenta para evitar ciclo
+      articulo
+    );
+  }
+
   SubtotalCalculado(): number {
     return 0;
   }

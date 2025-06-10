@@ -46,6 +46,44 @@ export class Factura extends BaseEntity {
     this.sucursal = sucursal;
   }
 
+  static fromJson(json: any): Factura | null {
+    if (!json) return null;
+
+    const fechaFacturacion = json.fechaFacturacion ? new Date(json.fechaFacturacion) : null;
+
+    // Para facturaDetalles que es un Set<FacturaDetalle>
+    const detalles = new Set<FacturaDetalle>();
+    if (Array.isArray(json.facturaDetalles)) {
+      json.facturaDetalles.forEach((fd: any) => {
+        if (FacturaDetalle.fromJson) {
+          detalles.add(FacturaDetalle.fromJson(fd));
+        } else {
+          detalles.add(fd);
+        }
+      });
+    }
+
+    const pedidoVenta = json.pedidoVenta ? PedidoVenta.fromJson(json.pedidoVenta) : null;
+    const datoMercadoPago = json.datoMercadoPago ? DatoMercadoPago.fromJson(json.datoMercadoPago) : null;
+    const cliente = json.cliente ? Cliente.fromJson(json.cliente) : null;
+    const sucursal = json.sucursal ? SucursalEmpresa.fromJson(json.sucursal) : null;
+
+    return new Factura(
+      fechaFacturacion,
+      json.nroComprobante ?? null,
+      json.formaPago ?? null,
+      json.descuento ?? null,
+      json.gastoEnvio ?? null,
+      json.totalVenta ?? null,
+      pedidoVenta,
+      detalles,
+      datoMercadoPago,
+      cliente,
+      sucursal
+    );
+  }
+
+
   descuentosCalculados(): number {
     return 0;
   }

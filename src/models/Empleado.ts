@@ -38,4 +38,21 @@ export class Empleado extends BaseEntity {
     this.domicilio = domicilio;
     this.pedidosVenta = pedidosVenta;
   }
+
+  static fromJson(json: any): Empleado | null {
+    if (!json) return null;
+
+    return new Empleado(
+      json.nombre,
+      json.apellido,
+      json.telefono,
+      json.email,
+      Usuario.fromJson(json.usuario),
+      SucursalEmpresa.fromJson(json.sucursal),
+      Domicilio.fromJson(json.domicilio),
+      (json.pedidosVenta || []).map((pv: any) => PedidoVenta.fromJson(pv)),
+      json.rol
+    );
+  }
+
 }

@@ -36,6 +36,32 @@ export abstract class Articulo extends BaseEntity {
     this.precioVenta = precioVenta;
   }
 
+   static fromJson(json: any): Articulo {
+    if (!json) return null;
+
+    // Para los objetos anidados llamamos sus fromJson respectivos
+    const unidadMedida = UnidadMedida.fromJson(json.unidadMedida);
+    const sucursal = SucursalEmpresa.fromJson(json.sucursal);
+    const imagenes = (json.imagenes ?? []).map((img: any) => Imagen.fromJson(img));
+    const categoria = CategoriaArticulo.fromJson(json.categoria);
+
+    // Como es abstracta, instanciamos con 'new' pero en la práctica se usaría una subclase concreta.
+    // Para esta demo, asumimos la misma clase (podrías crear una subclase ArticuloConcreto)
+    return new (this as any)(
+      json.denominacion,
+      unidadMedida,
+      sucursal,
+      imagenes,
+      categoria,
+      json.margenGanancia,
+      json.precioVenta,
+      json.id,
+      json.fechaAlta,
+      json.fechaModificacion,
+      json.fechaBaja
+    );
+  }
+
   protected abstract obtenerCostoBase(): number;
 
   precioCalculado(): void {

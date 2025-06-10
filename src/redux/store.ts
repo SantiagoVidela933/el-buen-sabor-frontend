@@ -10,6 +10,10 @@ export const store = configureStore({
     cart: cartReducer,
     pedidoVenta: pedidoVentaReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 // definir tipos globales

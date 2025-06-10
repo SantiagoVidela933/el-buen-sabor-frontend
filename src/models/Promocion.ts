@@ -34,4 +34,26 @@ export class Promocion extends BaseEntity {
     this.pedidosVentaDetalle = pedidosVentaDetalle;
     this.imagenes = imagenes;
   }
+
+  static fromJson(json: any): Promocion {
+    if (!json) return null;
+
+    const fechaDesde = json.fechaDesde ? new Date(json.fechaDesde) : undefined;
+    const fechaHasta = json.fechaHasta ? new Date(json.fechaHasta) : undefined;
+    const sucursal = json.sucursal ? SucursalEmpresa.fromJson(json.sucursal) : undefined;
+    const promocionesDetalle = (json.promocionesDetalle ?? []).map((pd: any) => PromocionDetalle.fromJson(pd));
+    const pedidosVentaDetalle = (json.pedidosVentaDetalle ?? []).map((pvd: any) => PedidoVentaDetalle.fromJson(pvd));
+    const imagenes = (json.imagenes ?? []).map((img: any) => Imagen.fromJson(img));
+
+    return new Promocion(
+      json.denominacion,
+      json.descuento,
+      fechaDesde,
+      fechaHasta,
+      sucursal,
+      promocionesDetalle,
+      pedidosVentaDetalle,
+      imagenes
+    );
+  }
 }

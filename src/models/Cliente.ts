@@ -38,4 +38,26 @@ export class Cliente extends BaseEntity {
     this.pedidosVenta = pedidosVenta;
     this.facturas = facturas;
   }
+
+  static fromJson(json: any): Cliente | null {
+  if (!json) return null;
+
+  const usuario = json.usuario ? Usuario.fromJson(json.usuario) : null;
+  const domicilio = json.domicilio ? Domicilio.fromJson(json.domicilio) : null;
+  const pedidosVenta = (json.pedidosVenta || []).map((pv: any) => PedidoVenta.fromJson(pv));
+  const facturas = (json.facturas || []).map((f: any) => Factura.fromJson(f));
+
+  return new Cliente(
+    json.nombre,
+    json.apellido,
+    json.telefono,
+    json.email,
+    json.fechaDeNacimiento,
+    usuario!,
+    domicilio!,
+    pedidosVenta,
+    facturas
+  );
+}
+
 }

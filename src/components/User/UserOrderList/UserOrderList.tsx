@@ -22,6 +22,22 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     setShowModal(true);
   };
 
+  const formatoARS = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
+
+  const renderEstado = (estado: Estado) => {
+    const nombre = Estado[estado];
+    const color =
+      estado === Estado.CANCELADO
+        ? "red"
+        : estado === Estado.ENTREGADO
+        ? "green"
+        : "orange";
+    return <span style={{ color, fontWeight: "bold" }}>{nombre}</span>;
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Mis Pedidos</h2>
@@ -55,8 +71,8 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                     {order.horaPedido}
                   </td>
                   <td>#{order.id}</td>
-                  <td>${order.totalVenta.toFixed(2)}</td>
-                  <td>{Estado[order.estado]}</td>
+                  <td>{formatoARS.format(order.totalVenta)}</td>
+                  <td>{renderEstado(order.estado)}</td>
                   <td className={styles.actions}>
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
 

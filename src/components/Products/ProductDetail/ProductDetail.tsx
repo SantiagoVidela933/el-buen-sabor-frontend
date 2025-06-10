@@ -45,7 +45,7 @@ const ProductDetail = ({ articuloManufacturado, onClose }: ProductDetailProps) =
           <span>{quantity}</span>
           <button onClick={handleIncrease}>+</button>
         </div>
-        <span>${articuloManufacturado.precioCosto * quantity}</span>
+        <span>${articuloManufacturado.precioVenta * quantity}</span>
         <button onClick={handleAdd}>Agregar al carrito</button>
       </div>
     </div>

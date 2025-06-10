@@ -11,4 +11,13 @@ export class FacturaDetalle extends BaseEntity {
     this.factura = factura;
     this.articulo = articulo;
   }
+
+  static fromJson(json: any): FacturaDetalle | null {
+    if (!json) return null;
+
+    const factura = json.factura ? Factura.fromJson(json.factura) : null;
+    const articulo = json.articulo ? Articulo.fromJson(json.articulo) : null;
+
+    return new FacturaDetalle(factura, articulo);
+  }
 }

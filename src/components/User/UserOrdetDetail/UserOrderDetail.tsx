@@ -10,6 +10,14 @@ interface OrderDetailProps {
 }
 
 const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+
+  const formatoMoneda = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
+
+  console.log(pedidoVenta.pedidosVentaDetalle)
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Pedido : {pedidoVenta.id}</h2>
@@ -81,12 +89,12 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidoVenta.pedidosVentaDetalle?.map(({ product, quantity }, index) => (
+          {pedidoVenta.pedidosVentaDetalle?.map((detalle, index) => (
             <tr key={index}>
-              <td>{product.title}</td>
-              <td>{quantity}</td>
-              <td>${product.price.toFixed(2)}</td>
-              <td>${(product.price * quantity).toFixed(2)}</td>
+              <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
+              <td>{detalle.cantidad}</td>
+              <td>{formatoMoneda.format(detalle.subtotalCosto)}</td>
+              <td>{formatoMoneda.format(detalle.subtotal)}</td>
             </tr>
           ))}
         </tbody>
@@ -100,7 +108,7 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           <strong>Descuentos:</strong> ${pedidoVenta.descuento.toFixed(2)}
         </p>
         <p className={styles.total}>
-          <strong>TOTAL:</strong> ${pedidoVenta.totalVenta.toFixed(2)}
+          <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>
       </div>
     </div>

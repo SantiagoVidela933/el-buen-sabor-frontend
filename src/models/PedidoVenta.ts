@@ -63,6 +63,50 @@ export class PedidoVenta extends BaseEntity {
     this.empleado = empleado;
   }
 
+  static fromJson(json: any): PedidoVenta | null {
+    if (!json) return null;
+
+    const fechaPedido = json.fechaPedido ? new Date(json.fechaPedido) : new Date();
+
+    const hp = json.horaPedido || { hour: 0, minute: 0, second: 0, nano: 0 };
+    const horaPedido = 
+      String(hp.hour).padStart(2, '0') + ':' +
+      String(hp.minute).padStart(2, '0') + ':' +
+      String(hp.second).padStart(2, '0');
+
+    const detalles = (json.pedidosVentaDetalle || []).map((d: any) =>
+      PedidoVentaDetalle.fromJson(d)
+    );
+
+    const facturas = (json.facturas || []).map((f: any) =>
+      Factura.fromJson(f)
+    );
+
+    
+    const domicilio = json.domicilio ? Domicilio.fromJson(json.domicilio) ?? undefined : undefined;
+    const cliente = json.cliente ? Cliente.fromJson(json.cliente) ?? undefined : undefined;
+    const empleado = json.empleado ? Empleado.fromJson(json.empleado) ?? undefined : undefined;
+    const sucursal = json.sucursal ? SucursalEmpresa.fromJson(json.sucursal) : undefined;
+
+    return new PedidoVenta(
+      fechaPedido,
+      horaPedido,
+      json.estado,
+      json.tipoEnvio,
+      json.gastoEnvio,
+      json.formaPago,
+      json.descuento,
+      json.totalCosto,
+      json.totalVenta,
+      detalles,
+      facturas,
+      sucursal,
+      domicilio,
+      cliente,
+      empleado
+    );
+  }
+
   HoraFinalizacion(): string {
     return this.horaPedido;
   }
