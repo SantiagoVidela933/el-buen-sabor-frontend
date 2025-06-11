@@ -8,6 +8,7 @@ export class Domicilio extends BaseEntity {
   codigoPostal: number;
   sucursal?: SucursalEmpresa; 
   localidad: Localidad;
+  idLocalidad:number=0;
 
   constructor(
     calle: string,
