@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
 import CartButton from "./CartButton/CartButton";
 import Modal from "../Modal/Modal";
 import UserData from "../../User/UserData/UserData";
-import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import axios from "axios";
+
+interface Auth0User {
+  email: string;
+  name?: string;
+  sub: string;
+}
 
 interface NavbarProps {
   onCartClick: () => void;
@@ -14,15 +20,30 @@ interface NavbarProps {
 const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const [optionUser, setOptionUser] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const navigate = useNavigate();
 
-  const {
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-    user,
-    isLoading,
-  } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
+
+  useEffect(() => {
+    const verificarRegistro = async () => {
+      if (isAuthenticated && user && !isLoading) {
+        const auth0User = user as Auth0User;
+        try {
+          await axios.get(
+            `http://localhost:8080/api/clientes/email/${auth0User.email}`
+          );
+          // Cliente existe, no hacer nada
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            // Cliente no registrado, redirigir a formulario registro
+            window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
+          } else {
+            console.error("Error al verificar cliente:", error);
+          }
+        }
+      }
+    };
+    verificarRegistro();
+  }, [isAuthenticated, user, isLoading]);
 
   const handleOptionUser = () => {
     setOptionUser((prev) => !prev);
@@ -54,7 +75,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
               onClick={handleOptionUser}
             >
               <span className="material-symbols-outlined">person</span>
-              <span style={{ marginLeft: "8px", fontSize:"11px"}}>
+              <span style={{ marginLeft: "8px", fontSize: "11px" }}>
                 Bienvenido {user?.name ?? user?.email ?? "Usuario"}
               </span>
               <button style={{ marginLeft: "10px" }}>Mi Cuenta</button>

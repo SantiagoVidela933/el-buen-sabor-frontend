@@ -9,6 +9,7 @@ import CocineroLayout from "../layouts/CocineroLayout/CocineroLayout";
 import ClientLayout from "../layouts/ClientLayout/ClientLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Unauthorized from "../pages/Unauthorized/Unauthorized";
+import RegistroPage from "../pages/RegistroPage/RegistroPage";
 
 const AppRoutes = () => {
   return (
@@ -23,7 +24,9 @@ const AppRoutes = () => {
           </ClientLayout>
         }
       />
-
+      
+      <Route path="/registro" element={<RegistroPage />}/>
+      
       {/* ADMIN: acceso a admin + vistas de cocinero, delivery y cajero */}
       <Route
         path="/admin"
