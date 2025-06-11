@@ -66,49 +66,71 @@ const CartView = ({ onClose }: CartViewProps) => {
   };
 
   function mapPedidoToDto(pedido: PedidoVenta): any {
-  return {
-    fechaPedido: pedido.fechaPedido.toISOString().split("T")[0],
-    horaPedido: pedido.horaPedido,
-    estado: pedido.estado,
-    tipoEnvio: pedido.tipoEnvio,
-    gastoEnvio: pedido.gastoEnvio,
-    formaPago: pedido.formaPago,
-    descuento: pedido.descuento,
-    totalCosto: pedido.totalCosto,
-    totalVenta: pedido.totalVenta,
-    domicilio: pedido.cliente?.domicilio && {
-      calle: pedido.cliente.domicilio.calle,
-      numero: pedido.cliente.domicilio.numero,
-      codigoPostal: pedido.cliente.domicilio.codigoPostal,
-      localidad: {
-        nombre: pedido.cliente.domicilio.localidad.nombre,
+    return {
+      fechaPedido: pedido.fechaPedido.toISOString().split("T")[0],
+      horaPedido: pedido.horaPedido,
+      estado: pedido.estado,
+      tipoEnvio: pedido.tipoEnvio,
+      gastoEnvio: pedido.gastoEnvio,
+      formaPago: pedido.formaPago,
+      descuento: pedido.descuento,
+      totalCosto: pedido.totalCosto,
+      totalVenta: pedido.totalVenta,
+      domicilio: pedido.cliente?.domicilio && {
+        calle: pedido.cliente.domicilio.calle,
+        numero: pedido.cliente.domicilio.numero,
+        codigoPostal: pedido.cliente.domicilio.codigoPostal,
+        localidad: {
+          nombre: pedido.cliente.domicilio.localidad.nombre,
+        },
       },
-    },
-    pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => ({
-      cantidad: detalle.cantidad,
-      subtotal: detalle.subtotal,
-      subtotalCosto: detalle.subtotalCosto,
-      articulo: {
-        id: detalle.articulo!.id,
-        tipoArticulo: "manufacturado"
-      },
-    })),
-  };
-}
-
+      pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => ({
+        cantidad: detalle.cantidad,
+        subtotal: detalle.subtotal,
+        subtotalCosto: detalle.subtotalCosto,
+        articulo: {
+          id: detalle.articulo!.id,
+          tipoArticulo: (detalle.articulo! as any).tipoArticulo || "manufacturado",
+        },
+      })),
+    };
+  }
 
   const handleConfirmOrder = async () => {
-    const detalles = cartItems.map(
-      (item) =>
+    const detalles: PedidoVentaDetalle[] = [];
+
+    cartItems.forEach((item) => {
+      const cantidadManu = item.quantity;
+
+      // Detalle del ArticuloManufacturado
+      detalles.push(
         new PedidoVentaDetalle(
-          item.quantity,
-          item.articuloManufacturado.precioVenta * item.quantity,
-          item.articuloManufacturado.precioCosto * item.quantity,
+          cantidadManu,
+          item.articuloManufacturado.precioVenta * cantidadManu,
+          item.articuloManufacturado.precioCosto * cantidadManu,
           undefined,
           undefined,
-          { id: item.articuloManufacturado.id } as any
+          { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
         )
-    );
+      );
+
+      // Detalles para cada insumo del producto manufacturado (receta)
+      item.articuloManufacturado.detalles.forEach((detalleInsumo) => {
+        const insumo = detalleInsumo.articuloInsumo;
+        const cantidadInsumo = detalleInsumo.cantidad * cantidadManu;
+
+        detalles.push(
+          new PedidoVentaDetalle(
+            cantidadInsumo,
+            0, // o puedes poner precio si lo tienes en articuloInsumo
+            0, // costo si lo tienes
+            undefined,
+            undefined,
+            { id: insumo.id, tipoArticulo: "insumo" } as any
+          )
+        );
+      });
+    });
 
     const newPedido = new PedidoVenta(
       new Date(),
