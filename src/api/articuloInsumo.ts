@@ -1,5 +1,7 @@
 import { ArticuloInsumo } from "../models/ArticuloInsumo";
 
+const API_URL = "http://localhost:8080/api/articuloInsumo";
+
 // GET Articulos Insumo por sucursal
 export async function getInsumosBySucursalId(sucursalId: number): Promise<ArticuloInsumo[]> {
   try {
@@ -19,4 +21,47 @@ export async function getInsumosBySucursalId(sucursalId: number): Promise<Articu
     console.error("Error en getInsumosBySucursalId:", error);
     return [];
   }
+}
+
+// GET Articulos Insumos
+export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  return data.map((item: any) => ArticuloInsumo.fromJson(item));
+}
+
+export async function createArticuloInsumo(insumoPayload: object): Promise<ArticuloInsumo> {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(insumoPayload),
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al crear insumo');
+  }
+  const data = await res.json();
+  return ArticuloInsumo.fromJson(data);
+}
+
+export async function updateArticuloInsumo(id: number | string, insumoPayload: object): Promise<ArticuloInsumo> {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(insumoPayload),
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al actualizar insumo');
+  }
+  const data = await res.json();
+  return ArticuloInsumo.fromJson(data);
+}
+
+export async function deleteArticuloInsumo(id: number): Promise<void> {
+  await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
 }
