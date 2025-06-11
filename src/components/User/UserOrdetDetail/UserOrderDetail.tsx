@@ -87,23 +87,25 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidoVenta.pedidosVentaDetalle?.map((detalle, index) => (
-            <tr key={index}>
-              <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
-              <td>{detalle.cantidad}</td>
-              <td>{formatoMoneda.format(detalle.subtotalCosto)}</td>
-              <td>{formatoMoneda.format(detalle.subtotal)}</td>
-            </tr>
+          {pedidoVenta.pedidosVentaDetalle
+            ?.filter((detalle) => detalle.articulo?.tipoArticulo === "manufacturado")
+            .map((detalle, index) => (
+              <tr key={index}>
+                <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
+                <td>{detalle.cantidad}</td>
+                <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
+                <td>{formatoMoneda.format(detalle.subtotal)}</td>
+              </tr>
           ))}
         </tbody>
       </table>
 
       <div className={styles.summary}>
         <p>
-          <strong>Sub Total:</strong> ${pedidoVenta.totalCosto.toFixed(2)}
+          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>
         <p>
-          <strong>Descuentos:</strong> ${pedidoVenta.descuento.toFixed(2)}
+          <strong>Descuentos:</strong> - - -
         </p>
         <p className={styles.total}>
           <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}

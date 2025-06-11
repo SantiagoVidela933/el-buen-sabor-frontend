@@ -12,6 +12,7 @@ export abstract class Articulo extends BaseEntity {
   sucursal: SucursalEmpresa;
   imagenes: Imagen[];
   categoria: CategoriaArticulo;
+  tipoArticulo: string; 
 
   constructor(
     denominacion: string,
@@ -25,6 +26,7 @@ export abstract class Articulo extends BaseEntity {
     fechaAlta: string | null = null,
     fechaModificacion: string | null = null,
     fechaBaja: string | null = null,
+    tipoArticulo: string = ''
   ) {
     super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.denominacion = denominacion;
@@ -34,6 +36,7 @@ export abstract class Articulo extends BaseEntity {
     this.categoria = categoria;
     this.margenGanancia = margenGanancia;
     this.precioVenta = precioVenta;
+    this.tipoArticulo = tipoArticulo;
   }
 
    static fromJson(json: any): Articulo {
@@ -58,7 +61,8 @@ export abstract class Articulo extends BaseEntity {
       json.id,
       json.fechaAlta,
       json.fechaModificacion,
-      json.fechaBaja
+      json.fechaBaja,
+      json.tipoArticulo
     );
   }
 
