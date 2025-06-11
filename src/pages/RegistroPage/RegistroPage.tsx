@@ -87,7 +87,7 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className='container'>
+    <div className='containera'>
       <div className='title'><h1>Registrarse</h1></div>
       <form className='Form' onSubmit={handleSubmit}>
         <div className='info-personal'>
