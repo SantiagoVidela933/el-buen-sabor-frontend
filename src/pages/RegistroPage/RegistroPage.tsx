@@ -1,13 +1,19 @@
-import Localidad from '../../models/prueba/Localidad';
-import Cliente from '../../models/prueba/Client';
-import Domicilio from '../../models/prueba/Domicilio';
-import Usuario from '../../models/prueba/Usuario';
-import { useState, useEffect } from 'react';
-import { getLocalidadesJSONFetch } from '../../api/localidades';
-import { crearCliente } from '../../api/cliente';
-import "./RegistroPage.css"
-import { useNavigate } from 'react-router-dom';
+import styles from "./RegistroPage.module.css";
+import Localidad from "../../models/prueba/Localidad";
+import Cliente from "../../models/prueba/Client";
+import Domicilio from "../../models/prueba/Domicilio";
+import Usuario from "../../models/prueba/Usuario";
+import { useState, useEffect } from "react";
+import { getLocalidadesJSONFetch } from "../../api/localidades";
+import { crearCliente } from "../../api/cliente";
+import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+
+/*IMAGENES*/
+import logo from "../../assets/logos/logo_buenSabor.png";
+import pensamiento from "../../assets/images/imagen-pensamiento.png";
+import personas from "../../assets/images/imagen-personas.png";
+import celular from "../../assets/images/imagen-celular.png";
 
 export default function RegistroPage() {
   const { isAuthenticated, isLoading, loginWithRedirect, user } = useAuth0();
@@ -25,28 +31,17 @@ export default function RegistroPage() {
   const [idLocalidad, setIdLocalidad] = useState(0);
 
   useEffect(() => {
-    // Si no está autenticado ni cargando, redirige a login
-    if (!isLoading && !isAuthenticated) {
-      loginWithRedirect();
-    }
+    if (!isLoading && !isAuthenticated) loginWithRedirect();
   }, [isAuthenticated, isLoading, loginWithRedirect]);
 
   useEffect(() => {
-    const cargarDatos = async () => {
-      const localidadesData = await getLocalidadesJSONFetch();
-      setLocalidades(localidadesData);
-    };
-    cargarDatos();
+    getLocalidadesJSONFetch().then(setLocalidades);
   }, []);
 
-  // Opcional: setear el email del usuario Auth0 en el input email si existe
   useEffect(() => {
-    if (user?.email) {
-      setEmail(user.email);
-    }
+    if (user?.email) setEmail(user.email);
   }, [user]);
 
-  // Bloquear render mientras no esté autenticado
   if (isLoading || !isAuthenticated) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +54,7 @@ export default function RegistroPage() {
     domicilio.idLocalidad = idLocalidad;
 
     const usuario = new Usuario();
-    usuario.auth0id = user?.sub || ""; // usar el sub de Auth0 real
+    usuario.auth0id = user?.sub || "";
     usuario.nombreUsuario = email;
 
     const cliente = new Cliente();
@@ -74,63 +69,106 @@ export default function RegistroPage() {
     try {
       await crearCliente(cliente);
       alert("Cliente creado correctamente");
-      navigate("/"); // redirigir al home u otra página
+      navigate("/");
     } catch (error) {
-      if (error instanceof Error) {
-        alert("⚠️ Hubo un error al crear el cliente: " + error.message);
-        console.error(error);
-      } else {
-        alert("⚠️ Hubo un error desconocido al crear el cliente.");
-        console.error("Error desconocido:", error);
-      }
+      alert(
+        "⚠️ Error al crear el cliente: " +
+          (error instanceof Error ? error.message : "desconocido")
+      );
+      console.error(error);
     }
   };
 
   return (
-    <div className='containera'>
-      <div className='title'><h1>Registrarse</h1></div>
-      <form className='Form' onSubmit={handleSubmit}>
-        <div className='info-personal'>
-          <div>
+    <div className={styles.pageContainer}>
+      <div className={styles.leftSide}>
+        <div className={styles.logoContainer}>
+          <img src={logo} alt="Logo Buen Sabor" className={styles.logo} />
+        </div>
+        <div className={styles.bottomImages}>
+          <img
+            src={pensamiento}
+            alt="Pensamiento"
+            className={styles.pensamiento}
+          />
+          <img src={personas} alt="Personas" className={styles.personas} />
+          <img src={celular} alt="Celular" className={styles.celular} />
+        </div>
+      </div>
+      <div className={styles.rightSide}>
+        <h1 className={styles.title}>
+          Te damos la bienvenida a <br /> <strong>“Buen Sabor”</strong>
+        </h1>
+        <h2 className={styles.subtitle}>Terminá de completar tus datos:</h2>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
             <label htmlFor="name">Nombre</label>
-            <input type="text" id="name" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+            <input
+              type="text"
+              id="name"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
           </div>
-
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="lastName">Apellido</label>
-            <input type="text" id="lastName" value={apellido} onChange={(e) => setApellido(e.target.value)} />
+            <input
+              type="text"
+              id="lastName"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+            />
           </div>
-
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="phone">Teléfono</label>
-            <input type="text" id="phone" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+            <input
+              type="text"
+              id="phone"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+            />
           </div>
-
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input type="email" id="email" value={email} readOnly />
           </div>
-
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="edad">Fecha de nacimiento</label>
-            <input type="date" id="edad" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} />
+            <input
+              type="date"
+              id="edad"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+            />
           </div>
-        </div>
-
-        <div className='info-domicilio'>
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="street">Calle</label>
-            <input type="text" id="street" value={calle} onChange={(e) => setCalle(e.target.value)} />
+            <input
+              type="text"
+              id="street"
+              value={calle}
+              onChange={(e) => setCalle(e.target.value)}
+            />
           </div>
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="number">Número</label>
-            <input type="number" id="number" value={numero} onChange={(e) => setNumero(parseInt(e.target.value) || 0)} />
+            <input
+              type="number"
+              id="number"
+              value={numero}
+              onChange={(e) => setNumero(parseInt(e.target.value) || 0)}
+            />
           </div>
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="postalCode">Código postal</label>
-            <input type="text" id="postalCode" value={codigoPostal} onChange={(e) => setCodigoPostal(e.target.value)} />
+            <input
+              type="text"
+              id="postalCode"
+              value={codigoPostal}
+              onChange={(e) => setCodigoPostal(e.target.value)}
+            />
           </div>
-          <div>
+          <div className={styles.inputGroup}>
             <label htmlFor="localidad">Localidad</label>
             <select
               id="localidad"
@@ -145,11 +183,11 @@ export default function RegistroPage() {
               ))}
             </select>
           </div>
-        </div>
-
-        <button type="submit">Registrarme</button>
-      </form>
+          <button className={styles.submitButton}>
+            Guardar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
-
