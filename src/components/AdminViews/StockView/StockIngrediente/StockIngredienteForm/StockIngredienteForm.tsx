@@ -35,7 +35,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
 
   useEffect(() => {
     async function fetchCategorias() {
-      const data = await getCategoriasInsumosBySucursalId(1); // ID hardcodeado
+      const data = await getCategoriasInsumosBySucursalId(1); 
       setCategorias(data);
     }
     fetchCategorias();
@@ -44,6 +44,20 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   useEffect(() => {
     getUnidadMedida().then(setUnidadesMedida);
   }, []);
+
+  useEffect(() => {
+    if (modo === "editar" && ingrediente) {
+      setDenominacion(ingrediente.denominacion || "");
+      setPrecioCompra(ingrediente.precioCompra || 0);
+      setMargenGanancia(ingrediente.margenGanancia || 0);
+      setImagenNombre(ingrediente.imagenes?.[0]?.denominacion || "");
+      setStockActual(ingrediente.stockPorSucursal?.[0]?.stockActual || 0);
+      setStockMinimo(ingrediente.stockPorSucursal?.[0]?.stockMinimo || 0);
+      setUnidadMedida(ingrediente.unidadMedida || undefined);
+      setCategoria(ingrediente.categoria || null);
+    }
+  }, [ingrediente, modo]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,111 +129,117 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
     }
   };
 
-
-
-
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.formContainer} onSubmit={handleSubmit}>
       <h2>{modo === "crear" ? "Crear Ingrediente" : "Editar Ingrediente"}</h2>
-
-      <label>
-        Nombre:
-        <input
-          type="text"
-          value={denominacion}
-          onChange={(e) => setDenominacion(e.target.value)}
-          required
-        />
-      </label>
-
-      <label>
-        Precio compra:
-        <input
-          type="number"
-          value={precioCompra}
-          onChange={(e) => setPrecioCompra(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-          required
-        />
-      </label>
-
-      <label>
-        Margen ganancia (%):
-        <input
-          type="number"
-          value={margenGanancia}
-          onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-          required
-        />
-      </label>
-
-      <label>
-        Imagen (nombre):
-        <input
-          type="text"
-          value={imagenNombre}
-          onChange={(e) => setImagenNombre(e.target.value)}
-        />
-      </label>
-
-      <label>
-        Unidad de medida:
-        <select
-          value={unidadMedida?.id ?? ""}
-          onChange={(e) => {
-            const selected = unidadesMedida.find(u => u.id === Number(e.target.value));
-            if (selected) setUnidadMedida(selected);
-          }}
-        >
-          <option value="">Seleccionar...</option>
-          {unidadesMedida.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.denominacion}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label>
-        Categoría:
-        <select
-          value={categoria?.id ?? ""}
-          onChange={(e) => {
-            const selected = categorias.find((c) => c.id === Number(e.target.value));
-            setCategoria(selected ?? null);
-          }}
-        >
-          <option value="">Seleccionar...</option>
-          {categorias.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.denominacion}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label>
-        Stock actual:
-        <input
-          type="number"
-          value={stockActual}
-          onChange={(e) => setStockActual(parseFloat(e.target.value))}
-        />
-      </label>
-
-      <label>
-        Stock mínimo:
-        <input
-          type="number"
-          value={stockMinimo}
-          onChange={(e) => setStockMinimo(parseFloat(e.target.value))}
-        />
-      </label>
-
-      <div className={styles.actions}>
-        <button type="submit">
+      <div className={styles.fieldsGrid}>
+        <div className={styles.fieldGroup}>
+          <label>
+            Nombre:
+            <input
+              type="text"
+              value={denominacion}
+              onChange={(e) => setDenominacion(e.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Precio compra:
+            <input
+              type="number"
+              value={precioCompra}
+              onChange={(e) => setPrecioCompra(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+              required
+            />
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Margen ganancia (%):
+            <input
+              type="number"
+              value={margenGanancia}
+              onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+              required
+            />
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Imagen (nombre):
+            <input
+              type="text"
+              value={imagenNombre}
+              onChange={(e) => setImagenNombre(e.target.value)}
+            />
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Unidad de medida:
+            <select
+              value={unidadMedida?.id ?? ""}
+              onChange={(e) => {
+                const selected = unidadesMedida.find(u => u.id === Number(e.target.value));
+                if (selected) setUnidadMedida(selected);
+              }}
+            >
+              <option value="">Seleccionar...</option>
+              {unidadesMedida.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.denominacion}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Categoría:
+            <select
+              value={categoria?.id ?? ""}
+              onChange={(e) => {
+                const selected = categorias.find((c) => c.id === Number(e.target.value));
+                setCategoria(selected ?? null);
+              }}
+            >
+              <option value="">Seleccionar...</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.denominacion}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Stock actual:
+            <input
+              type="number"
+              value={stockActual}
+              onChange={(e) => setStockActual(parseFloat(e.target.value))}
+            />
+          </label>
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>
+            Stock mínimo:
+            <input
+              type="number"
+              value={stockMinimo}
+              onChange={(e) => setStockMinimo(parseFloat(e.target.value))}
+            />
+          </label>
+        </div>
+      </div>
+      <div className={styles.buttonActions}>
+        <button type="submit" className={styles.saveBtn}> 
           {modo === "crear" ? "Crear" : "Actualizar"}
         </button>
-        <button type="button" onClick={onClose}>
+        <button type="button" onClick={onClose} className={styles.cancelBtn}>
           Cancelar
         </button>
       </div>

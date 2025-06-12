@@ -78,18 +78,24 @@ export default function StockIngrediente() {
 
   return (
     <div className={styles.container}>
+      
       <div className={styles.header}>
-        <h2>Stock de Ingredientes</h2>
-        <button className={styles.addButton} onClick={abrirCrear}>
-          +
+        <h2 className={styles.title}>Ingredientes</h2>
+        <button className={styles.addBtn} onClick={abrirCrear}>
+          <span className="material-symbols-outlined">add</span>
         </button>
+      </div>
+
+      <div className={styles.searchBar}>
+        <span className="material-symbols-outlined">search</span>
         <input 
           type="text"
           placeholder="Buscar..."
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
         />
-      </div>
+      </div>  
+
       <table className={styles.table}>
         <thead>
           <tr>
@@ -110,8 +116,12 @@ export default function StockIngrediente() {
               <td>{i.esParaElaborar ? "Sí" : "No"}</td>
               <td>{i.stockPorSucursal.length}</td>
               <td>
-                <button onClick={() => abrirEditar(i)}>Editar</button>
-                <button onClick={() => abrirConfirmEliminar(i)}>Eliminar</button>
+                <button onClick={() => abrirEditar(i)} className={styles.editBtn}>
+                  <span className="material-symbols-outlined">edit</span>
+                </button>
+                <button onClick={() => abrirConfirmEliminar(i)} className={styles.deleteBtn}>
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
               </td>
             </tr>
           ))}
@@ -130,10 +140,19 @@ export default function StockIngrediente() {
       )}
       {modalConfirmOpen && (
         <Modal onClose={cancelarEliminar}>
-          <div>
+          <div className={styles.confirmation}>
             <p>¿Seguro querés eliminar <strong>{insumoAEliminar?.denominacion}</strong>?</p>
-            <button onClick={confirmarEliminar}>Aceptar</button>
-            <button onClick={cancelarEliminar}>Cancelar</button>
+            <div className={styles.confirmationButtons}>
+              <button className={styles.confirmBtn} onClick={confirmarEliminar}>
+                Aceptar
+              </button>
+              <button
+                className={styles.cancelBtn}
+                onClick={cancelarEliminar}
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </Modal>
       )}
