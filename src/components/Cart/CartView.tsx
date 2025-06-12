@@ -14,6 +14,8 @@ import { FormaPago } from '../../models/enums/FormaPago';
 import { PedidoVenta } from '../../models/PedidoVenta';
 import { PedidoVentaDetalle } from '../../models/PedidoVentaDetalle';
 import { crearPedidoVenta } from '../../api/pedidoVenta';
+import { useAuth0 } from '@auth0/auth0-react';
+import { getClientesMailJSONFetch } from '../../api/cliente';
 
 interface CartViewProps {
   onClose: () => void;
@@ -41,6 +43,9 @@ const CartView = ({ onClose }: CartViewProps) => {
   const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
   const [departamento, setDepartamento] = useState('');
+
+  const { user, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
 
   const togglePaymentMethod = (method: string) => {
     setPaymentMethod((prev) =>
@@ -76,6 +81,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       descuento: pedido.descuento,
       totalCosto: pedido.totalCosto,
       totalVenta: pedido.totalVenta,
+      cliente: pedido.cliente && { id: pedido.cliente.id },
       domicilio: pedido.cliente?.domicilio && {
         calle: pedido.cliente.domicilio.calle,
         numero: pedido.cliente.domicilio.numero,
@@ -97,12 +103,16 @@ const CartView = ({ onClose }: CartViewProps) => {
   }
 
   const handleConfirmOrder = async () => {
+    if (!isAuthenticated || !user?.email) {
+      alert("Debes iniciar sesión para realizar un pedido.");
+      return;
+    }
+
     const detalles: PedidoVentaDetalle[] = [];
 
     cartItems.forEach((item) => {
       const cantidadManu = item.quantity;
 
-      // Detalle del ArticuloManufacturado
       detalles.push(
         new PedidoVentaDetalle(
           cantidadManu,
@@ -114,7 +124,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         )
       );
 
-      // Detalles para cada insumo del producto manufacturado (receta)
       item.articuloManufacturado.detalles.forEach((detalleInsumo) => {
         const insumo = detalleInsumo.articuloInsumo;
         const cantidadInsumo = detalleInsumo.cantidad * cantidadManu;
@@ -122,8 +131,8 @@ const CartView = ({ onClose }: CartViewProps) => {
         detalles.push(
           new PedidoVentaDetalle(
             cantidadInsumo,
-            0, // o puedes poner precio si lo tienes en articuloInsumo
-            0, // costo si lo tienes
+            0,
+            0,
             undefined,
             undefined,
             { id: insumo.id, tipoArticulo: "insumo" } as any
@@ -145,19 +154,23 @@ const CartView = ({ onClose }: CartViewProps) => {
       detalles
     );
 
-    const pedidoDto = mapPedidoToDto(newPedido);
-    console.log(JSON.stringify(pedidoDto, null, 2));
-
     try {
-      const pedidoCreado = await crearPedidoVenta(pedidoDto);
+      const cliente = await getClientesMailJSONFetch(user.email);
+
+      newPedido.cliente = cliente;
+
+      const pedidoDto = mapPedidoToDto(newPedido);
+
+      const pedidoCreado = await crearPedidoVenta(pedidoDto, getAccessTokenSilently);
       console.log("Pedido creado en backend:", pedidoCreado);
+
       dispatch(clearCart());
       setConfirmed(true);
     } catch (error) {
       console.error("Error al crear pedido:", error);
+      alert("Ocurrió un error al crear el pedido.");
     }
   };
-
 
   return (
     <div className={styles.cartView_wrapper}>

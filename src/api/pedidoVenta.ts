@@ -1,4 +1,5 @@
 import { PedidoVenta } from "../models/PedidoVenta";
+import type { GetTokenSilentlyOptions } from '@auth0/auth0-react';
 
 // GET PedidoVenta
 export const getPedidosVentas = async () => {
@@ -19,11 +20,21 @@ export const getPedidosVentas = async () => {
 
 
 // POST PedidoVenta
-export const crearPedidoVenta = async (pedido: PedidoVenta) => {
+export const crearPedidoVenta = async (
+  pedido: PedidoVenta, 
+  getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
+) => {
+  const token = await getAccessTokenSilently({
+    audience: 'https://apiSabor',
+    scope: 'openid profile email',
+  } as any);
+  console.log("Token JWT:", token);
+
   const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/Create", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,  
     },
     body: JSON.stringify(pedido)
   });

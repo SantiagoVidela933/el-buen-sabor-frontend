@@ -96,7 +96,10 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
   const detallesConvertidos = ingredientes.map((i) => ({
     cantidad: i.cantidad,
-    articuloInsumo: i.insumo
+    articuloInsumo: {
+      ...i.insumo,
+      tipoArticulo: "insumo"
+    }
   }));
 
   const handleEliminarIngrediente = (idInsumo: number) => {
@@ -130,6 +133,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
       // payload segun modelo back
       const articuloPayload = {
+        tipoArticulo: 'manufacturado',
         denominacion: nombre,
         margenGanancia: margenGanancia,
         tiempoEstimadoMinutos: tiempoCocina,
