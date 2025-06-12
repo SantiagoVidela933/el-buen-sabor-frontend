@@ -4,6 +4,9 @@ import CartButton from "./CartButton/CartButton";
 import Modal from "../Modal/Modal";
 import UserData from "../../User/UserData/UserData";
 import { useAuth0 } from "@auth0/auth0-react";
+import Cliente from "../../../models/prueba/Client";
+import { getClientesMailJSONFetch } from "../../../api/cliente";
+
 import axios from "axios";
 
 interface Auth0User {
@@ -20,8 +23,11 @@ interface NavbarProps {
 const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const [optionUser, setOptionUser] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
   const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
+  const [cliente, setCliente] = useState<Cliente | null>(null);
+
+
+
 
   useEffect(() => {
     const verificarRegistro = async () => {
@@ -31,10 +37,10 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
           await axios.get(
             `http://localhost:8080/api/clientes/email/${auth0User.email}`
           );
-          // Cliente existe, no hacer nada
+        
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
-            // Cliente no registrado, redirigir a formulario registro
+           
             window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
           } else {
             console.error("Error al verificar cliente:", error);
@@ -44,6 +50,20 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
     };
     verificarRegistro();
   }, [isAuthenticated, user, isLoading]);
+
+  useEffect(() => {
+    if (isAuthenticated && user && !isLoading) {
+        const auth0User = user as Auth0User;
+        try {
+        getClientesMailJSONFetch(auth0User.email).then(setCliente);
+        } catch (error) {
+          console.log ("Error al obtener cliente")
+        }
+      }
+    
+  }, [isAuthenticated, user, isLoading]);
+
+
 
   const handleOptionUser = () => {
     setOptionUser((prev) => !prev);
@@ -92,7 +112,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                       setOptionUser(false);
                     }}
                   >
-                    <UserData />
+                    <UserData cliente={cliente} />
                   </Modal>
                 )}
                 <button
