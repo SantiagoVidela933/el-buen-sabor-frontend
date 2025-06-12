@@ -78,8 +78,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   }
 }, [modo]);
 
-  console.log('producto.detalles completos:', producto?.detalles);
-
   // cargar ingredientes si es modo editar y producto tiene detalles **
   useEffect(() => {
     if (modo === 'editar' && producto?.detalles?.length && insumos.length > 0) {

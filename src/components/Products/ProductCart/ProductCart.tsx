@@ -27,13 +27,17 @@ const ProductCart = ({
   return (
     <div className={styles.card_wrapper}>
       <div className={styles.box_image}>
-        <img src={articuloManufacturado.imagenes[0].nombre} alt={articuloManufacturado.denominacion} />
+        <img src={
+            articuloManufacturado.imagenes && articuloManufacturado.imagenes.length > 0
+              ? `http://localhost:8080/api/imagenes/file/${articuloManufacturado.imagenes[0].denominacion}`
+              : '/src/assets/images/pizza_example.jpg'
+          } alt={articuloManufacturado.denominacion} />
       </div>
 
       <div className={styles.box_info}>
         <h3 className={styles.card_title}>{articuloManufacturado.denominacion}</h3>
         <p className={styles.card_description}>{articuloManufacturado.descripcion}</p>
-        <p className={styles.card_price}>${articuloManufacturado.precioCosto}</p>
+        <p className={styles.card_price}>${articuloManufacturado.precioVenta}</p>
       </div>
 
       <div className={styles.box_actions}>
@@ -43,7 +47,7 @@ const ProductCart = ({
           <button onClick={handleIncrease}>+</button>
         </div>
 
-        <span>${articuloManufacturado.precioCosto * quantity}</span>
+        <span>${articuloManufacturado.precioVenta * quantity}</span>
 
         <button onClick={() => removeFromCart(articuloManufacturado.id)}>Eliminar</button>
       </div>

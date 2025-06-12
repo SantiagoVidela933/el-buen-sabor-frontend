@@ -17,4 +17,18 @@ export class Provincia extends BaseEntity {
     this.localidades = localidades;
     this.pais = pais;
   }
+
+  static fromJson(json: any): Provincia | null {
+    if (!json) return null;
+
+    const localidades = (json.localidades || []).map((l: any) => Localidad.fromJson(l));
+    const pais = json.pais ? Pais.fromJson(json.pais) : undefined;
+
+    return new Provincia(
+      json.nombre,
+      localidades,
+      pais
+    );
+  }
+
 }

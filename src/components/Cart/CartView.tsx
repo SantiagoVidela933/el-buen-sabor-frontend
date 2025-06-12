@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
-
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
 import {
@@ -9,11 +8,12 @@ import {
   removeFromCart,
   updateQuantity
 } from '../../redux/slices/cartSlice';
-import { usePedidoVenta } from '../../hooks/usePedidoVenta';
 import { Estado } from '../../models/enums/Estado';
 import { TipoEnvio } from '../../models/enums/TipoEnvio';
 import { FormaPago } from '../../models/enums/FormaPago';
 import { PedidoVenta } from '../../models/PedidoVenta';
+import { PedidoVentaDetalle } from '../../models/PedidoVentaDetalle';
+import { crearPedidoVenta } from '../../api/pedidoVenta';
 
 interface CartViewProps {
   onClose: () => void;
@@ -24,17 +24,15 @@ const CartView = ({ onClose }: CartViewProps) => {
   // obtiene items del carrito y sus funciones
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const dispatch = useDispatch();
-
+  
   // Calcula el total
   const getTotal = () => {
     return cartItems.reduce(
-      (total, item) => total + item.articuloManufacturado.precioCosto * item.quantity,
+      (total, item) => total + item.articuloManufacturado.precioVenta * item.quantity,
       0
     );
   };
   
-  const { agregarPedido } = usePedidoVenta();
-
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
@@ -67,24 +65,99 @@ const CartView = ({ onClose }: CartViewProps) => {
     return false;
   };
 
-  const handleConfirmOrder = () => {
+  function mapPedidoToDto(pedido: PedidoVenta): any {
+    return {
+      fechaPedido: pedido.fechaPedido.toISOString().split("T")[0],
+      horaPedido: pedido.horaPedido,
+      estado: pedido.estado,
+      tipoEnvio: pedido.tipoEnvio,
+      gastoEnvio: pedido.gastoEnvio,
+      formaPago: pedido.formaPago,
+      descuento: pedido.descuento,
+      totalCosto: pedido.totalCosto,
+      totalVenta: pedido.totalVenta,
+      domicilio: pedido.cliente?.domicilio && {
+        calle: pedido.cliente.domicilio.calle,
+        numero: pedido.cliente.domicilio.numero,
+        codigoPostal: pedido.cliente.domicilio.codigoPostal,
+        localidad: {
+          nombre: pedido.cliente.domicilio.localidad.nombre,
+        },
+      },
+      pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => ({
+        cantidad: detalle.cantidad,
+        subtotal: detalle.subtotal,
+        subtotalCosto: detalle.subtotalCosto,
+        articulo: {
+          id: detalle.articulo!.id,
+          tipoArticulo: (detalle.articulo! as any).tipoArticulo || "manufacturado",
+        },
+      })),
+    };
+  }
+
+  const handleConfirmOrder = async () => {
+    const detalles: PedidoVentaDetalle[] = [];
+
+    cartItems.forEach((item) => {
+      const cantidadManu = item.quantity;
+
+      // Detalle del ArticuloManufacturado
+      detalles.push(
+        new PedidoVentaDetalle(
+          cantidadManu,
+          item.articuloManufacturado.precioVenta * cantidadManu,
+          item.articuloManufacturado.precioCosto * cantidadManu,
+          undefined,
+          undefined,
+          { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
+        )
+      );
+
+      // Detalles para cada insumo del producto manufacturado (receta)
+      item.articuloManufacturado.detalles.forEach((detalleInsumo) => {
+        const insumo = detalleInsumo.articuloInsumo;
+        const cantidadInsumo = detalleInsumo.cantidad * cantidadManu;
+
+        detalles.push(
+          new PedidoVentaDetalle(
+            cantidadInsumo,
+            0, // o puedes poner precio si lo tienes en articuloInsumo
+            0, // costo si lo tienes
+            undefined,
+            undefined,
+            { id: insumo.id, tipoArticulo: "insumo" } as any
+          )
+        );
+      });
+    });
+
     const newPedido = new PedidoVenta(
-      new Date(),                    // fechaPedido
-      new Date().toTimeString().slice(0, 8), // horaPedido HH:MM:SS
-      Estado.PREPARACION,         // enum Estado, asumí que tienes esos enums
-      deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY, // enum TipoEnvio
-      deliveryMethod === 'envio' ? 150 : 0, // gastoEnvio (ejemplo fijo)
-      paymentMethod.includes('mercadoPago') ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO, // enum FormaPago
-      0, // descuento
-      0, // totalCosto (si querés podés calcularlo)
-      getTotal(), // totalVenta
-      [] // pedidosVentaDetalle vacíos por ahora
+      new Date(),
+      new Date().toTimeString().slice(0, 8),
+      Estado.PREPARACION,
+      deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY,
+      deliveryMethod === 'envio' ? 150 : 0,
+      paymentMethod.includes('mercadoPago') ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
+      0,
+      detalles.reduce((acc, d) => acc + d.subtotalCosto, 0),
+      getTotal(),
+      detalles
     );
 
-    agregarPedido(newPedido);  // guarda en redux
-    dispatch(clearCart()); // limpia carrito
-    setConfirmed(true);
+    const pedidoDto = mapPedidoToDto(newPedido);
+    console.log(JSON.stringify(pedidoDto, null, 2));
+
+    try {
+      const pedidoCreado = await crearPedidoVenta(pedidoDto);
+      console.log("Pedido creado en backend:", pedidoCreado);
+      dispatch(clearCart());
+      setConfirmed(true);
+    } catch (error) {
+      console.error("Error al crear pedido:", error);
+    }
   };
+
 
   return (
     <div className={styles.cartView_wrapper}>

@@ -24,4 +24,19 @@ export class Domicilio extends BaseEntity {
     this.localidad = localidad;
     if (sucursal) this.sucursal = sucursal;
   }
+
+  static fromJson(json: any): Domicilio | null {
+  if (!json) return null;
+
+  const localidad = json.localidad ? Localidad.fromJson(json.localidad) : null;
+  const sucursal = json.sucursal ? SucursalEmpresa.fromJson(json.sucursal) : undefined;
+
+  return new Domicilio(
+    json.calle,
+    json.numero,
+    json.codigoPostal,
+    localidad!,
+    sucursal
+  );
+}
 }

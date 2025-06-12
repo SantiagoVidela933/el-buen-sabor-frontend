@@ -17,4 +17,17 @@ export class Localidad extends BaseEntity {
     this.domicilios = domicilios;
     this.provincia = provincia ?? null;
   }
+
+  static fromJson(json: any): Localidad | null {
+    if (!json) return null;
+
+    const domicilios = (json.domicilios || []).map((d: any) => Domicilio.fromJson(d));
+    const provincia = json.provincia ? Provincia.fromJson(json.provincia) : null;
+
+    return new Localidad(
+      json.nombre,
+      domicilios,
+      provincia
+    );
+  }
 }

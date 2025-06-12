@@ -9,4 +9,14 @@ export class Usuario extends BaseEntity {
     this.auth0id = auth0id;
     this.nombreUsuario = nombreUsuario;
   }
+
+  static fromJson(json: any): Usuario | null {
+    if (!json) return null;
+
+    return new Usuario(
+      json.auth0id,
+      json.nombreUsuario
+    );
+  }
+
 }
