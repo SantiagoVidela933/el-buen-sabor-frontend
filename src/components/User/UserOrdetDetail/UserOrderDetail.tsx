@@ -10,6 +10,12 @@ interface OrderDetailProps {
 }
 
 const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+
+  const formatoMoneda = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Pedido : {pedidoVenta.id}</h2>
@@ -18,7 +24,7 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
         <div>
           <p>
             <strong>Fecha:</strong>{" "}
-            {pedidoVenta.fechaPedido.toLocaleDateString("es-AR", {
+            {new Date(pedidoVenta.fechaPedido).toLocaleDateString("es-AR", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
@@ -81,26 +87,28 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidoVenta.pedidosVentaDetalle?.map(({ product, quantity }, index) => (
-            <tr key={index}>
-              <td>{product.title}</td>
-              <td>{quantity}</td>
-              <td>${product.price.toFixed(2)}</td>
-              <td>${(product.price * quantity).toFixed(2)}</td>
-            </tr>
+          {pedidoVenta.pedidosVentaDetalle
+            ?.filter((detalle) => detalle.articulo?.tipoArticulo === "manufacturado")
+            .map((detalle, index) => (
+              <tr key={index}>
+                <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
+                <td>{detalle.cantidad}</td>
+                <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
+                <td>{formatoMoneda.format(detalle.subtotal)}</td>
+              </tr>
           ))}
         </tbody>
       </table>
 
       <div className={styles.summary}>
         <p>
-          <strong>Sub Total:</strong> ${pedidoVenta.totalCosto.toFixed(2)}
+          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>
         <p>
-          <strong>Descuentos:</strong> ${pedidoVenta.descuento.toFixed(2)}
+          <strong>Descuentos:</strong> - - -
         </p>
         <p className={styles.total}>
-          <strong>TOTAL:</strong> ${pedidoVenta.totalVenta.toFixed(2)}
+          <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>
       </div>
     </div>

@@ -50,7 +50,7 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
   return (
     <div className={styles.category_wrapper}>
       <div className={styles.category_box_title}>
-        <p className={styles.category_title_text}>Categorías</p>
+        <p className={styles.category_title_text}>Hola. ¿Que vas a pedir hoy?</p>
       </div>
       <div className={styles.category_box_ul}>
         <ul className={styles.category_ul}>

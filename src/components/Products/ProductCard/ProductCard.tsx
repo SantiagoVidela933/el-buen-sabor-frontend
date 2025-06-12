@@ -7,8 +7,19 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, onClick }: ProductCardProps) => {
+  const isDisabled = !!product.fechaBaja;
+
+  const handleClick = () => {
+    if (!isDisabled && onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <div className={styles.card_wrapper} onClick={onClick}>
+    <div
+      className={`${styles.card_wrapper} ${isDisabled ? styles.disabled : ''}`}
+      onClick={handleClick}
+    >
       <div className={styles.box_image}>
         <img
           src={
@@ -24,6 +35,9 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
         <p className={styles.card_description}>{product.descripcion}</p>
         <p className={styles.card_price}>${product.precioVenta}</p>
         {product.estado === false && (
+          <span className={styles.outOfStock}>Sin Stock</span>
+        )}
+        {isDisabled && (
           <span className={styles.outOfStock}>Sin Stock</span>
         )}
       </div>

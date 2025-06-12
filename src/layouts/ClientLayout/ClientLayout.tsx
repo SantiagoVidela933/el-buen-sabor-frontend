@@ -5,6 +5,8 @@ import styles from "./ClientLayout.module.css";
 import CartView from "../../components/Cart/CartView";
 import PhotoLanding from "../../components/LandingPage/PhotoLanding/PhotoLanding";
 import UserOrderList from "../../components/User/UserOrderList/UserOrderList";
+import SobreNosotros from "../../components/LandingPage/SobreNosotros/SobreNosotros";
+import Destacados from "../../components/LandingPage/Destacados/Destacados";
 
 interface ClientLayoutProps {
   children: ReactNode;

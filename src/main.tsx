@@ -5,13 +5,24 @@ import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { store } from './redux/store.ts'
 import { Provider } from 'react-redux'
-
+import { Auth0Provider } from '@auth0/auth0-react';
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
+ <StrictMode>
+  <Auth0Provider
+    domain="dev-oeojpg2fmcrgcf2n.us.auth0.com"
+    clientId="vhdjvuMntjaGKUWbKDRDQzJOrRTve1O5"
+    authorizationParams={{
+      redirect_uri: window.location.origin,
+      audience: 'https://apiSabor',
+      scope: 'openid profile email'
+    }}
+    cacheLocation="localstorage" // ¡agregar esto para persistir sesión!
+  >
+    <Provider store={store}>
+      <BrowserRouter>
         <App />
-      </Provider>
-    </BrowserRouter>
-  </StrictMode>,
+      </BrowserRouter>
+    </Provider>
+  </Auth0Provider>
+</StrictMode>,
 )
