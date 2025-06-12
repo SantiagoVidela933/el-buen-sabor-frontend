@@ -3,10 +3,10 @@
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
-  background-color: #ff6609;
+  background: linear-gradient(to right, #ff3300,#ff6b46,  #feb47b);
   margin: 0px 60px 0px 60px;
   border-radius: 10px;
-  
+  color: white;
 }
 
 .category_box_title,

@@ -1,9 +1,12 @@
 .destacados {
-  background-color: #f5c015;
+  
+  background: linear-gradient(to right ,  #ff7c2a, #bdb3ff);
   border-radius: 16px;
   padding: 1rem 10rem 1rem 10rem;
   margin: 2rem auto;
   max-width: 1200px;
+  
+  
 }
 
 .contenido {
