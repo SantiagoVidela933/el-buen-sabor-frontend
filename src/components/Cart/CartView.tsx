@@ -81,15 +81,6 @@ const CartView = ({ onClose }: CartViewProps) => {
       descuento: pedido.descuento,
       totalCosto: pedido.totalCosto,
       totalVenta: pedido.totalVenta,
-      cliente: pedido.cliente && { id: pedido.cliente.id },
-      domicilio: pedido.cliente?.domicilio && {
-        calle: pedido.cliente.domicilio.calle,
-        numero: pedido.cliente.domicilio.numero,
-        codigoPostal: pedido.cliente.domicilio.codigoPostal,
-        localidad: {
-          nombre: pedido.cliente.domicilio.localidad.nombre,
-        },
-      },
       pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => ({
         cantidad: detalle.cantidad,
         subtotal: detalle.subtotal,
