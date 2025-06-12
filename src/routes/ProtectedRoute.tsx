@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth0();
-  const namespace = "https://buen-sabor.com/roles"; // tu namespace
+  const namespace = "https://buensaborot.com/roles"; // tu namespace
 
   console.log("USER desde Auth0:", user); // 👈 Log para inspeccionar qué datos trae Auth0
 
