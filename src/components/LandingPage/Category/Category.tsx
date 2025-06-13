@@ -13,7 +13,6 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
 
-  // fetch - obtengo categorias de articulos manufacturados
   useEffect(() => {
     const fetchCategorias = async () => {
       const data = await getCategoriasMenuBySucursalId(1);
@@ -64,6 +63,14 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
               </button>
             </li>
           ))}
+          <li className={styles.category_li}>
+            <button
+              onClick={() => handleCategoryClick(0)} 
+              className={getButtonClass(0)}
+            >
+              <span >Todos</span>
+            </button>
+          </li>
         </ul>
       </div>
     </div>
