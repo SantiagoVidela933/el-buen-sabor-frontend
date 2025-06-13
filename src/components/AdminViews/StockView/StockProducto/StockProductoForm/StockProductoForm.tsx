@@ -94,13 +94,19 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   }, [modo, producto, insumos]);
 
-  const detallesConvertidos = ingredientes.map((i) => ({
+  const detallesConvertidos = ingredientes.map(i => ({
     cantidad: i.cantidad,
     articuloInsumo: {
-      ...i.insumo,
-      tipoArticulo: "insumo"
+      id: i.insumo.id,
+      denominacion: i.insumo.denominacion,
+      precioCompra: i.insumo.precioCompra,
+      esParaElaborar: i.insumo.esParaElaborar,
+      tipoArticulo: "insumo",
+      unidadMedida: i.insumo.unidadMedida,
     }
   }));
+
+
 
   const handleEliminarIngrediente = (idInsumo: number) => {
     setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
@@ -187,129 +193,119 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   };
 
   return (
-    <>
-      <form className={styles.formContainer} onSubmit={handleSubmit}>
-        <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
-
-        <div className={styles.fieldsGrid}>
-          <div className={styles.fieldGroup}>
-            <label>Nombre</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label>Descripción</label>
-            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label>Tiempo en cocina</label>
-            <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label>Margen Ganancia</label>
-            <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label>Rubro</label>
-            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-              <option value="">-- Selecciona un rubro --</option>
-              {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
-                  {categoria.denominacion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.fieldGroupFull}>
-          <label>Receta</label>
-
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <select
-              value={selectedInsumoId}
-              onChange={(e) => {
-                const id = Number(e.target.value);
-                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
-                if (id !== 0 && !insumoYaAgregado) {
-                  const insumo = insumos.find(i => i.id === id);
-                  if (insumo) {
-                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
-                  }
+    <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
+      <div className={styles.fieldsGrid}>
+        <div className={styles.fieldGroup}>
+          <label>Nombre</label>
+          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>Descripción</label>
+          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>Tiempo en cocina</label>
+          <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>Margen Ganancia</label>
+          <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
+        </div>
+        <div className={styles.fieldGroup}>
+          <label>Rubro</label>
+          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+            <option value="">-- Selecciona un rubro --</option>
+            {categorias.map((categoria) => (
+              <option key={categoria.id} value={categoria.id}>
+                {categoria.denominacion}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.fieldGroupFull}>
+        <label>Receta</label>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <select
+            value={selectedInsumoId}
+            onChange={(e) => {
+              const id = Number(e.target.value);
+              const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+              if (id !== 0 && !insumoYaAgregado) {
+                const insumo = insumos.find(i => i.id === id);
+                if (insumo) {
+                  setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
                 }
-                setSelectedInsumoId(0); // Reset select
+              }
+              setSelectedInsumoId(0); // Reset select
+            }}
+          >
+            <option value={0}>-- Seleccionar ingrediente --</option>
+            {insumos.map((insumo) => (
+              <option
+                key={insumo.id}
+                value={insumo.id}
+                disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+              >
+                {insumo.denominacion}
+              </option>
+            ))}
+          </select>
+        </div>
+        <h4>Ingredientes Agregados:</h4>
+        <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {ingredientes.map(({ insumo, cantidad }, index) => (
+            <li
+              key={insumo.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
               }}
             >
-              <option value={0}>-- Seleccionar ingrediente --</option>
-              {insumos.map((insumo) => (
-                <option
-                  key={insumo.id}
-                  value={insumo.id}
-                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
-                >
-                  {insumo.denominacion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <h4>Ingredientes Agregados:</h4>
-          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {ingredientes.map(({ insumo, cantidad }, index) => (
-              <li
-                key={insumo.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
+              <span style={{ flex: 1 }}>
+                {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+              </span>
+              <input
+                type="number"
+                min={0}
+                step={0.1}
+                value={cantidad}
+                onChange={(e) => {
+                  const nuevaCantidad = Number(e.target.value);
+                  setIngredientes((prev) =>
+                    prev.map((ing, i) =>
+                      i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                    )
+                  );
                 }}
-              >
-                <span style={{ flex: 1 }}>
-                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-                </span>
-
-                <input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  value={cantidad}
-                  onChange={(e) => {
-                    const nuevaCantidad = Number(e.target.value);
-                    setIngredientes((prev) =>
-                      prev.map((ing, i) =>
-                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                      )
-                    );
-                  }}
-                />
-
-                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-              </li>
-            ))}
-          </ul>
+              />
+              <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+        <div className={styles.fieldGroupFull}>
+          <label htmlFor="imagen">Imágen</label>
+          <input
+            type="file"
+            id="imagen"
+            className={styles.imageInput}
+            onChange={handleImageChange}
+          />
+          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
         </div>
-
-          <div className={styles.fieldGroupFull}>
-            <label htmlFor="imagen">Imágen</label>
-            <input
-              type="file"
-              id="imagen"
-              className={styles.imageInput}
-              onChange={handleImageChange}
-            />
-            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-            {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
-          </div>
-        </div>
-
-        <div className={styles.buttonActions}>
-          <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
-          <button type="submit" className={styles.saveBtn}>Guardar</button>
-        </div>
-      </form>
-    </>
+      </div>
+      <div className={styles.buttonActions}>
+        <button type="submit" className={styles.saveBtn}> 
+          {modo === "crear" ? "Crear" : "Actualizar"}
+        </button>
+        <button type="button" onClick={onClose} className={styles.cancelBtn}>
+          Cancelar
+        </button>
+      </div>
+    </form>
   );
 };
 

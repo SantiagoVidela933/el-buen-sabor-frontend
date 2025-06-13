@@ -15,7 +15,7 @@ export async function getCategoriasMenuBySucursalId(sucursalId: number): Promise
   }
 }
 
-// GET Categorias de Articulos Manufacturados
+// GET Categorias de Articulos Insumos
 export async function getCategoriasInsumosBySucursalId(sucursalId: number): Promise<CategoriaArticulo[]> {
   try {
     const response = await fetch(`http://localhost:8080/api/categoria/insumos/${sucursalId}`);

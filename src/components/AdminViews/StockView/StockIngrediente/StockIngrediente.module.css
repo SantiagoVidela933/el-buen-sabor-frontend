@@ -66,3 +66,61 @@
 .deleteBtn span {
   color: #e63946;
 }
+.confirmation {
+  text-align: center;
+}
+
+.confirmationButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.confirmBtn {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmBtn:hover {
+  background-color: #b71c1c;
+}
+
+.cancelBtn {
+  background-color: #888;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancelBtn:hover {
+  background-color: #666;
+}
+
+.filaBaja {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #a00;
+}
+
+.reactivarBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px;
+  margin: 0 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reactivarBtn:hover {
+  background-color: #45a049;
+}
