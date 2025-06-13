@@ -28,7 +28,15 @@ export const crearPedidoVenta = async (
     audience: 'https://apiSabor',
     scope: 'openid profile email',
   } as any);
-  console.log("Token JWT:", token);
+  
+  // Create a complete DTO with all necessary fields including domicilio
+  const pedidoDto = {
+    ...pedido,
+    // Make sure domicilio is included when delivery is selected
+    domicilio: pedido.tipoEnvio === "DELIVERY" ? pedido.domicilio : null
+  };
+
+  console.log("Sending pedido to backend:", pedidoDto);
 
   const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/Create", {
     method: "POST",
@@ -36,7 +44,7 @@ export const crearPedidoVenta = async (
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,  
     },
-    body: JSON.stringify(pedido)
+    body: JSON.stringify(pedidoDto)
   });
 
   if (!response.ok) {
@@ -46,4 +54,3 @@ export const crearPedidoVenta = async (
 
   return await response.json();
 };
-

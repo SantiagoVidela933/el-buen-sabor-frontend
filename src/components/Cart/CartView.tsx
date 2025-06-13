@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './CartView.module.css';
 import ProductCart from '../Products/ProductCart/ProductCart';
 import { useSelector, useDispatch } from 'react-redux';
@@ -39,14 +39,21 @@ const CartView = ({ onClose }: CartViewProps) => {
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [confirmed, setConfirmed] = useState(false);
   const [preferenceId, setPreferenceId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  
+  //Variables para el uso de la dirección
+  const [useDefaultAddress, setUseDefaultAddress] = useState(true);
+  const [clientData, setClientData] = useState<any>(null);
+  const [loadingAddress, setLoadingAddress] = useState(false);
 
   // datos necesarios si elige envio
-  const [telefono, setTelefono] = useState('');
-  const [direccion, setDireccion] = useState('');
+  const [calle, setCalle] = useState('');
+  const [numero, setNumero] = useState('');
   const [departamento, setDepartamento] = useState('');
+  const [localidad, setLocalidad] = useState('');
 
   const { user, isAuthenticated } = useAuth0();
   const { getAccessTokenSilently } = useAuth0();
@@ -54,19 +61,56 @@ const CartView = ({ onClose }: CartViewProps) => {
   const isFormValid = () => {
     // si es retiro, que haya al menos 1 metodo de pago
     if (deliveryMethod === 'retiro') {
-      return paymentMethod.length > 0;
+      return paymentMethod != '';
     }
     // si es envio, que los campos esten completos y pago con MP
     if (deliveryMethod === 'envio') {
+      // Si usa dirección predeterminada, solo verificar método de pago
+      if (useDefaultAddress && clientData?.domicilios?.length > 0) {
+        return paymentMethod ==='mercadoPago';
+      } 
+      // Si usa dirección nueva, verificar que todos los campos estén completos
       return (
-        telefono.trim() !== '' &&
-        direccion.trim() !== '' &&
-        departamento.trim() !== '' &&
+        calle.trim() !== '' &&
+        numero.trim() !== '' &&
+        localidad.trim() !== '' &&
         paymentMethod === 'mercadoPago'
       );
     }
     return false;
   };
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      if (isAuthenticated && user?.email) {
+        setLoadingAddress(true);
+        try {
+          console.log("Obteniendo datos para email:", user.email);
+          const cliente = await getClientesMailJSONFetch(user.email);
+          console.log("Datos obtenidos del cliente:", cliente);
+        
+          setClientData(cliente);
+          // Comprobar si el cliente tiene domicilio
+          if (cliente && cliente.domicilio) {
+            if (useDefaultAddress) {
+              setCalle(cliente.domicilio.calle || '');
+              setNumero(cliente.domicilio.numero?.toString() || '');
+              setDepartamento(cliente.domicilio.piso || '');
+              setLocalidad(cliente.domicilio.localidad?.nombre || '');
+            }
+          } else {
+            console.log("El cliente no tiene domicilio registrado");
+          }
+        } catch (error) {
+          console.error("Error al obtener datos del cliente:", error);
+        } finally {
+          setLoadingAddress(false);
+        }
+      }
+    };
+    
+    fetchClientData();
+  }, [isAuthenticated, user?.email, useDefaultAddress]);
 
   function mapPedidoToDto(pedido: PedidoVenta): any {
     return {
@@ -88,8 +132,22 @@ const CartView = ({ onClose }: CartViewProps) => {
           tipoArticulo: (detalle.articulo! as any).tipoArticulo || "manufacturado",
         },
       })),
-    };
-  }
+      // Agregamos el domicilio cuando es necesario
+      domicilio: deliveryMethod === 'envio' ? 
+      useDefaultAddress && clientData?.domicilio ? 
+        clientData.domicilio : 
+        {
+          calle: calle,
+          numero: parseInt(numero) || 0,
+          piso: departamento,
+          localidad: {
+            id: 1, // ID por defecto para localidad
+            nombre: localidad || "Desconocido"
+          }
+        } 
+      : null
+  };
+}
 
   const handleConfirmOrder = async () => {
     if (!isAuthenticated || !user?.email) {
@@ -129,6 +187,27 @@ const CartView = ({ onClose }: CartViewProps) => {
         );
       });
     });
+    
+    //Domicilio
+    let domicilioData = null;
+    if (deliveryMethod === 'envio') {
+      if (useDefaultAddress && clientData?.domicilio) {
+        // Usar domicilio existente del cliente
+        domicilioData = clientData.domicilio;
+      } else {
+        // Crear nuevo domicilio con los datos ingresados
+        domicilioData = {
+          calle: calle,
+          numero: parseInt(numero) || 0,
+          piso: departamento,
+          codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
+          localidad: {
+            id: 0,  // Puedes necesitar ajustar esto según tu lógica de backend
+            nombre: localidad || "Desconocido"
+          }
+        };
+      }
+    }
 
     const newPedido = new PedidoVenta(
       new Date(),
@@ -136,17 +215,23 @@ const CartView = ({ onClose }: CartViewProps) => {
       Estado.PREPARACION,
       deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY,
       deliveryMethod === 'envio' ? 150 : 0,
-      paymentMethod === 'mercadoPago' ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
+      paymentMethod ==='mercadoPago' ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
       0,
       detalles.reduce((acc, d) => acc + d.subtotalCosto, 0),
       getTotal(),
       detalles
     );
 
+    
+
     try {
       const cliente = await getClientesMailJSONFetch(user.email);
 
       newPedido.cliente = cliente;
+      // Añadir información del domicilio al pedido
+      if (domicilioData) {
+        newPedido.domicilio = domicilioData;
+      }
 
       const pedidoDto = mapPedidoToDto(newPedido);
 
@@ -154,8 +239,10 @@ const CartView = ({ onClose }: CartViewProps) => {
       console.log("Pedido creado en backend:", pedidoCreado);
 
       //MercadoPago
-      if (paymentMethod === 'mercadoPago') {
+      if (paymentMethod ==='mercadoPago') {
         try {
+          console.log("Creando preferencia de MercadoPago para pedido ID:", pedidoCreado.id);
+
           // Wait a moment to ensure the factura is created in the backend
           await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -164,7 +251,7 @@ const CartView = ({ onClose }: CartViewProps) => {
 
           if (!pedidoId) {
             console.error("No se pudo obtener el ID del pedido");
-            return;
+            throw new Error("ID de pedido no disponible");
           }
 
           // Use the crearPagoMercadoPago function properly
@@ -176,8 +263,8 @@ const CartView = ({ onClose }: CartViewProps) => {
 
         } catch (mpError) {
           console.error("Error al preparar pago con MercadoPago:", mpError);
-        } finally {
-          setLoading(false);
+          alert("Error al preparar el pago con MercadoPago. Por favor, inténtalo de nuevo.");
+          return;
         }
       }
       dispatch(clearCart());
@@ -185,6 +272,10 @@ const CartView = ({ onClose }: CartViewProps) => {
     } catch (error) {
       console.error("Error al crear pedido:", error);
       alert("Ocurrió un error al crear el pedido.");
+    }finally{
+      setLoading(false);
+      console.log("Estado de carga finalizado. Loading:", false);
+
     }
   };
 
@@ -194,8 +285,8 @@ const CartView = ({ onClose }: CartViewProps) => {
         <h3>CARRITO DE COMPRAS</h3>
       </div>
 
-      <div className={styles.cartView_mainContent}> {/* Contenedor principal de dos columnas */}
-        <div className={styles.cartView_leftColumn}> {/* Columna izquierda: productos y resumen */}
+      <div className={styles.cartView_mainContent}>
+        <div className={styles.cartView_leftColumn}>
           <div className={styles.cart_products}>
             {/* Lista de Productos */}
             {cartItems.length === 0 ? (
@@ -229,7 +320,7 @@ const CartView = ({ onClose }: CartViewProps) => {
           </div>
         </div>
 
-        <div className={styles.cartView_rightColumn}> {/* Columna derecha: formulario y botones post-confirmación */}
+        <div className={styles.cartView_rightColumn}>
           <form className={styles.resumen_form}>
             <p className={styles.formTitle}>Seleccionar:</p>
             <div className={styles.formGroup}>
@@ -240,10 +331,12 @@ const CartView = ({ onClose }: CartViewProps) => {
                   checked={deliveryMethod === 'retiro'}
                   onChange={() => {
                     setDeliveryMethod('retiro');
-                    setPaymentMethod([]);
-                    setTelefono('');
-                    setDireccion('');
+                    setPaymentMethod('');
+                    // Limpiar campos de domicilio con los nombres actualizados
+                    setCalle('');
+                    setNumero('');
                     setDepartamento('');
+                    setLocalidad('');
                   }}
                 />
                 Retiro por el local
@@ -255,34 +348,45 @@ const CartView = ({ onClose }: CartViewProps) => {
                   checked={deliveryMethod === 'envio'}
                   onChange={() => {
                     setDeliveryMethod('envio');
-                    setPaymentMethod([]);
-                    setTelefono('');
-                    setDireccion('');
-                    setDepartamento('');
+                    setPaymentMethod('');
+                    
+                    // Si hay datos de cliente disponibles y tiene domicilio, precarga los valores
+                    if (clientData?.domicilio && useDefaultAddress) {
+                      setCalle(clientData.domicilio.calle || '');
+                      setNumero(clientData.domicilio.numero?.toString() || '');
+                      setDepartamento(clientData.domicilio.piso || '');
+                      setLocalidad(clientData.domicilio.localidad?.nombre || '');
+                    } else {
+                      // Limpiar campos
+                      setCalle('');
+                      setNumero('');
+                      setDepartamento('');
+                      setLocalidad('');
+                    }
                   }}
                 />
                 Envío a domicilio
               </label>
             </div>
 
-            {/* RETIRO */}
+            {/* RETIRO POR LOCAL */}
             {deliveryMethod === 'retiro' && (
               <div className={styles.form_section}>
                 <p className={styles.sectionTitle}>Tipo de pago:</p>
                 <div className={styles.checkboxGroup}>
-                  <label className={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="efectivo"
-                      checked={paymentMethod === 'efectivo'}
-                      onChange={() => setPaymentMethod('efectivo')}
-                    />
+                  <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    name="paymentMethod"
+                    value="efectivo"
+                    checked={paymentMethod === 'efectivo'}
+                    onChange={() => setPaymentMethod('efectivo')}
+                  />
                     Efectivo
                   </label>
                   <label className={styles.radioLabel}>
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="paymentMethod"
                       value="mercadoPago"
                       checked={paymentMethod === 'mercadoPago'}
@@ -294,42 +398,79 @@ const CartView = ({ onClose }: CartViewProps) => {
               </div>
             )}
 
-            {/* ENVÍO */}
+            {/* ENVÍO A DOMICILIO */}
             {deliveryMethod === 'envio' && (
               <div className={styles.form_section}>
                 <p className={styles.sectionTitle}>Datos de envío:</p>
-                <input
-                  type="text"
-                  placeholder="Teléfono"
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  className={styles.inputField}
-                />
-                <input
-                  type="text"
-                  placeholder="Dirección"
-                  value={direccion}
-                  onChange={(e) => setDireccion(e.target.value)}
-                  className={styles.inputField}
-                />
-                <input
-                  type="text"
-                  placeholder="Departamento"
-                  value={departamento}
-                  onChange={(e) => setDepartamento(e.target.value)}
-                  className={styles.inputField}
-                />
-
+                
+                {loadingAddress ? (
+                  <p>Cargando datos de dirección...</p>
+                ) : clientData?.domicilio? (
+                  <div className={styles.addressOptions}>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={useDefaultAddress}
+                        onChange={() => setUseDefaultAddress(true)}
+                      />
+                      Usar mi dirección guardada: {clientData.domicilio.calle} {clientData.domicilio.numero}
+                        {clientData.domicilio.piso && `, Piso/Dpto: ${clientData.domicilio.piso}`}
+                      </label>
+                    
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={!useDefaultAddress}
+                        onChange={() => setUseDefaultAddress(false)}
+                      />
+                      Usar otra dirección
+                    </label>
+                  </div>
+                ) : null}
+                
+                {(!clientData?.domicilio || !useDefaultAddress) && (
+                <div className={styles.newAddressForm}>
+                  <input
+                    type="text"
+                    placeholder="Calle"
+                    value={calle}
+                    onChange={(e) => setCalle(e.target.value)}
+                    className={styles.inputField}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Número"
+                    value={numero}
+                    onChange={(e) => setNumero(e.target.value)}
+                    className={styles.inputField}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Piso/Departamento (opcional)"
+                    value={departamento}
+                    onChange={(e) => setDepartamento(e.target.value)}
+                    className={styles.inputField}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Localidad"
+                    value={localidad}
+                    onChange={(e) => setLocalidad(e.target.value)}
+                    className={styles.inputField}
+                  />
+                </div>
+              )}
+                
                 <p className={styles.sectionTitle}>Forma de pago:</p>
                 <div className={styles.checkboxGroup}>
-                  <label className={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="mercadoPago"
-                      checked={paymentMethod === 'mercadoPago'}
-                      onChange={() => setPaymentMethod('mercadoPago')}
-                    />
+                  <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        name="paymentMethod"
+                        value="mercadoPago"
+                        checked={paymentMethod === 'mercadoPago'}
+                        onChange={() => setPaymentMethod('mercadoPago')}
+                      />
                     Mercado Pago
                   </label>
                 </div>
@@ -348,7 +489,7 @@ const CartView = ({ onClose }: CartViewProps) => {
           {/* Sacamos los BOTONES POST-CONFIRMACIÓN FUERA del formulario */}
           {confirmed && (
             <div className={styles.postConfirm}>
-              {paymentMethod === 'mercadoPago' && (
+              {paymentMethod==='mercadoPago' && (
                 <div className={styles.mercadoPagoContainer}>
                   <p className={styles.paymentMessage}>
                     Tu pedido ha sido creado. Para completar la compra, haz clic en el botón de pago.
@@ -369,7 +510,7 @@ const CartView = ({ onClose }: CartViewProps) => {
                 </div>
               )}
 
-              {paymentMethod.includes('efectivo') && (
+              {paymentMethod ==='efectivo' && (
                 <p className={styles.paymentMessage}>
                   Tu pedido ha sido confirmado y será preparado para retirar en el local.
                 </p>

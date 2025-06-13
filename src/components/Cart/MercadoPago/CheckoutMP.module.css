@@ -49,3 +49,9 @@
   color: #e74c3c;
   font-size: 14px;
 }
+
+.checkout_container .cho-container {
+  width: 100%;
+  min-height: 50px;
+  display: block;
+}
