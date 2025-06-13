@@ -16,6 +16,8 @@ import { PedidoVentaDetalle } from '../../models/PedidoVentaDetalle';
 import { crearPedidoVenta } from '../../api/pedidoVenta';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getClientesMailJSONFetch } from '../../api/cliente';
+import CheckoutMP from './MercadoPago/CheckoutMP';
+import { crearPagoMercadoPago } from '../../api/mercadoPago';
 
 interface CartViewProps {
   onClose: () => void;
@@ -38,6 +40,8 @@ const CartView = ({ onClose }: CartViewProps) => {
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
+  const [preferenceId, setPreferenceId] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   // datos necesarios si elige envio
   const [telefono, setTelefono] = useState('');
@@ -98,7 +102,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       alert("Debes iniciar sesión para realizar un pedido.");
       return;
     }
-
+    setLoading(true);
     const detalles: PedidoVentaDetalle[] = [];
 
     cartItems.forEach((item) => {
@@ -155,6 +159,33 @@ const CartView = ({ onClose }: CartViewProps) => {
       const pedidoCreado = await crearPedidoVenta(pedidoDto, getAccessTokenSilently);
       console.log("Pedido creado en backend:", pedidoCreado);
 
+      //MercadoPago
+      if (paymentMethod.includes('mercadoPago')) {
+        try {
+          // Wait a moment to ensure the factura is created in the backend
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Get the pedidoId from the order
+          const pedidoId = pedidoCreado.id;
+          
+          if (!pedidoId) {
+            console.error("No se pudo obtener el ID del pedido");
+            return;
+          }
+          
+          // Use the crearPagoMercadoPago function properly
+          const mercadoPagoData = await crearPagoMercadoPago(pedidoId, getAccessTokenSilently);
+          
+          // Set the preferenceId from the response
+          setPreferenceId(mercadoPagoData.preferenceId);
+          console.log("Preference ID obtenido:", mercadoPagoData.preferenceId);
+          
+        } catch (mpError) {
+          console.error("Error al preparar pago con MercadoPago:", mpError);
+        } finally {
+          setLoading(false);
+        }
+      }
       dispatch(clearCart());
       setConfirmed(true);
     } catch (error) {
@@ -307,6 +338,35 @@ const CartView = ({ onClose }: CartViewProps) => {
         {/* BOTONES POST-CONFIRMACIÓN */}
         {confirmed && (
           <div className={styles.postConfirm}>
+            {/* MercadoPago button - only show if MercadoPago was selected */}
+            {paymentMethod.includes('mercadoPago') && (
+              <div className={styles.mercadoPagoContainer}>
+                <p className={styles.paymentMessage}>
+                  Tu pedido ha sido creado. Para completar la compra, haz clic en el botón de pago.
+                </p>
+                
+                {loading ? (
+                  <p>Preparando opciones de pago...</p>
+                ) : preferenceId ? (
+                  <CheckoutMP 
+                    idPreferencia={preferenceId}
+                    mostrar={true} 
+                  />
+                ) : (
+                  <p className={styles.errorMessage}>
+                    Error al obtener opciones de pago. Contacta con soporte.
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {/* Show message for cash payments */}
+            {paymentMethod.includes('efectivo') && (
+              <p className={styles.paymentMessage}>
+                Tu pedido ha sido confirmado y será preparado para retirar en el local.
+              </p>
+            )}
+            
             <button className={styles.invoiceButton}>Ver Factura</button>
             <button className={styles.timeButton}>Hora estimada 21.30 - 22.00</button>
           </div>
