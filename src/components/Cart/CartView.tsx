@@ -38,7 +38,7 @@ const CartView = ({ onClose }: CartViewProps) => {
   };
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [confirmed, setConfirmed] = useState(false);
   const [preferenceId, setPreferenceId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,12 +51,6 @@ const CartView = ({ onClose }: CartViewProps) => {
   const { user, isAuthenticated } = useAuth0();
   const { getAccessTokenSilently } = useAuth0();
 
-  const togglePaymentMethod = (method: string) => {
-    setPaymentMethod((prev) =>
-      prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method]
-    );
-  };
-
   const isFormValid = () => {
     // si es retiro, que haya al menos 1 metodo de pago
     if (deliveryMethod === 'retiro') {
@@ -68,7 +62,7 @@ const CartView = ({ onClose }: CartViewProps) => {
         telefono.trim() !== '' &&
         direccion.trim() !== '' &&
         departamento.trim() !== '' &&
-        paymentMethod.includes('mercadoPago')
+        paymentMethod === 'mercadoPago'
       );
     }
     return false;
@@ -142,7 +136,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       Estado.PREPARACION,
       deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY,
       deliveryMethod === 'envio' ? 150 : 0,
-      paymentMethod.includes('mercadoPago') ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
+      paymentMethod === 'mercadoPago' ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
       0,
       detalles.reduce((acc, d) => acc + d.subtotalCosto, 0),
       getTotal(),
@@ -160,7 +154,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       console.log("Pedido creado en backend:", pedidoCreado);
 
       //MercadoPago
-      if (paymentMethod.includes('mercadoPago')) {
+      if (paymentMethod === 'mercadoPago') {
         try {
           // Wait a moment to ensure the factura is created in the backend
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -276,19 +270,23 @@ const CartView = ({ onClose }: CartViewProps) => {
               <div className={styles.form_section}>
                 <p className={styles.sectionTitle}>Tipo de pago:</p>
                 <div className={styles.checkboxGroup}>
-                  <label className={styles.checkboxLabel}>
+                  <label className={styles.radioLabel}>
                     <input
-                      type="checkbox"
-                      checked={paymentMethod.includes('efectivo')}
-                      onChange={() => togglePaymentMethod('efectivo')}
+                      type="radio"
+                      name="paymentMethod"
+                      value="efectivo"
+                      checked={paymentMethod === 'efectivo'}
+                      onChange={() => setPaymentMethod('efectivo')}
                     />
                     Efectivo
                   </label>
-                  <label className={styles.checkboxLabel}>
+                  <label className={styles.radioLabel}>
                     <input
-                      type="checkbox"
-                      checked={paymentMethod.includes('mercadoPago')}
-                      onChange={() => togglePaymentMethod('mercadoPago')}
+                      type="radio"
+                      name="paymentMethod"
+                      value="mercadoPago"
+                      checked={paymentMethod === 'mercadoPago'}
+                      onChange={() => setPaymentMethod('mercadoPago')}
                     />
                     Mercado Pago
                   </label>
@@ -324,11 +322,13 @@ const CartView = ({ onClose }: CartViewProps) => {
 
                 <p className={styles.sectionTitle}>Forma de pago:</p>
                 <div className={styles.checkboxGroup}>
-                  <label className={styles.checkboxLabel}>
+                  <label className={styles.radioLabel}>
                     <input
-                      type="checkbox"
-                      checked={paymentMethod.includes('mercadoPago')}
-                      onChange={() => togglePaymentMethod('mercadoPago')}
+                      type="radio"
+                      name="paymentMethod"
+                      value="mercadoPago"
+                      checked={paymentMethod === 'mercadoPago'}
+                      onChange={() => setPaymentMethod('mercadoPago')}
                     />
                     Mercado Pago
                   </label>
@@ -348,7 +348,7 @@ const CartView = ({ onClose }: CartViewProps) => {
           {/* Sacamos los BOTONES POST-CONFIRMACIÓN FUERA del formulario */}
           {confirmed && (
             <div className={styles.postConfirm}>
-              {paymentMethod.includes('mercadoPago') && (
+              {paymentMethod === 'mercadoPago' && (
                 <div className={styles.mercadoPagoContainer}>
                   <p className={styles.paymentMessage}>
                     Tu pedido ha sido creado. Para completar la compra, haz clic en el botón de pago.
