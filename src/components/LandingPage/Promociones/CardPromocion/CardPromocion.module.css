@@ -7,6 +7,13 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .titulo {
@@ -48,6 +55,11 @@
   max-height: 100%;
   max-width: 100%;
   object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .imagen {
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {

@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import styles from "./Promociones.module.css";
 import CardPromocion from "./CardPromocion/CardPromocion";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTags } from "react-icons/fa";
 
 /*IMAGENES*/
 import pizzaCoca from "../../../assets/images/Promos/pizza-coca.webp";
@@ -70,7 +70,11 @@ const Promociones: React.FC = () => {
 
   return (
     <div className={styles.contenedor}>
-      <h2>¡Nuestras promociones!</h2>
+      <h2 className={styles.titulo}>
+        NUESTRAS PROMOCIONES
+        <FaTags className={styles.icono} />
+      </h2>
+
       <div className={styles.carouselWrapper}>
         <button onClick={() => scroll("left")} className={styles.flecha}>
           <FaChevronLeft />

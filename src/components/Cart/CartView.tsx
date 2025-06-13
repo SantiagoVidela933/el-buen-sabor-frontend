@@ -28,7 +28,7 @@ const CartView = ({ onClose }: CartViewProps) => {
   // obtiene items del carrito y sus funciones
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const dispatch = useDispatch();
-  
+
   // Calcula el total
   const getTotal = () => {
     return cartItems.reduce(
@@ -36,7 +36,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       0
     );
   };
-  
+
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
@@ -167,19 +167,19 @@ const CartView = ({ onClose }: CartViewProps) => {
 
           // Get the pedidoId from the order
           const pedidoId = pedidoCreado.id;
-          
+
           if (!pedidoId) {
             console.error("No se pudo obtener el ID del pedido");
             return;
           }
-          
+
           // Use the crearPagoMercadoPago function properly
           const mercadoPagoData = await crearPagoMercadoPago(pedidoId, getAccessTokenSilently);
-          
+
           // Set the preferenceId from the response
           setPreferenceId(mercadoPagoData.preferenceId);
           console.log("Preference ID obtenido:", mercadoPagoData.preferenceId);
-          
+
         } catch (mpError) {
           console.error("Error al preparar pago con MercadoPago:", mpError);
         } finally {
@@ -199,181 +199,190 @@ const CartView = ({ onClose }: CartViewProps) => {
       <div className={styles.cartView_title}>
         <h3>CARRITO DE COMPRAS</h3>
       </div>
-      <div className={styles.cartView_cart}>
-        <div className={styles.cart_products}>
-          {/* Lista de Productos */}
-          {cartItems.length === 0 ? (
-            <p>No hay productos en el carrito</p>
-          ) : (
-            cartItems.map((item) => (
-              <ProductCart
-                key={item.articuloManufacturado.id}
-                articuloManufacturado={item.articuloManufacturado}
-                quantity={item.quantity}
-                removeFromCart={(productId) => dispatch(removeFromCart(productId))}
-                updateQuantity={(productId, quantity) => dispatch(updateQuantity({ productId, quantity }))}
-              />
 
-            ))
-          )}
+      <div className={styles.cartView_mainContent}> {/* Contenedor principal de dos columnas */}
+        <div className={styles.cartView_leftColumn}> {/* Columna izquierda: productos y resumen */}
+          <div className={styles.cart_products}>
+            {/* Lista de Productos */}
+            {cartItems.length === 0 ? (
+              <p>No hay productos en el carrito</p>
+            ) : (
+              cartItems.map((item) => (
+                <ProductCart
+                  key={item.articuloManufacturado.id}
+                  articuloManufacturado={item.articuloManufacturado}
+                  quantity={item.quantity}
+                  removeFromCart={(productId) => dispatch(removeFromCart(productId))}
+                  updateQuantity={(productId, quantity) => dispatch(updateQuantity({ productId, quantity }))}
+                />
+              ))
+            )}
+          </div>
+
+          <div className={styles.cart_resumen}>
+            <div className={styles.resumen_amount}>
+              <p>{cartItems.length} artículo(s)</p>
+              <span>${getTotal()}</span>
+            </div>
+            <div className={styles.resumen_desc}>
+              <p>Descuento</p>
+              <span>---</span>
+            </div>
+            <div className={styles.resumen_total}>
+              <p>Total:</p>
+              <span>${getTotal()}</span>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.cart_resumen}>
-          <div className={styles.resumen_amount}>
-            <p>{cartItems.length} artículo(s)</p>
-            <span>${getTotal()}</span>
-          </div>
-          <div className={styles.resumen_desc}>
-            <p>Descuento</p>
-            <span>---</span>
-          </div>
-          <div className={styles.resumen_total}>
-            <p>Total:</p>
-            <span>${getTotal()}</span>
-          </div>
-        </div>
-
-        <div className={styles.divLine}></div>
-
-        <form className={styles.resumen_form}>
-          <p>Seleccionar:</p>
-          <label>
-            <input
-              type="checkbox"
-              checked={deliveryMethod === 'retiro'}
-              onChange={() => {
-                setDeliveryMethod('retiro');
-                setPaymentMethod([]);
-                setTelefono('');
-                setDireccion('');
-                setDepartamento('');
-              }}
-            />
-            Retiro por el local
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={deliveryMethod === 'envio'}
-              onChange={() => {
-                setDeliveryMethod('envio');
-                setPaymentMethod([]);
-                setTelefono('');
-                setDireccion('');
-                setDepartamento('');
-              }}
-            />
-            Envío a domicilio
-          </label>
-
-          {/* RETIRO */}
-          {deliveryMethod === 'retiro' && (
-            <div className={styles.form_section}>
-              <p>Tipo de pago:</p>
-              <label>
+        <div className={styles.cartView_rightColumn}> {/* Columna derecha: formulario y botones post-confirmación */}
+          <form className={styles.resumen_form}>
+            <p className={styles.formTitle}>Seleccionar:</p>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={paymentMethod.includes('efectivo')}
-                  onChange={() => togglePaymentMethod('efectivo')}
+                  name="deliveryMethod"
+                  checked={deliveryMethod === 'retiro'}
+                  onChange={() => {
+                    setDeliveryMethod('retiro');
+                    setPaymentMethod([]);
+                    setTelefono('');
+                    setDireccion('');
+                    setDepartamento('');
+                  }}
                 />
-                Efectivo
+                Retiro por el local
               </label>
-              <label>
+              <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={paymentMethod.includes('mercadoPago')}
-                  onChange={() => togglePaymentMethod('mercadoPago')}
+                  name="deliveryMethod"
+                  checked={deliveryMethod === 'envio'}
+                  onChange={() => {
+                    setDeliveryMethod('envio');
+                    setPaymentMethod([]);
+                    setTelefono('');
+                    setDireccion('');
+                    setDepartamento('');
+                  }}
                 />
-                Mercado Pago
+                Envío a domicilio
               </label>
             </div>
-          )}
 
-          {/* ENVÍO */}
-          {deliveryMethod === 'envio' && (
-            <div className={styles.form_section}>
-              <input
-                type="text"
-                placeholder="Teléfono"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className={styles.inputField}
-              />
-              <input
-                type="text"
-                placeholder="Dirección"
-                value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
-                className={styles.inputField}
-              />
-              <input
-                type="text"
-                placeholder="Departamento"
-                value={departamento}
-                onChange={(e) => setDepartamento(e.target.value)}
-                className={styles.inputField}
-              />
-
-              <p>Forma de pago:</p>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={paymentMethod.includes('mercadoPago')}
-                  onChange={() => togglePaymentMethod('mercadoPago')}
-                />
-                Mercado Pago
-              </label>
-              <p className={styles.warningText}>* Solo se permite Mercado Pago para envío</p>
-            </div>
-          )}
-        </form>
-
-        {/* BOTÓN CONFIRMAR */}
-        {!confirmed && isFormValid() && (
-          <button onClick={handleConfirmOrder} className={styles.confirmButton}>
-            Confirmar Pedido
-          </button>
-        )}
-
-        {/* BOTONES POST-CONFIRMACIÓN */}
-        {confirmed && (
-          <div className={styles.postConfirm}>
-            {/* MercadoPago button - only show if MercadoPago was selected */}
-            {paymentMethod.includes('mercadoPago') && (
-              <div className={styles.mercadoPagoContainer}>
-                <p className={styles.paymentMessage}>
-                  Tu pedido ha sido creado. Para completar la compra, haz clic en el botón de pago.
-                </p>
-                
-                {loading ? (
-                  <p>Preparando opciones de pago...</p>
-                ) : preferenceId ? (
-                  <CheckoutMP 
-                    idPreferencia={preferenceId}
-                    mostrar={true} 
-                  />
-                ) : (
-                  <p className={styles.errorMessage}>
-                    Error al obtener opciones de pago. Contacta con soporte.
-                  </p>
-                )}
+            {/* RETIRO */}
+            {deliveryMethod === 'retiro' && (
+              <div className={styles.form_section}>
+                <p className={styles.sectionTitle}>Tipo de pago:</p>
+                <div className={styles.checkboxGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={paymentMethod.includes('efectivo')}
+                      onChange={() => togglePaymentMethod('efectivo')}
+                    />
+                    Efectivo
+                  </label>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={paymentMethod.includes('mercadoPago')}
+                      onChange={() => togglePaymentMethod('mercadoPago')}
+                    />
+                    Mercado Pago
+                  </label>
+                </div>
               </div>
             )}
-            
-            {/* Show message for cash payments */}
-            {paymentMethod.includes('efectivo') && (
-              <p className={styles.paymentMessage}>
-                Tu pedido ha sido confirmado y será preparado para retirar en el local.
-              </p>
+
+            {/* ENVÍO */}
+            {deliveryMethod === 'envio' && (
+              <div className={styles.form_section}>
+                <p className={styles.sectionTitle}>Datos de envío:</p>
+                <input
+                  type="text"
+                  placeholder="Teléfono"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  className={styles.inputField}
+                />
+                <input
+                  type="text"
+                  placeholder="Dirección"
+                  value={direccion}
+                  onChange={(e) => setDireccion(e.target.value)}
+                  className={styles.inputField}
+                />
+                <input
+                  type="text"
+                  placeholder="Departamento"
+                  value={departamento}
+                  onChange={(e) => setDepartamento(e.target.value)}
+                  className={styles.inputField}
+                />
+
+                <p className={styles.sectionTitle}>Forma de pago:</p>
+                <div className={styles.checkboxGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={paymentMethod.includes('mercadoPago')}
+                      onChange={() => togglePaymentMethod('mercadoPago')}
+                    />
+                    Mercado Pago
+                  </label>
+                </div>
+                <p className={styles.warningText}>* Solo se permite Mercado Pago para envío</p>
+              </div>
             )}
-            
-            <button className={styles.invoiceButton}>Ver Factura</button>
-            <button className={styles.timeButton}>Hora estimada 21.30 - 22.00</button>
-          </div>
-        )}
+
+            {/* BOTÓN CONFIRMAR dentro del formulario */}
+            {!confirmed && isFormValid() && (
+              <button type="button" onClick={handleConfirmOrder} className={styles.confirmButton}>
+                Confirmar pedido
+              </button>
+            )}
+          </form>
+
+          {/* Sacamos los BOTONES POST-CONFIRMACIÓN FUERA del formulario */}
+          {confirmed && (
+            <div className={styles.postConfirm}>
+              {paymentMethod.includes('mercadoPago') && (
+                <div className={styles.mercadoPagoContainer}>
+                  <p className={styles.paymentMessage}>
+                    Tu pedido ha sido creado. Para completar la compra, haz clic en el botón de pago.
+                  </p>
+
+                  {loading ? (
+                    <p>Preparando opciones de pago...</p>
+                  ) : preferenceId ? (
+                    <CheckoutMP
+                      idPreferencia={preferenceId}
+                      mostrar={true}
+                    />
+                  ) : (
+                    <p className={styles.errorMessage}>
+                      Error al obtener opciones de pago. Contacta con soporte.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {paymentMethod.includes('efectivo') && (
+                <p className={styles.paymentMessage}>
+                  Tu pedido ha sido confirmado y será preparado para retirar en el local.
+                </p>
+              )}
+
+              <button className={styles.invoiceButton}>Ver Factura</button>
+              <button className={styles.timeButton}>Hora estimada 21.30 - 22.00</button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <button onClick={onClose}>Cerrar</button>
+      <button onClick={onClose} className={styles.backToMenuButton}>Volver al menú</button>
     </div>
   );
 };

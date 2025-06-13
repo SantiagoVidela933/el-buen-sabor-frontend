@@ -133,6 +133,32 @@
     margin: 0 1.5vh;
 }
 
+/* Contenedor del CartButton para posicionar la alerta */
+.cartButtonContainer {
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+}
+
+/* Estilos para el distintivo de alerta (badge) */
+.cartAlertBadge {
+  position: absolute;
+  top: -8px; 
+  right: -8px; 
+  background-color: #ff0000; 
+  color: white;
+  border-radius: 50%; 
+  width: 20px; 
+  height: 20px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem; 
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+  z-index: 10; 
+}
+
 @media (max-width: 768px) {
     .navbar {
       height: auto;

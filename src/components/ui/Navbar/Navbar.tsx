@@ -8,6 +8,8 @@ import Cliente from "../../../models/prueba/Client";
 import { getClientesMailJSONFetch } from "../../../api/cliente";
 
 import axios from "axios";
+import { useSelector } from "react-redux"; // Importar useSelector
+import { RootState } from '../../../redux/store'; // Importar RootState para tipado
 
 interface Auth0User {
   email: string;
@@ -26,8 +28,9 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
   const [cliente, setCliente] = useState<Cliente | null>(null);
 
-
-
+  // --- NUEVO: Obtener el estado del carrito desde Redux ---
+  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const hasItemsInCart = cartItems.length > 0; // Booleano para saber si hay ítems
 
   useEffect(() => {
     const verificarRegistro = async () => {
@@ -37,10 +40,10 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
           await axios.get(
             `http://localhost:8080/api/clientes/email/${auth0User.email}`
           );
-        
+
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
-           
+
             window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
           } else {
             console.error("Error al verificar cliente:", error);
@@ -59,8 +62,9 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
         } catch (error) {
           console.log ("Error al obtener cliente")
         }
-      }
-    
+
+    }
+
   }, [isAuthenticated, user, isLoading]);
 
 
@@ -127,7 +131,18 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
               </div>
             )}
             <div className={styles.div_line_profile}></div>
-            <CartButton onClick={onCartClick} />
+            {/* --- Modificación para el CartButton con alerta --- */}
+            <div className={styles.cartButtonContainer}> {/* Nuevo contenedor para posicionar la alerta */}
+              <CartButton onClick={onCartClick} />
+              {hasItemsInCart && ( // Renderizado condicional de la alerta
+                <span className={styles.cartAlertBadge}>
+                  {/* Puedes usar un "!" o el número de ítems */}
+                  {cartItems.length > 9 ? '9+' : cartItems.length}
+                  {/* Alternativa: Un simple icono de exclamación */}
+                  {/* <span className="material-symbols-outlined">warning</span> */}
+                </span>
+              )}
+            </div>
           </div>
         ) : (
           <>
@@ -139,7 +154,17 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
               <button>Iniciar sesión</button>
             </div>
             <div className={styles.div_line_profile}></div>
-            <CartButton onClick={onCartClick} />
+            {/* --- Modificación para el CartButton con alerta en estado no autenticado --- */}
+            <div className={styles.cartButtonContainer}> {/* Nuevo contenedor para posicionar la alerta */}
+              <CartButton onClick={onCartClick} />
+              {hasItemsInCart && ( // Renderizado condicional de la alerta
+                <span className={styles.cartAlertBadge}>
+                   {cartItems.length > 9 ? '9+' : cartItems.length}
+                   {/* Alternativa: Un simple icono de exclamación */}
+                   {/* <span className="material-symbols-outlined">warning</span> */}
+                </span>
+              )}
+            </div>
           </>
         )}
       </div>
