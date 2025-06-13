@@ -39,7 +39,6 @@ const CartView = ({ onClose }: CartViewProps) => {
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [confirmed, setConfirmed] = useState(false);
   const [preferenceId, setPreferenceId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -384,7 +383,7 @@ const CartView = ({ onClose }: CartViewProps) => {
                   />
                     Efectivo
                   </label>
-                  <label className={styles.radioLabel}>
+                  <label className={styles.checkboxLabel}>
                     <input
                       type="checkbox"
                       name="paymentMethod"
