@@ -280,7 +280,7 @@ const CartView = ({ onClose }: CartViewProps) => {
                     />
                     Efectivo
                   </label>
-                  <label className={styles.radioLabel}>
+                  <label className={styles.checkboxLabel}>
                     <input
                       type="radio"
                       name="paymentMethod"

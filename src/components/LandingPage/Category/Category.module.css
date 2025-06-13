@@ -44,27 +44,26 @@
 
 .category_button {
   background-color: transparent;
-  border: 2px solid white;
+  border: 2px solid #080707;
   border-radius: 1rem;
   padding: 0.5rem 1rem;
   font-size: 1.1rem;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: white;
 }
 
 .category_button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: white;
+  background-color: #000000;
+  border-color: #000000;
   color: white;
 }
 
 .selected {
-  background-color: white;
-  color: #ff5a1f;
-  border-color: white;
+  background-color: #ff6609;
+  color: white;
+  border-color: #ff6609;
 }
 
 @media (max-width: 768px) {
