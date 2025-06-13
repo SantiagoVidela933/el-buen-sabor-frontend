@@ -32,6 +32,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   const [stockMinimo, setStockMinimo] = useState(
     ingrediente?.stockPorSucursal?.[0]?.stockMinimo || 0
   );
+  const [esParaElaborar, setEsParaElaborar] = useState(ingrediente?.esParaElaborar ?? false);
 
   useEffect(() => {
     async function fetchCategorias() {
@@ -51,10 +52,15 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       setPrecioCompra(ingrediente.precioCompra || 0);
       setMargenGanancia(ingrediente.margenGanancia || 0);
       setImagenNombre(ingrediente.imagenes?.[0]?.denominacion || "");
-      setStockActual(ingrediente.stockPorSucursal?.[0]?.stockActual || 0);
-      setStockMinimo(ingrediente.stockPorSucursal?.[0]?.stockMinimo || 0);
+      // setStockActual(ingrediente.stockPorSucursal?.[0]?.stockActual || 0);
+      // setStockMinimo(ingrediente.stockPorSucursal?.[0]?.stockMinimo || 0);
       setUnidadMedida(ingrediente.unidadMedida || undefined);
       setCategoria(ingrediente.categoria || null);
+      const stockSucursal = ingrediente.stockPorSucursal?.[0];
+      if (stockSucursal) {
+        setStockActual(stockSucursal.stockActual ?? 0);
+        setStockMinimo(stockSucursal.stockMinimo ?? 0);
+      }
     }
   }, [ingrediente, modo]);
 
@@ -75,9 +81,10 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
     const imagenes: Imagen[] = imagenNombre ? [new Imagen(imagenNombre)] : [];
 
     const articuloInsumoPayload = {
+      tipoArticulo: 'insumo',
       denominacion,
       precioCompra,
-      esParaElaborar: false,
+      esParaElaborar,
       unidadMedida: { id: unidadMedida.id },
       sucursal: { id: 1 },
       imagenes: imagenes.map((img) => ({
@@ -90,6 +97,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       categoria: { id: categoria.id },
       stockPorSucursal: [
         {
+          sucursal: { id: 1 },
           stockActual,
           stockMinimo,
           stockMaximo: 0,
@@ -128,6 +136,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       alert("Error al guardar el insumo: " + error);
     }
   };
+  
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -166,13 +175,13 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
-        <div className={styles.fieldGroup}>
+        <div>
           <label>
-            Imagen (nombre):
+            ¿Es para elaborar?
             <input
-              type="text"
-              value={imagenNombre}
-              onChange={(e) => setImagenNombre(e.target.value)}
+              type="checkbox"
+              checked={esParaElaborar}
+              onChange={(e) => setEsParaElaborar(e.target.checked)}
             />
           </label>
         </div>

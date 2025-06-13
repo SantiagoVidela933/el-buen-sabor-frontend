@@ -94,13 +94,19 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   }, [modo, producto, insumos]);
 
-  const detallesConvertidos = ingredientes.map((i) => ({
+  const detallesConvertidos = ingredientes.map(i => ({
     cantidad: i.cantidad,
     articuloInsumo: {
-      ...i.insumo,
-      tipoArticulo: "insumo"
+      id: i.insumo.id,
+      denominacion: i.insumo.denominacion,
+      precioCompra: i.insumo.precioCompra,
+      esParaElaborar: i.insumo.esParaElaborar,
+      tipoArticulo: "insumo",
+      unidadMedida: i.insumo.unidadMedida,
     }
   }));
+
+
 
   const handleEliminarIngrediente = (idInsumo: number) => {
     setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));

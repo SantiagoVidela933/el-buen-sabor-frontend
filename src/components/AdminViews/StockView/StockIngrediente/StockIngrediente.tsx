@@ -103,7 +103,6 @@ export default function StockIngrediente() {
             <th>Unidad</th>
             <th>Precio Compra</th>
             <th>Elaborar</th>
-            <th>Sucursales</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -114,7 +113,6 @@ export default function StockIngrediente() {
               <td>{i.unidadMedida.denominacion}</td>
               <td>${i.precioCompra}</td>
               <td>{i.esParaElaborar ? "Sí" : "No"}</td>
-              <td>{i.stockPorSucursal.length}</td>
               <td>
                 <button onClick={() => abrirEditar(i)} className={styles.editBtn}>
                   <span className="material-symbols-outlined">edit</span>
