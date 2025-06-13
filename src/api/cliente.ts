@@ -46,28 +46,16 @@ export async function guardarCliente(cliente: Cliente) {
 
 
 export async function getClientesMailJSONFetch(email:string) {
-  try {
-    const urlServer = `http://localhost:8080/api/clientes/email/${email}`;
-    console.log(`Realizando petición GET a: ${urlServer}`);
-    
-    const response = await fetch(urlServer, {
-      method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      mode: 'cors'
-    });
+  const urlServer = `http://localhost:8080/api/clientes/email/${email}`;
+  const response = await fetch(urlServer, {
+    method: 'GET',
+    headers: {
+      'Content-type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    },
+    mode: 'cors'
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error al obtener cliente: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Datos del cliente recibidos:", data);
-    return data;
-  } catch (error) {
-    console.error("Error en getClientesMailJSONFetch:", error);
-    throw error;
-  }
+  console.log(response);
+  return await response.json();
 }

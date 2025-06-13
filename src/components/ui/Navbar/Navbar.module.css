@@ -4,11 +4,7 @@
   height: 4rem;
   display: flex;
   background-color: #1a1a1a;
-  justify-content: space-evenly;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;  
+  justify-content: space-evenly; 
 }
 
 /* Logo App*/
