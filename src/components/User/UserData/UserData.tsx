@@ -62,49 +62,51 @@ const UserData: React.FC<UserDataProps> = ({ cliente }) => {
         <h3 className={styles.title}>Mis datos personales</h3>
       </div>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <label className={styles.label}>
-          Nombre
-          <input type="text" className={styles.input} name="nombre" value={clienteEditable?.nombre || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Apellido
-          <input type="text" className={styles.input} name="apellido" value={clienteEditable?.apellido || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Número de Teléfono
-          <input type="text" className={styles.input} name="telefono" value={clienteEditable?.telefono || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Email
-          <input type="email" className={styles.input} name="email" value={clienteEditable?.email || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Fecha de nacimiento
-          <input type="date" className={styles.input} name="fechaDeNacimiento" value={clienteEditable?.fechaDeNacimiento || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Calle
-          <input type="text" className={styles.input} name="domicilio.calle" value={clienteEditable?.domicilio.calle || ''} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Número calle
-          <input type="number" className={styles.input} name="domicilio.numero" value={clienteEditable?.domicilio.numero || 0} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Código Postal
-          <input type="number" className={styles.input} name="domicilio.codigoPostal" value={clienteEditable?.domicilio.codigoPostal || 0} onChange={handleInputChange} />
-        </label>
-        <label className={styles.label}>
-          Departamento
-          <select className={styles.select} name="domicilio.idLocalidad" value={clienteEditable?.domicilio.idLocalidad || ''} onChange={handleInputChange}>
-            <option value="">-- Selecciona una localidad --</option>
-            {localidades.map((loc) => (
-              <option key={loc.id} value={loc.id}>
-                {loc.nombre}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className={styles.formGrid}>
+          <label className={styles.label}>
+            Nombre
+            <input type="text" className={styles.input} name="nombre" value={clienteEditable?.nombre || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Apellido
+            <input type="text" className={styles.input} name="apellido" value={clienteEditable?.apellido || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Número de Teléfono
+            <input type="text" className={styles.input} name="telefono" value={clienteEditable?.telefono || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Email
+            <input type="email" className={styles.input} name="email" value={clienteEditable?.email || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Fecha de nacimiento
+            <input type="date" className={styles.input} name="fechaDeNacimiento" value={clienteEditable?.fechaDeNacimiento || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Calle
+            <input type="text" className={styles.input} name="domicilio.calle" value={clienteEditable?.domicilio.calle || ''} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Número calle
+            <input type="number" className={styles.input} name="domicilio.numero" value={clienteEditable?.domicilio.numero || 0} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Código Postal
+            <input type="number" className={styles.input} name="domicilio.codigoPostal" value={clienteEditable?.domicilio.codigoPostal || 0} onChange={handleInputChange} />
+          </label>
+          <label className={styles.label}>
+            Departamento
+            <select className={styles.select} name="domicilio.idLocalidad" value={clienteEditable?.domicilio.idLocalidad || ''} onChange={handleInputChange}>
+              <option value="">-- Selecciona una localidad --</option>
+              {localidades.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.nombre}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className={styles.buttonWrapper}>
           <button type="submit" className={styles.button} onClick={() => {window.location.href = "/"}}>
             Guardar cambios

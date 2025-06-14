@@ -18,6 +18,30 @@ export const getPedidosVentas = async () => {
   return await response.json();
 };
 
+export const getMisPedidosVenta = async (
+  getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
+): Promise<PedidoVenta[]> => {
+  try {
+    const token = await getAccessTokenSilently();
+
+    const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/mis-pedidos", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error al obtener los pedidos: ${errorText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Error general al obtener pedidos: ${error}`);
+  }
+};
 
 // POST PedidoVenta
 export const crearPedidoVenta = async (

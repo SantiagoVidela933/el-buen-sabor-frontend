@@ -4,7 +4,8 @@ import Modal from "../../../components/ui/Modal/Modal";
 import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
 import { PedidoVenta } from "../../../models/PedidoVenta";
 import { Estado } from "../../../models/enums/Estado";
-import { getPedidosVentas } from "../../../api/pedidoVenta";
+import { getMisPedidosVenta } from "../../../api/pedidoVenta";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 interface UserOrderListProps {
@@ -17,19 +18,21 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
 
+  const { getAccessTokenSilently } = useAuth0();
+
   // fetch - obtengo categorias de articulos manufacturados
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const data = await getPedidosVentas();
-        console.log(data)
+        const data = await getMisPedidosVenta(getAccessTokenSilently);
+        console.log(data);
         setPedidos(data);
       } catch (error) {
         console.error("Error al cargar pedidos:", error);
       }
     };
     fetchPedidos();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   const handleViewOrder = (order: PedidoVenta) => {
     setSelectedOrder(order);
