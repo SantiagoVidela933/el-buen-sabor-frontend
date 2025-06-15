@@ -104,7 +104,7 @@ export const fetchMovimientosMensuales = async (desde: string, hasta: string) =>
         console.error(error);
         throw error;
     }
-    };
+};
 
 // Obtener totales
 export const fetchTotales = async (desde: string, hasta: string) => {

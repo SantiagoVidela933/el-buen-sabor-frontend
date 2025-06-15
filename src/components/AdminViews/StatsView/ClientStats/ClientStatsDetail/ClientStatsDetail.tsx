@@ -2,14 +2,18 @@ import styles from "./ClientStatsDetail.module.css";
 import { useEffect, useState } from "react";
 import { PedidoVenta } from "../../../../../models/PedidoVenta";
 import { getPedidosVentasPorCliente } from "../../../../../api/pedidoVenta";
-
+import OrderDetail from "../../../../User/UserOrdetDetail/UserOrderDetail";
+import Modal from "../../../../ui/Modal/Modal";
 
 interface ClienteStatsDetailsProps {
   clienteId: number | null;
+  fechaInicio: string;
+  fechaFin: string;
 }
 
-const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId }) => {
+const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fechaInicio, fechaFin }) => {
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<PedidoVenta | null>(null); // Pedido seleccionado para mostrar detalles
 
     const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -21,7 +25,7 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId }) 
     const fetchPedidos = async () => {
       if(clienteId === null) return;
       try {
-        const data = await getPedidosVentasPorCliente(clienteId);
+        const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
         console.log(data);
         setPedidos(data);
       } catch (error) {
@@ -29,12 +33,17 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId }) 
       }
     };
     fetchPedidos();
-  }, [clienteId]);
+  }, [clienteId, fechaInicio, fechaFin]);
 
-  const formatoARS = new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  });
+    const handleVerDetalle = (pedido: PedidoVenta) => {
+    setPedidoSeleccionado(pedido); 
+  };
+
+  const handleCerrarDetalle = () => {
+    setPedidoSeleccionado(null);
+  };
+
+  
 
   return (
     <div className={styles.container}>
@@ -66,37 +75,26 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId }) 
                     {order.horaPedido}
                   </td>
                   <td>#{order.id}</td>
-                  <td>{formatoARS.format(order.totalVenta)}</td>
+                  <td>{formatoMoneda.format(order.totalVenta)}</td>
                   <td>
-                    <table className={styles.productTable}>
-                      <thead>
-                        <tr>
-                          <th>Producto</th>
-                          <th>Cantidad</th>
-                          <th>Precio</th>
-                          <th>Sub total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {order.pedidosVentaDetalle
-                          ?.filter((detalle) => detalle.articulo?.tipoArticulo === "manufacturado")
-                          .map((detalle, index) => (
-                            <tr key={index}>
-                              <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
-                              <td>{detalle.cantidad}</td>
-                              <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
-                              <td>{formatoMoneda.format(detalle.subtotal)}</td>
-                            </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <button
+                      className={styles.verDetalleBtn}
+                      onClick={() => handleVerDetalle(order)}
+                    >
+                      Ver
+                    </button>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-  </div>
+              {pedidoSeleccionado && (
+        <Modal onClose={handleCerrarDetalle}>
+          <OrderDetail pedidoVenta={pedidoSeleccionado} onClose={handleCerrarDetalle} />
+        </Modal>
+      )}
+    </div>
   );
 
 };

@@ -14,10 +14,17 @@ const ClientStats = () => {
   const [tablaClientes, setTablaClientes] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
+  const ajustarFecha = (fecha: string): string => {
+    const date = new Date(fecha);
+    date.setHours(0, 0, 0, 0);
+    return date.toISOString().split('T')[0];
+  };
+
   const obtenerDatos = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
-    const desde = fechaInicio || '2000-01-01';
-    const hasta = fechaFin || fechaActual;
+    const desde = fechaInicio ? ajustarFecha(fechaInicio) : '2000-01-01';
+    const hasta = fechaFin ? ajustarFecha(fechaFin) : fechaActual;
+
 
     try {
       const data = await fetchRankingClientes(desde, hasta, orden);
@@ -48,7 +55,6 @@ const ClientStats = () => {
   };
   
   const toggleDetalles = (clienteId: number) => {
-    // Si el cliente ya está seleccionado, deseleccionarlo
     if (clienteSeleccionado === clienteId) {
       setClienteSeleccionado(null);
     } else {
@@ -144,7 +150,11 @@ const ClientStats = () => {
                 {clienteSeleccionado === cliente.clienteId && (
                   <tr>
                     <td colSpan={4}>
-                      <ClientStatsDetails clienteId={cliente.clienteId} />
+                      <ClientStatsDetails
+                        clienteId={cliente.clienteId}
+                        fechaInicio={fechaInicio ? ajustarFecha(fechaInicio) : '2000-01-01'}
+                        fechaFin={fechaFin ? ajustarFecha(fechaFin) : ajustarFecha(new Date().toISOString().split('T')[0])}
+                      />
                     </td>
                   </tr>
                 )}
