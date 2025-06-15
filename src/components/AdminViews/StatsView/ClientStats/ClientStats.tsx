@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import styles from './ClientStats.module.css';
 import Chart from 'react-google-charts';
+import ClientStatsDetails from './ClientStatsDetail/ClientStatsDetail';
 import { fetchRankingClientes, downloadRankingClientesExcel } from '../../../../api/ranking';
+
 
 const ClientStats = () => {
 
@@ -10,6 +12,7 @@ const ClientStats = () => {
   const [orden, setOrden] = useState('cantidad');
   const [datosClientes, setDatosClientes] = useState([['Cliente', 'Cantidad Comprada']]);
   const [tablaClientes, setTablaClientes] = useState([]);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
   const obtenerDatos = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
@@ -19,8 +22,10 @@ const ClientStats = () => {
     try {
       const data = await fetchRankingClientes(desde, hasta, orden);
 
-      const clientesGrafico = data.map((item: any) => [item.clienteNome, Number(item.cantidadPedidos)]);
-      
+      const clientesGrafico =
+            data.length > 0
+              ? data.map((item: any) => [item.clienteNome, Number(item.cantidadPedidos)])
+              : [['Sin Ventas', 0]];      
       setDatosClientes([['Cliente', 'Cantidad Comprada'], ...clientesGrafico]);
       setTablaClientes(data);
 
@@ -39,6 +44,15 @@ const ClientStats = () => {
       alert('Archivo descargado con éxito.');
     } catch (error) {
       alert('Error al descargar el archivo Excel.');
+    }
+  };
+  
+  const toggleDetalles = (clienteId: number) => {
+    // Si el cliente ya está seleccionado, deseleccionarlo
+    if (clienteSeleccionado === clienteId) {
+      setClienteSeleccionado(null);
+    } else {
+      setClienteSeleccionado(clienteId);
     }
   };
 
@@ -72,9 +86,9 @@ const ClientStats = () => {
           Ordenar por:
           <select
             value={orden}
-            onChange={(e) => setOrden(e.target.value as 'pedidos' | 'importe')}
+            onChange={(e) => setOrden(e.target.value as 'cantidad' | 'importe')}
           >
-            <option value="pedidos">Cantidad de pedidos</option>
+            <option value="cantidad">Cantidad de pedidos</option>
             <option value="importe">Importe total</option>
           </select>
         </label>
@@ -97,6 +111,7 @@ const ClientStats = () => {
             title: orden === 'pedidos' ? 'Cantidad de Pedidos' : 'Importe Total',
             minValue: 0,
           },
+          sort: false,
         }}
       />
 
@@ -112,17 +127,30 @@ const ClientStats = () => {
           </thead>
           <tbody>
             {tablaClientes.map((cliente: any) => (
-              <tr key={cliente.clienteId}>
-                <td>{cliente.clienteNome}</td>
-                <td>{cliente.cantidadPedidos}</td>
-                <td>${cliente.importeTotal.toFixed(2)}</td>
-                <td>
-                  <button className={styles.verPedidosBtn}>
-                    Ver pedidos
-                  </button>
-                </td>
-              </tr>
+              <>
+                <tr key={cliente.clienteId}>
+                  <td>{cliente.clienteNome}</td>
+                  <td>{cliente.cantidadPedidos}</td>
+                  <td>${cliente.importeTotal.toFixed(2)}</td>
+                  <td>
+                    <button
+                      className={styles.verPedidosBtn}
+                      onClick={() => toggleDetalles(cliente.clienteId)}
+                    >
+                      {clienteSeleccionado === cliente.clienteId ? 'Ocultar pedidos' : 'Ver pedidos'}
+                    </button>
+                  </td>
+                </tr>
+                {clienteSeleccionado === cliente.clienteId && (
+                  <tr>
+                    <td colSpan={4}>
+                      <ClientStatsDetails clienteId={cliente.clienteId} />
+                    </td>
+                  </tr>
+                )}
+              </>
             ))}
+
           </tbody>
         </table>
       </div>

@@ -71,3 +71,19 @@ export const crearPedidoVenta = async (
   return await response.json();
 };
 
+// GET PedidoVenta por idCliente
+export const getPedidosVentasPorCliente = async (idCliente: number) => {
+  const response = await fetch(`http://localhost:8080/api/v1/pedidoVenta/pedidos/cliente/${idCliente}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del cliente: ${errorText}`);
+  }
+
+  return await response.json();
+};
