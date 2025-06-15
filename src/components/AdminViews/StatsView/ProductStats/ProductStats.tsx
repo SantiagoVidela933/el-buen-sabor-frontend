@@ -17,8 +17,17 @@ const ProductStats = () => {
 
     try{
       const datos = await RankingProductos(desde, hasta);
-      const cocina = datos.comida.map((item: any) => [item.nombre, Number(item.cantidadVendida)]);
-      const bebidas = datos.bebida.map((item: any) => [item.nombre, Number(item.cantidadVendida)]);
+      
+      const cocina =
+        datos.comida.length > 0
+          ? datos.comida.map((item: any) => [item.nombre, Number(item.cantidadVendida)])
+          : [['Sin Ventas', 0]];
+
+
+      const bebidas =
+        datos.bebida.length > 0
+          ? datos.bebida.map((item: any) => [item.nombre, Number(item.cantidadVendida)])
+          : [['Sin Ventas', 0]];
       
       setDatosCocina([['Producto', 'Cantidad Vendida'], ...cocina]);
       setDatosBebidas([['Producto', 'Cantidad Vendida'], ...bebidas]);

@@ -1,34 +1,56 @@
+import {useState, useEffect} from 'react';
 import Chart from 'react-google-charts';
 import styles from './Movimientos.module.css'; 
-import { useState } from 'react';
+import { downloadMovimientosExcel, fetchMovimientosMensuales, fetchTotales } from '../../../../api/ranking';
 
 const Movimientos = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [movimientosMensuales, setMovimientosMensuales] = useState([['Mes', 'Ingreso', 'Costo', 'Ganancia']]);
+  const [totales, setTotales] = useState({ ingreso: 0, costo: 0, ganancia: 0 });
 
-  // Datos simulados por día
-  const movimientos = [
-    { fecha: 'Enero', ingresos: 15000, costos: 8000 },
-    { fecha: 'Febrero', ingresos: 18000, costos: 9500 },
-    { fecha: 'Marzo', ingresos: 12000, costos: 7000 },
-    { fecha: 'Abril', ingresos: 20000, costos: 11000 },
-    { fecha: 'Mayo', ingresos: 17000, costos: 9000 },
-  ];
+  const obtenerDatos = async () => {
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const desde = fechaInicio || '2000-01-01';
+    const hasta = fechaFin || fechaActual;
 
-  // Armado de datos para el gráfico
-  const data = [
-    ['Fecha', 'Ingresos', 'Costos', 'Ganancias'],
-    ...movimientos.map((m) => [
-      m.fecha,
-      m.ingresos,
-      m.costos,
-      m.ingresos - m.costos,
-    ]),
-  ];
+    try {
+      const dataMensuales = await fetchMovimientosMensuales(desde, hasta);
+      const movimientos =
+        dataMensuales.length > 0
+          ? dataMensuales.map((item: any) => [
+              `${item.anio}-${item.mes.toString().padStart(2, '0')}`,
+              Number(item.ingreso),
+              Number(item.costo),
+              Number(item.ganancia),
+            ])
+          : [['Sin Ventas', 0, 0, 0]];
+      setMovimientosMensuales([['Mes', 'Ingreso', 'Costo', 'Ganancia'], ...movimientos]);
 
-  const totalIngresos = movimientos.reduce((acc, m) => acc + m.ingresos, 0);
-  const totalCostos = movimientos.reduce((acc, m) => acc + m.costos, 0);
-  const totalGanancias = totalIngresos - totalCostos;
+      const dataTotales = await fetchTotales(desde, hasta);
+      setTotales(dataTotales);
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+    }
+  };
+
+  const exportarExcel = async () => {
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const desde = fechaInicio || '2000-01-01';
+    const hasta = fechaFin || fechaActual;
+
+    try {
+      await downloadMovimientosExcel(desde, hasta);
+      alert('Archivo descargado con éxito.');
+    } catch (error) {
+      alert('Error al descargar el archivo Excel.');
+    }
+  };
+
+  useEffect(() => {
+    obtenerDatos();
+  }, [fechaInicio, fechaFin]);
+
 
   return (
     <div className={styles.container}>
@@ -52,7 +74,7 @@ const Movimientos = () => {
           />
         </label>
 
-        <button className={styles.exportarBtn}>
+        <button className={styles.exportarBtn} onClick={exportarExcel}>
           <span className="material-symbols-outlined">file_download</span>
           Exportar a Excel
         </button>
@@ -62,7 +84,7 @@ const Movimientos = () => {
         chartType="LineChart"
         width="100%"
         height="350px"
-        data={data}
+        data={movimientosMensuales}
         options={{
           title: 'Ingresos, Costos y Ganancias',
           curveType: 'function',
@@ -74,15 +96,15 @@ const Movimientos = () => {
       <div className={styles.resumen}>
         <div className={styles.card}>
           <h4>Ingresos Totales</h4>
-          <p>${totalIngresos.toLocaleString()}</p>
+          <p>${totales.ingreso ? totales.ingreso.toFixed(2) : 0.00}</p>
         </div>
         <div className={styles.card}>
           <h4>Costos Totales</h4>
-          <p>${totalCostos.toLocaleString()}</p>
+          <p>${totales.costo ? totales.costo.toFixed(2) : 0.00}</p>
         </div>
         <div className={styles.card}>
           <h4>Ganancias</h4>
-          <p>${totalGanancias.toLocaleString()}</p>
+          <p>${totales.ganancia ? totales.ganancia.toFixed(2) : 0.00}</p>
         </div>
       </div>
     </div>
