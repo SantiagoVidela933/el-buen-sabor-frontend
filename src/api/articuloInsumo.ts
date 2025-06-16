@@ -25,11 +25,12 @@ export async function getInsumosBySucursalId(sucursalId: number): Promise<Articu
 
 // GET Articulos Insumos
 export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
-  const res = await fetch(API_URL);
+  const res = await fetch(`${API_URL}/todos`);
   const data = await res.json();
   return data.map((item: any) => ArticuloInsumo.fromJson(item));
 }
 
+// POST Articulos Insumo
 export async function createArticuloInsumo(insumoPayload: object): Promise<ArticuloInsumo> {
   const res = await fetch(API_URL, {
     method: "POST",
@@ -45,6 +46,7 @@ export async function createArticuloInsumo(insumoPayload: object): Promise<Artic
   return ArticuloInsumo.fromJson(data);
 }
 
+// PUT Articulos Insumo
 export async function updateArticuloInsumo(id: number | string, insumoPayload: object): Promise<ArticuloInsumo> {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
@@ -60,8 +62,32 @@ export async function updateArticuloInsumo(id: number | string, insumoPayload: o
   return ArticuloInsumo.fromJson(data);
 }
 
+// DELETE Articulo Insumo ( logico )
 export async function deleteArticuloInsumo(id: number): Promise<void> {
   await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
   });
 }
+
+export const darDeBajaArticuloInsumo = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/${id}/darBaja`, {
+    method: 'PATCH',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR dar de baja]:', errorText);
+    throw new Error('Error al dar de baja el artículo insumo');
+  }
+};
+
+export const darDeAltaArticuloInsumo = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/${id}/darAlta`, {
+    method: 'PATCH',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR dar de alta]:', errorText);
+    throw new Error('Error al dar de alta el artículo insumo');
+  }
+};
+
