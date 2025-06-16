@@ -2,7 +2,7 @@ import styles from "./ClientStatsDetail.module.css";
 import { useEffect, useState } from "react";
 import { PedidoVenta } from "../../../../../models/PedidoVenta";
 import { getPedidosVentasPorCliente } from "../../../../../api/pedidoVenta";
-import OrderDetail from "../../../../User/UserOrdetDetail/UserOrderDetail";
+import OrderDetailRanking from "../ClientStatsDetail/OrderDetailRanking/OrderDetailRankign";
 import Modal from "../../../../ui/Modal/Modal";
 
 interface ClienteStatsDetailsProps {
@@ -102,7 +102,7 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
         </table>
               {pedidoSeleccionado && (
         <Modal onClose={handleCerrarDetalle}>
-          <OrderDetail pedidoVenta={pedidoSeleccionado} onClose={handleCerrarDetalle} />
+          <OrderDetailRanking pedidoVenta={pedidoSeleccionado} onClose={handleCerrarDetalle} />
         </Modal>
       )}
     </div>
