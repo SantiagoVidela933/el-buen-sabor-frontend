@@ -24,6 +24,10 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
   useEffect(() => {
     const fetchPedidos = async () => {
       if(clienteId === null) return;
+          // Log para verificar las fechas y el clienteId
+          console.log("Buscando pedidos para el cliente:", clienteId);
+          console.log("Fecha inicio:", fechaInicio);
+          console.log("Fecha fin:", fechaFin);
       try {
         const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
         console.log(data);
@@ -67,11 +71,18 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
               pedidos.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
+                    {(() => {
+                      if (typeof order.fechaPedido === "string") {
+                        const [year, month, day] = order.fechaPedido.split('-').map(Number);
+                        const date = new Date(year, month - 1, day);
+                        return date.toLocaleDateString("es-AR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        });
+                      }
+                      return "Fecha inválida";
+                    })()}{" "}
                     {order.horaPedido}
                   </td>
                   <td>#{order.id}</td>

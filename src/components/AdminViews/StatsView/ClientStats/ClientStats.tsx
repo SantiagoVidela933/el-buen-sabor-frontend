@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect } from 'react';
+import React from 'react';
 import styles from './ClientStats.module.css';
 import Chart from 'react-google-charts';
 import ClientStatsDetails from './ClientStatsDetail/ClientStatsDetail';
@@ -14,16 +15,10 @@ const ClientStats = () => {
   const [tablaClientes, setTablaClientes] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
-  const ajustarFecha = (fecha: string): string => {
-    const date = new Date(fecha);
-    date.setHours(0, 0, 0, 0);
-    return date.toISOString().split('T')[0];
-  };
-
   const obtenerDatos = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
-    const desde = fechaInicio ? ajustarFecha(fechaInicio) : '2000-01-01';
-    const hasta = fechaFin ? ajustarFecha(fechaFin) : fechaActual;
+    const desde = fechaInicio || '2000-01-01';
+    const hasta = fechaFin || fechaActual;
 
 
     try {
@@ -133,6 +128,7 @@ const ClientStats = () => {
           </thead>
           <tbody>
             {tablaClientes.map((cliente: any) => (
+              <React.Fragment key={cliente.clienteId}>
               <>
                 <tr key={cliente.clienteId}>
                   <td>{cliente.clienteNome}</td>
@@ -152,15 +148,16 @@ const ClientStats = () => {
                     <td colSpan={4}>
                       <ClientStatsDetails
                         clienteId={cliente.clienteId}
-                        fechaInicio={fechaInicio ? ajustarFecha(fechaInicio) : '2000-01-01'}
-                        fechaFin={fechaFin ? ajustarFecha(fechaFin) : ajustarFecha(new Date().toISOString().split('T')[0])}
+                        fechaInicio={fechaInicio || '2000-01-01'} // Usar directamente la cadena seleccionada
+                        fechaFin={fechaFin || new Date().toISOString().split('T')[0]} // Usar directamente la cadena seleccionada
                       />
                     </td>
                   </tr>
                 )}
               </>
+            </React.Fragment>  
             ))}
-
+      
           </tbody>
         </table>
       </div>

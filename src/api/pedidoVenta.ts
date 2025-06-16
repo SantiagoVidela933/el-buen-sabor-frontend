@@ -80,6 +80,8 @@ export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio:
   url.searchParams.append('desde', fechaInicio);
   url.searchParams.append('hasta', fechaFin);
 
+  console.log("URL de la solicitud:", url.toString());
+
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
