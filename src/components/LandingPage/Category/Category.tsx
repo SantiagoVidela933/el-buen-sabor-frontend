@@ -53,6 +53,14 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
       </div>
       <div className={styles.category_box_ul}>
         <ul className={styles.category_ul}>
+          <li className={styles.category_li}>
+            <button
+              onClick={() => handleCategoryClick(0)} 
+              className={getButtonClass(0)}
+            >
+              <span >Todos</span>
+            </button>
+          </li>
           {categorias.map((cat) => (
             <li key={cat.id} className={styles.category_li} aria-label={cat.denominacion.toLowerCase()}>
               <button
@@ -63,14 +71,6 @@ const Category = ({ onCategoryChange }: CategoryProps) => {
               </button>
             </li>
           ))}
-          <li className={styles.category_li}>
-            <button
-              onClick={() => handleCategoryClick(0)} 
-              className={getButtonClass(0)}
-            >
-              <span >Todos</span>
-            </button>
-          </li>
         </ul>
       </div>
     </div>
