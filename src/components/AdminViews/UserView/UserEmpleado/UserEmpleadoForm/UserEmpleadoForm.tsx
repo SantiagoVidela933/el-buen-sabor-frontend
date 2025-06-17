@@ -1,11 +1,7 @@
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import Empleado from '../../../../../models/prueba/Employee';
 import styles from './UserEmpleadoForm.module.css';
-
-interface Localidad {
-  id: number;
-  nombre: string;
-}
+import {getLocalidades,crearEmpleado,actualizarEmpleado,Localidad,EmpleadoRequest} from '../../../../../api/empleado';
 
 interface UserEmpleadoFormProps {
   modo: 'crear' | 'editar';
@@ -17,27 +13,25 @@ interface UserEmpleadoFormProps {
 const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFormProps) => {
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
 
- const [form, setForm] = useState({
-  nombre: empleado?.nombre || '',
-  apellido: empleado?.apellido || '',
-  telefono: empleado?.telefono || '',
-  email: empleado?.email || '',
-  calle: empleado?.domicilio?.calle || '',
-  numero: empleado?.domicilio?.numero?.toString() || '',
-  codigoPostal: empleado?.domicilio?.codigoPostal?.toString() || '',
-  idLocalidad: empleado?.domicilio?.localidad?.id?.toString() || '',
-  clave: '',
-  repetirClave: '',
-  rol: empleado?.rol || '',
-});
-
+  const [form, setForm] = useState({
+    nombre: empleado?.nombre || '',
+    apellido: empleado?.apellido || '',
+    telefono: empleado?.telefono || '',
+    email: empleado?.email || '',
+    calle: empleado?.domicilio?.calle || '',
+    numero: empleado?.domicilio?.numero?.toString() || '',
+    codigoPostal: empleado?.domicilio?.codigoPostal?.toString() || '',
+    idLocalidad: empleado?.domicilio?.localidad?.id?.toString() || '',
+    clave: '',
+    repetirClave: '',
+    rol: empleado?.rol || '',
+  });
 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/localidades')
-      .then((res) => res.json())
-      .then((data) => setLocalidades(data))
+    getLocalidades()
+      .then(setLocalidades)
       .catch(() => setError('Error al cargar localidades'));
   }, []);
 
@@ -47,84 +41,52 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
     setError(null);
   };
 
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-  const camposObligatorios = [
-    'nombre', 'apellido', 'telefono', 'email',
-    'calle', 'numero', 'codigoPostal', 'idLocalidad', 'rol'
-  ];
-  for (const campo of camposObligatorios) {
-    if (!form[campo as keyof typeof form]) {
-      setError('Todos los campos obligatorios deben estar completos.');
+    const camposObligatorios = [
+      'nombre', 'apellido', 'telefono', 'email',
+      'calle', 'numero', 'codigoPostal', 'idLocalidad', 'rol'
+    ];
+    for (const campo of camposObligatorios) {
+      if (!form[campo as keyof typeof form]) {
+        setError('Todos los campos obligatorios deben estar completos.');
+        return;
+      }
+    }
+
+    if (form.clave !== form.repetirClave) {
+      setError('Las claves no coinciden.');
       return;
     }
-  }
 
-  if (form.clave !== form.repetirClave) {
-    setError('Las claves no coinciden.');
-    return;
-  }
+    const empleadoData: EmpleadoRequest = {
+      nombre: form.nombre,
+      apellido: form.apellido,
+      telefono: form.telefono,
+      email: form.email,
+      rol: form.rol,
+      sucursalId: 1,
+      domicilio: {
+        calle: form.calle,
+        numero: parseInt(form.numero),
+        codigoPostal: parseInt(form.codigoPostal),
+        idLocalidad: parseInt(form.idLocalidad)
+      }
+    };
 
- try {
-  const empleadoNuevo = {
-    nombre: form.nombre,
-    apellido: form.apellido,
-    telefono: form.telefono,
-    email: form.email,
-    rol: form.rol,
-    sucursalId: 1, // fijo por ahora
-    domicilio: {
-      calle: form.calle,
-      numero: parseInt(form.numero),
-      codigoPostal: parseInt(form.codigoPostal),
-      idLocalidad: parseInt(form.idLocalidad)
+    try {
+      const data = modo === 'crear'
+        ? await crearEmpleado(empleadoData)
+        : await actualizarEmpleado(empleado!.id!, empleadoData);
+
+      onSubmit(data);
+      alert(`Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente.`);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error inesperado.');
     }
   };
-
-  let url = '';
-  let method: 'POST' | 'PUT' = 'POST';
-
-  if (modo === 'crear') {
-    url = 'http://localhost:8080/api/empleados/crear';
-    method = 'POST';
-  } else {
-    if (!empleado?.id) {
-      setError('ID de empleado no disponible para editar.');
-      return;
-    }
-    url = `http://localhost:8080/api/empleados/${empleado.id}`;
-    method = 'PUT';
-  }
-
-  const response = await fetch(url, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(empleadoNuevo)
-  });
-
-  const text = await response.text();
-
-  if (!response.ok) {
-    throw new Error(`Error al ${modo === 'crear' ? 'crear' : 'editar'} el empleado: ${text}`);
-  }
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = empleadoNuevo;
-  }
-
-  onSubmit(data);
-  alert(`Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente.`);
-  onClose();
-
-} catch (err: any) {
-  setError(err.message || 'Ocurrió un error inesperado.');
-}
-};
-
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -192,7 +154,6 @@ const handleSubmit = async (e: FormEvent) => {
       </div>
 
       <div className={styles.buttonGroup}>
-       
         <div className={styles.rightButtons}>
           <button type="submit">Guardar</button>
         </div>
