@@ -1,7 +1,13 @@
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import Empleado from '../../../../../models/prueba/Employee';
 import styles from './UserEmpleadoForm.module.css';
-import {getLocalidades,crearEmpleado,actualizarEmpleado,Localidad,EmpleadoRequest} from '../../../../../api/empleado';
+import {
+  getLocalidades,
+  crearEmpleado,
+  actualizarEmpleado,
+  Localidad,
+  EmpleadoRequest
+} from '../../../../../api/empleado';
 
 interface UserEmpleadoFormProps {
   modo: 'crear' | 'editar';
@@ -41,6 +47,13 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
     setError(null);
   };
 
+  const validarContraseñaSegura = (clave: string): boolean => {
+    const tieneMayuscula = /[A-Z]/.test(clave);
+    const tieneNumero = /\d/.test(clave);
+    const tieneSimbolo = /[!@#$%^&*(),.?":{}|<>_]/.test(clave);
+    return tieneMayuscula && tieneNumero && tieneSimbolo;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -48,6 +61,7 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
       'nombre', 'apellido', 'telefono', 'email',
       'calle', 'numero', 'codigoPostal', 'idLocalidad', 'rol'
     ];
+
     for (const campo of camposObligatorios) {
       if (!form[campo as keyof typeof form]) {
         setError('Todos los campos obligatorios deben estar completos.');
@@ -55,25 +69,38 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
       }
     }
 
-    if (form.clave !== form.repetirClave) {
-      setError('Las claves no coinciden.');
-      return;
+    if (modo === 'crear') {
+      if (!form.clave || !form.repetirClave) {
+        setError('Debe ingresar y repetir la contraseña.');
+        return;
+      }
+
+      if (form.clave !== form.repetirClave) {
+        setError('Las claves no coinciden.');
+        return;
+      }
+
+      if (!validarContraseñaSegura(form.clave)) {
+        setError('La contraseña debe tener al menos una mayúscula, un número y un símbolo.');
+        return;
+      }
     }
 
-    const empleadoData: EmpleadoRequest = {
-      nombre: form.nombre,
-      apellido: form.apellido,
-      telefono: form.telefono,
-      email: form.email,
-      rol: form.rol,
-      sucursalId: 1,
-      domicilio: {
-        calle: form.calle,
-        numero: parseInt(form.numero),
-        codigoPostal: parseInt(form.codigoPostal),
-        idLocalidad: parseInt(form.idLocalidad)
-      }
-    };
+ const empleadoData: EmpleadoRequest = {
+  nombre: form.nombre,
+  apellido: form.apellido,
+  telefono: form.telefono,
+  email: form.email,
+  rol: form.rol,
+  sucursalId: 1,
+  domicilio: {
+    calle: form.calle,
+    numero: parseInt(form.numero),
+    codigoPostal: parseInt(form.codigoPostal),
+    idLocalidad: parseInt(form.idLocalidad)
+  },
+  ...(modo === 'crear' && { password: form.clave }) // CAMBIO aquí
+};
 
     try {
       const data = modo === 'crear'
@@ -151,6 +178,20 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
             <option value="DELIVERY">Delivery</option>
           </select>
         </div>
+
+        {modo === 'crear' && (
+          <>
+            <div className={styles.fieldGroup}>
+              <label>Contraseña</label>
+              <input type="password" name="clave" value={form.clave} onChange={handleChange} />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label>Repetir Contraseña</label>
+              <input type="password" name="repetirClave" value={form.repetirClave} onChange={handleChange} />
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.buttonGroup}>

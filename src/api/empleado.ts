@@ -6,6 +6,7 @@ export interface EmpleadoRequest {
   email: string;
   rol: string;
   sucursalId: number;
+  password?: string; 
   domicilio: {
     calle: string;
     numero: number;
@@ -13,6 +14,8 @@ export interface EmpleadoRequest {
     idLocalidad: number;
   };
 }
+
+
 
 export interface Localidad {
   id: number;
