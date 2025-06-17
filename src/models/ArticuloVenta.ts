@@ -5,7 +5,7 @@ export class ArticuloVenta {
     tipo: string;
     denominacion: string;
     descripcion: string | null;
-    categoria: CategoriaArticulo | null;
+    categoriaArticulo: CategoriaArticulo | null;
     precioVenta: number;
     imagenUrl: string | null;
     stockDisponible: number;
@@ -15,7 +15,7 @@ export class ArticuloVenta {
         tipo: string,
         denominacion: string,
         descripcion: string | null,
-        categoria: CategoriaArticulo | null,
+        categoriaArticulo: CategoriaArticulo | null,
         precioVenta: number,
         imagenUrl: string | null,
         stockDisponible: number
@@ -24,21 +24,27 @@ export class ArticuloVenta {
         this.tipo = tipo;
         this.denominacion = denominacion;
         this.descripcion = descripcion;
-        this.categoria = categoria;
+        this.categoriaArticulo = categoriaArticulo;
         this.precioVenta = precioVenta;
         this.imagenUrl = imagenUrl;
         this.stockDisponible = stockDisponible;
     }
     // Método estático para mapear datos JSON a una instancia de ArticuloVenta
     static fromJson(json: any): ArticuloVenta {
+        const categoriaArticulo = json.categoriaArticulo
+            ? new CategoriaArticulo(
+                json.categoriaArticulo.id,
+                json.categoriaArticulo.denominacion
+            )
+        : null;
         return new ArticuloVenta(
             json.id,
             json.tipo,
             json.denominacion,
             json.descripcion,
-            json.categoria || null,
+            categoriaArticulo,
             json.precioVenta,
-            json.imagenUrl || null,
+            json.imagenUrl,
             json.stockDisponible
         );
     }

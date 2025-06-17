@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ArticuloVenta } from '../../models/ArticuloVenta';
 
 interface CartItem {
-  articuloManufacturado: ArticuloVenta;
+  articuloVenta: ArticuloVenta;
   quantity: number;
 }
 
@@ -19,21 +19,21 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<{ articuloManufacturado: ArticuloVenta; quantity?: number }>) => {
-      const { articuloManufacturado, quantity = 1 } = action.payload;
-      const existingItem = state.cartItems.find(item => item.articuloManufacturado.id === articuloManufacturado.id);
+    addToCart: (state, action: PayloadAction<{ articuloVenta: ArticuloVenta; quantity?: number }>) => {
+      const { articuloVenta, quantity = 1 } = action.payload;
+      const existingItem = state.cartItems.find(item => item.articuloVenta.id === articuloVenta.id);
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
-        state.cartItems.push({ articuloManufacturado, quantity });
+        state.cartItems.push({ articuloVenta, quantity });
       }
     },
     removeFromCart: (state, action: PayloadAction<number>) => {
-      state.cartItems = state.cartItems.filter(item => item.articuloManufacturado.id !== action.payload);
+      state.cartItems = state.cartItems.filter(item => item.articuloVenta.id !== action.payload);
     },
     updateQuantity: (state, action: PayloadAction<{ productId: number; quantity: number }>) => {
       const { productId, quantity } = action.payload;
-      const item = state.cartItems.find(item => item.articuloManufacturado.id === productId);
+      const item = state.cartItems.find(item => item.articuloVenta.id === productId);
       if (item) {
         item.quantity = quantity;
       }

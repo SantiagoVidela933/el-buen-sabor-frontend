@@ -32,7 +32,7 @@ const CartView = ({ onClose }: CartViewProps) => {
   // Calcula el total
   const getTotal = () => {
     return cartItems.reduce(
-      (total, item) => total + (item.articuloManufacturado.precioVenta ?? 0) * item.quantity,
+      (total, item) => total + (item.articuloVenta.precioVenta ?? 0) * item.quantity,
       0
     );
   };
@@ -162,11 +162,11 @@ const CartView = ({ onClose }: CartViewProps) => {
 
       return new PedidoVentaDetalle(
         cantidadManu,
-        (item.articuloManufacturado.precioVenta ?? 0) * cantidadManu,
-        item.articuloManufacturado.precioCosto * cantidadManu,
+        (item.articuloVenta.precioVenta ?? 0) * cantidadManu,
+        item.articuloVenta.precioVenta * cantidadManu,
         undefined,
         undefined,
-        { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
+        { id: item.articuloVenta.id, tipoArticulo: "manufacturado" } as any
       );
     });
     
@@ -276,8 +276,8 @@ const CartView = ({ onClose }: CartViewProps) => {
             ) : (
               cartItems.map((item) => (
                 <ProductCart
-                  key={item.articuloManufacturado.id}
-                  articuloManufacturado={item.articuloManufacturado}
+                  key={item.articuloVenta.id}
+                  articuloVenta={item.articuloVenta}
                   quantity={item.quantity}
                   removeFromCart={(productId) => dispatch(removeFromCart(productId))}
                   updateQuantity={(productId, quantity) => dispatch(updateQuantity({ productId, quantity }))}

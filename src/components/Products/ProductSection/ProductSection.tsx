@@ -8,7 +8,7 @@ import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import { CategoriaArticulo } from '../../../models/CategoriaArticulo';
 
-import { getAllArticulosVenta } from '../../../api/articuloVenta';
+import { getArticulosByTipo } from '../../../api/articuloVenta';
 import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
 
 const ProductSection = () => {
@@ -21,15 +21,26 @@ const ProductSection = () => {
 
   const idSucursal = 1; 
 
-  // Cargar productos manufacturados
-  useEffect(() => {
-    getAllArticulosVenta()
-      .then(data => {
-        setArticulos(data);
-      })
-      .catch(error => {
-        console.error('Error cargando artículos manufacturados:', error);
-      });
+  // Cargar productos a la venta
+    useEffect(() => {
+    const fetchArticulos = async () => {
+      try {
+        const [insumos, manufacturados] = await Promise.all([
+          getArticulosByTipo(idSucursal, 'insumo'),
+          getArticulosByTipo(idSucursal, 'manufacturado'),
+        ]);
+        // Agrega un log para inspeccionar los productos obtenidos
+        console.log('Insumos obtenidos:', insumos);
+        console.log('Manufacturados obtenidos:', manufacturados);
+        const articulosCombinados =[...insumos, ...manufacturados];
+        console.log('Artículos combinados:', articulosCombinados);
+        setArticulos(articulosCombinados);
+      } catch (error) {
+        console.error('Error cargando artículos:', error);
+      }
+    };
+
+    fetchArticulos();
   }, []);
 
   // Cargar categorías activas para la sucursal
@@ -46,6 +57,8 @@ const ProductSection = () => {
   const handleCategoryChange = (categoryId: number) => {
     setSelectedCategory(categoryId);
     setSearchQuery('');
+      console.log('Categoría seleccionada:', categoryId);
+
   };
 
   const handleProductClick = (product: ArticuloVenta) => {
@@ -64,11 +77,17 @@ const ProductSection = () => {
 
   // Filtrar productos por categoría y búsqueda
   const filteredProducts = articulos.filter((product) => {
-    const categoriaId = product.categoria?.id ?? 0;
+    const categoriaId = product.categoriaArticulo?.id ?? 0;
+      console.log(`Comparando categoría del producto (${categoriaId}) con la categoría seleccionada (${selectedCategory})`);
+
     const coincideCategoria = selectedCategory === 0 || categoriaId === selectedCategory;
     const coincideBusqueda = product.denominacion?.toLowerCase().includes(searchQuery);
     return coincideCategoria && coincideBusqueda;
   });
+  console.log("Categorías:", categorias);
+console.log("Productos:", articulos);
+console.log("Categoría seleccionada:", selectedCategory);
+console.log("Productos filtrados:", filteredProducts);
 
   return (
     <div>
