@@ -71,3 +71,28 @@ export const crearPedidoVenta = async (
   return await response.json();
 };
 
+// GET PedidoVenta por idCliente y fechas
+export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio: string, fechaFin: string) => {
+  // Construir la URL con el nuevo endpoint
+  const url = new URL(`http://localhost:8080/api/v1/pedidoVenta/pedidos/cliente/${idCliente}/fechas`);
+  
+  // Agregar parámetros de consulta (fechas)
+  url.searchParams.append('desde', fechaInicio);
+  url.searchParams.append('hasta', fechaFin);
+
+  console.log("URL de la solicitud:", url.toString());
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del cliente: ${errorText}`);
+  }
+
+  return await response.json();
+};

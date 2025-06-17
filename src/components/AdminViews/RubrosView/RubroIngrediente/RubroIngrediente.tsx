@@ -1,28 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './RubroIngrediente.module.css';
 import Modal from '../../../ui/Modal/Modal';
-import {
-  vegetalesCategory,
-  lacteosCategory,
-  carnesCategory,
-  panificadosCategory,
-} from "../../../../data/ingredientCategory";
-import { IngredientCategory } from '../../../../models/Products/Ingredient/IngredientCategory';
 import RubroIngredienteForm from './RubroIngredienteForm/RubroIngredienteForm';
-
-const rubrosIniciales: IngredientCategory[] = [
-  vegetalesCategory,
-  lacteosCategory,
-  carnesCategory,
-  panificadosCategory,
-];
+import { deleteCategoria, getCategoriasInsumosBySucursalId, updateCategoria } from '../../../../api/articuloCategoria';
+import { CategoriaArticulo } from '../../../../models/CategoriaArticulo';
 
 const RubroIngrediente = () => {
 
-  const [rubros, setRubros] = useState<IngredientCategory[]>(rubrosIniciales);
+  const [rubros, setRubros] = useState<CategoriaArticulo[]>([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
-  const [rubroSeleccionado, setRubroSeleccionado] = useState<IngredientCategory | undefined>(undefined);
+  const [rubroSeleccionado, setRubroSeleccionado] = useState<CategoriaArticulo | undefined>(undefined);
+  const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
+  const [rubroAEliminar, setRubroAEliminar] = useState<CategoriaArticulo | null>(null);
+  const [busqueda, setBusqueda] = useState('');
+
+  // Cargar rubros desde el backend al montar
+  useEffect(() => {
+    const fetchRubros = async () => {
+      const data = await getCategoriasInsumosBySucursalId(1); 
+      console.log('Rubros:', data);
+      setRubros(data);
+    };
+    fetchRubros();
+  }, []);
 
   const abrirCrearRubro = () => {
     setModoFormulario('crear');
@@ -30,9 +31,9 @@ const RubroIngrediente = () => {
     setModalAbierto(true);
   };
 
-  const abrirEditarRubro = (rubroIngrediente: IngredientCategory) => {
+  const abrirEditarRubro = (rubroProducto: CategoriaArticulo) => {
     setModoFormulario('editar');
-    setRubroSeleccionado(rubroIngrediente);
+    setRubroSeleccionado(rubroProducto);
     setModalAbierto(true);
   };
 
@@ -40,22 +41,78 @@ const RubroIngrediente = () => {
     setModalAbierto(false);
   };
 
-  const manejarSubmit = (rubroActualizado: IngredientCategory) => {
+  const abrirModalEliminar = (rubro: CategoriaArticulo) => {
+    setRubroAEliminar(rubro);
+    setModalConfirmacionAbierto(true);
+  };
+
+  const cancelarEliminacion = () => {
+    setRubroAEliminar(null);
+    setModalConfirmacionAbierto(false);
+  };
+
+  const eliminarRubro = async () => {
+    if (!rubroAEliminar) return;
+
+    try {
+      await deleteCategoria(rubroAEliminar.id!); 
+
+      setRubros(prev =>
+        prev.map(rubro =>
+          rubro.id === rubroAEliminar.id
+            ? { ...rubro, fechaBaja: new Date().toISOString() }
+            : rubro
+        )
+      );
+
+      setRubroAEliminar(null);
+      setModalConfirmacionAbierto(false);
+    } catch (error) {
+      console.error("Error al eliminar categoría:", error);
+      alert("No se pudo eliminar la categoría.");
+    }
+  };
+
+  const rubrosFiltrados = rubros.filter((rubro)=> 
+    rubro.denominacion.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const manejarSubmit = (rubroActualizado: CategoriaArticulo) => {
     if (modoFormulario === 'crear') {
       setRubros(prev => [...prev, rubroActualizado]);
     } else {
       setRubros(prev =>
         prev.map(rubro =>
-          rubro.title === rubroSeleccionado?.title ? rubroActualizado : rubro
+          rubro.id === rubroSeleccionado?.id ? rubroActualizado : rubro
         )
       );
     }
     cerrarModal();
   };
 
+  const handleDarDeAlta = async (rubro: CategoriaArticulo) => {
+    try {
+      const payload = {
+        denominacion: rubro.denominacion,
+        sucursalId: rubro.sucursal?.id ?? 1, 
+        fechaBaja: null,
+      };
+
+      const actualizado = await updateCategoria(rubro.id!, payload);
+
+      setRubros(prev =>
+        prev.map(r =>
+          r.id === rubro.id ? actualizado : r
+        )
+      );
+    } catch (error) {
+      console.error("Error al dar de alta el rubro:", error);
+      alert("Error al dar de alta el rubro");
+    }
+  };
+
   return (
     <div className={styles.container}>
-
       <div className={styles.header}>
         <h2 className={styles.title}>Ingredientes</h2>
         <button className={styles.addBtn} onClick={abrirCrearRubro}>
@@ -65,32 +122,41 @@ const RubroIngrediente = () => {
 
       <div className={styles.searchBar}>
         <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder='Buscar por nombre...' />
+        <input type="text" placeholder='Buscar por nombre...' value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
       </div>
 
       <table className={styles.table}>
         <thead>
           <tr>
             <th>Rubro</th>
-            <th>Rubro Padre</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-        {rubros.map((rubro, index) => (
-          <tr key={index}>
-            <td>{rubro.title}</td>
-            <td>{rubro.parentCategory?.title}</td>  
-            <td>{rubro.available}</td>  
+        {rubrosFiltrados.map((rubro, index) => (
+          <tr key={index} className={rubro.fechaBaja ? styles.filaBaja : ''}>
+            <td>{rubro.denominacion}</td>
+            <td>{rubro.fechaBaja ? "Baja" : "Alta"}</td>
             <td>
-              <button className={styles.editBtn} onClick={() => abrirEditarRubro(rubro)}>
-                <span className="material-symbols-outlined">edit</span>
-              </button>
-              <button className={styles.deleteBtn}>
-                <span className="material-symbols-outlined">delete</span>
-              </button>
-            </td>  
+              {rubro.fechaBaja ? (
+                <button
+                  className={styles.reactivarBtn}
+                  onClick={() => handleDarDeAlta(rubro)}
+                >
+                  <span className="material-symbols-outlined">restart_alt</span>
+                </button>
+              ) : (
+                <>
+                  <button className={styles.editBtn} onClick={() => abrirEditarRubro(rubro)}>
+                    <span className="material-symbols-outlined">edit</span>
+                  </button>
+                  <button className={styles.deleteBtn} onClick={() => abrirModalEliminar(rubro)}>
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </>
+              )}
+            </td>
           </tr>
         ))}
         </tbody>
@@ -103,6 +169,18 @@ const RubroIngrediente = () => {
             onClose={cerrarModal}
             onSubmit={manejarSubmit}
           />
+        </Modal>
+      )}
+      {modalConfirmacionAbierto && (
+        <Modal onClose={cancelarEliminacion}>
+          <div className={styles.confirmation}>
+            <h3>¿Estás seguro?</h3>
+            <p>¿Deseás eliminar la categoría <strong>{rubroAEliminar?.denominacion}</strong>?</p>
+            <div className={styles.confirmationButtons}>
+              <button className={styles.confirmBtn} onClick={eliminarRubro}>Aceptar</button>
+              <button className={styles.cancelBtn} onClick={cancelarEliminacion}>Cancelar</button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

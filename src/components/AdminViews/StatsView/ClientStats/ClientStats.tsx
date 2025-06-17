@@ -1,33 +1,65 @@
-import { useState } from 'react';
+import {useState, useEffect } from 'react';
+import React from 'react';
 import styles from './ClientStats.module.css';
 import Chart from 'react-google-charts';
+import ClientStatsDetails from './ClientStatsDetail/ClientStatsDetail';
+import { fetchRankingClientes, downloadRankingClientesExcel } from '../../../../api/ranking';
+
 
 const ClientStats = () => {
 
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
-  const [ordenarPor, setOrdenarPor] = useState<'pedidos' | 'importe'>('pedidos');
+  const [orden, setOrden] = useState('cantidad');
+  const [datosClientes, setDatosClientes] = useState([['Cliente', 'Cantidad Comprada']]);
+  const [tablaClientes, setTablaClientes] = useState([]);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
-  // Datos simulados
-  const clientesData = [
-    { nombre: 'Juan Pérez', pedidos: 12, importe: 32000 },
-    { nombre: 'Lucía González', pedidos: 9, importe: 29000 },
-    { nombre: 'Carlos Romero', pedidos: 14, importe: 27500 },
-    { nombre: 'María López', pedidos: 7, importe: 21000 },
-    { nombre: 'Ana Martínez', pedidos: 10, importe: 30500 },
-  ];
+  const obtenerDatos = async () => {
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const desde = fechaInicio || '2000-01-01';
+    const hasta = fechaFin || fechaActual;
 
-  const datosGrafico = [
-    ['Cliente', ordenarPor === 'pedidos' ? 'Cantidad de Pedidos' : 'Importe Total'],
-    ...clientesData
-      .sort((a, b) =>
-        ordenarPor === 'pedidos' ? b.pedidos - a.pedidos : b.importe - a.importe
-      )
-      .map((cliente) => [
-        cliente.nombre,
-        ordenarPor === 'pedidos' ? cliente.pedidos : cliente.importe,
-      ]),
-  ];
+
+    try {
+      const data = await fetchRankingClientes(desde, hasta, orden);
+
+      const clientesGrafico =
+            data.length > 0
+              ? data.map((item: any) => [item.clienteNome, Number(item.cantidadPedidos)])
+              : [['Sin Ventas', 0]];      
+      setDatosClientes([['Cliente', 'Cantidad Comprada'], ...clientesGrafico]);
+      setTablaClientes(data);
+
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+    }
+  };
+
+  const exportarExcel = async () => {
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const desde = fechaInicio || '2000-01-01';
+    const hasta = fechaFin || fechaActual;
+
+    try {
+      await downloadRankingClientesExcel(desde, hasta, orden);
+      alert('Archivo descargado con éxito.');
+    } catch (error) {
+      alert('Error al descargar el archivo Excel.');
+    }
+  };
+  
+  const toggleDetalles = (clienteId: number) => {
+    if (clienteSeleccionado === clienteId) {
+      setClienteSeleccionado(null);
+    } else {
+      setClienteSeleccionado(clienteId);
+    }
+  };
+
+  useEffect(() => {
+    obtenerDatos();
+  }, [fechaInicio, fechaFin, orden]);
   
   return (
     <div className={styles.container}>
@@ -54,15 +86,15 @@ const ClientStats = () => {
         <label>
           Ordenar por:
           <select
-            value={ordenarPor}
-            onChange={(e) => setOrdenarPor(e.target.value as 'pedidos' | 'importe')}
+            value={orden}
+            onChange={(e) => setOrden(e.target.value as 'cantidad' | 'importe')}
           >
-            <option value="pedidos">Cantidad de pedidos</option>
+            <option value="cantidad">Cantidad de pedidos</option>
             <option value="importe">Importe total</option>
           </select>
         </label>
 
-        <button className={styles.exportarBtn}>
+        <button className={styles.exportarBtn} onClick={exportarExcel}>
           <span className="material-symbols-outlined">file_download</span>
           Exportar a Excel
         </button>
@@ -72,14 +104,15 @@ const ClientStats = () => {
         chartType="BarChart"
         width="100%"
         height="300px"
-        data={datosGrafico}
+        data={datosClientes}
         options={{
           legend: { position: 'none' },
           chartArea: { width: '70%' },
           hAxis: {
-            title: ordenarPor === 'pedidos' ? 'Cantidad de Pedidos' : 'Importe Total',
+            title: orden === 'pedidos' ? 'Cantidad de Pedidos' : 'Importe Total',
             minValue: 0,
           },
+          sort: false,
         }}
       />
 
@@ -94,22 +127,37 @@ const ClientStats = () => {
             </tr>
           </thead>
           <tbody>
-            {clientesData
-              .sort((a, b) =>
-                ordenarPor === 'pedidos' ? b.pedidos - a.pedidos : b.importe - a.importe
-              )
-              .map((cliente, i) => (
-                <tr key={i}>
-                  <td>{cliente.nombre}</td>
-                  <td>{cliente.pedidos}</td>
-                  <td>${cliente.importe.toLocaleString()}</td>
+            {tablaClientes.map((cliente: any) => (
+              <React.Fragment key={cliente.clienteId}>
+              <>
+                <tr key={cliente.clienteId}>
+                  <td>{cliente.clienteNome}</td>
+                  <td>{cliente.cantidadPedidos}</td>
+                  <td>${cliente.importeTotal.toFixed(2)}</td>
                   <td>
-                    <button className={styles.verPedidosBtn}>
-                      Ver pedidos
+                    <button
+                      className={styles.verPedidosBtn}
+                      onClick={() => toggleDetalles(cliente.clienteId)}
+                    >
+                      {clienteSeleccionado === cliente.clienteId ? 'Ocultar pedidos' : 'Ver pedidos'}
                     </button>
                   </td>
                 </tr>
-              ))}
+                {clienteSeleccionado === cliente.clienteId && (
+                  <tr>
+                    <td colSpan={4}>
+                      <ClientStatsDetails
+                        clienteId={cliente.clienteId}
+                        fechaInicio={fechaInicio || '2000-01-01'} // Usar directamente la cadena seleccionada
+                        fechaFin={fechaFin || new Date().toISOString().split('T')[0]} // Usar directamente la cadena seleccionada
+                      />
+                    </td>
+                  </tr>
+                )}
+              </>
+            </React.Fragment>  
+            ))}
+      
           </tbody>
         </table>
       </div>
