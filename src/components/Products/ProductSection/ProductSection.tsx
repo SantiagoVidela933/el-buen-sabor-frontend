@@ -5,17 +5,17 @@ import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 
-import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import { CategoriaArticulo } from '../../../models/CategoriaArticulo';
 
-import { getAllArticulosManufacturados } from '../../../api/articuloManufacturado';
+import { getAllArticulosVenta } from '../../../api/articuloVenta';
 import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
 
 const ProductSection = () => {
-  const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
+  const [articulos, setArticulos] = useState<ArticuloVenta[]>([]);
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number>(0); 
-  const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ArticuloVenta | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -23,7 +23,7 @@ const ProductSection = () => {
 
   // Cargar productos manufacturados
   useEffect(() => {
-    getAllArticulosManufacturados()
+    getAllArticulosVenta()
       .then(data => {
         setArticulos(data);
       })
@@ -48,7 +48,7 @@ const ProductSection = () => {
     setSearchQuery('');
   };
 
-  const handleProductClick = (product: ArticuloManufacturado) => {
+  const handleProductClick = (product: ArticuloVenta) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -85,13 +85,13 @@ const ProductSection = () => {
       />
 
       <ProductList
-        articulosManufacturados={filteredProducts}
+        articuloVenta={filteredProducts}
         onProductClick={handleProductClick}
       />
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
-          <ProductDetail articuloManufacturado={selectedProduct} onClose={closeModal} />
+          <ProductDetail articuloVenta={selectedProduct} onClose={closeModal} />
         </Modal>
       )}
     </div>

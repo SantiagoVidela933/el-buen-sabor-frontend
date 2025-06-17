@@ -32,7 +32,7 @@ const CartView = ({ onClose }: CartViewProps) => {
   // Calcula el total
   const getTotal = () => {
     return cartItems.reduce(
-      (total, item) => total + item.articuloManufacturado.precioVenta * item.quantity,
+      (total, item) => total + (item.articuloManufacturado.precioVenta ?? 0) * item.quantity,
       0
     );
   };
@@ -131,6 +131,9 @@ const CartView = ({ onClose }: CartViewProps) => {
           tipoArticulo: (detalle.articulo! as any).tipoArticulo || "manufacturado",
         },
       })),
+      sucursal:{
+        id: 1
+      },
       // Agregamos el domicilio cuando es necesario
       domicilio: deliveryMethod === 'envio' ? 
       useDefaultAddress && clientData?.domicilio ? 
@@ -154,37 +157,17 @@ const CartView = ({ onClose }: CartViewProps) => {
       return;
     }
     setLoading(true);
-    const detalles: PedidoVentaDetalle[] = [];
-
-    cartItems.forEach((item) => {
+    const detalles: PedidoVentaDetalle[] = cartItems.map((item) => {
       const cantidadManu = item.quantity;
 
-      detalles.push(
-        new PedidoVentaDetalle(
-          cantidadManu,
-          item.articuloManufacturado.precioVenta * cantidadManu,
-          item.articuloManufacturado.precioCosto * cantidadManu,
-          undefined,
-          undefined,
-          { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
-        )
+      return new PedidoVentaDetalle(
+        cantidadManu,
+        (item.articuloManufacturado.precioVenta ?? 0) * cantidadManu,
+        item.articuloManufacturado.precioCosto * cantidadManu,
+        undefined,
+        undefined,
+        { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
       );
-
-      item.articuloManufacturado.detalles.forEach((detalleInsumo) => {
-        const insumo = detalleInsumo.articuloInsumo;
-        const cantidadInsumo = detalleInsumo.cantidad * cantidadManu;
-
-        detalles.push(
-          new PedidoVentaDetalle(
-            cantidadInsumo,
-            0,
-            0,
-            undefined,
-            undefined,
-            { id: insumo.id, tipoArticulo: "insumo" } as any
-          )
-        );
-      });
     });
     
     //Domicilio

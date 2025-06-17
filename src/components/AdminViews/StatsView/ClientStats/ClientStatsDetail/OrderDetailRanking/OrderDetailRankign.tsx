@@ -5,10 +5,9 @@ import { TipoEnvio } from '../../../../../../models/enums/TipoEnvio';
 
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
-  onClose: () => void;
 }
 
-const OrderDetailRanking = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+const OrderDetailRanking = ({ pedidoVenta }: OrderDetailProps) => {
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -25,7 +24,7 @@ const OrderDetailRanking = ({ pedidoVenta, onClose }: OrderDetailProps) => {
             <strong>Fecha:</strong>{" "}
             {(() => {
               if (typeof pedidoVenta.fechaPedido === "string") {
-                const [year, month, day] = pedidoVenta.fechaPedido.split('-').map(Number);
+                const [year, month, day] = (pedidoVenta.fechaPedido as string).split('-').map(Number);
                 const date = new Date(year, month - 1, day);
                 return date.toLocaleDateString("es-AR", {
                   day: "2-digit",

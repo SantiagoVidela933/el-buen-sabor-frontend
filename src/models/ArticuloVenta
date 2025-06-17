@@ -1,0 +1,26 @@
+import { CategoriaArticulo } from './CategoriaArticulo';
+
+export class ArticuloVenta {
+    id: number;
+    tipo: string;
+    denominacion: string;
+    descripcion: string | null;
+    categoria: CategoriaArticulo | null;
+    precioVenta: number;
+    imagenUrl: string | null;
+    stockDisponible: number;
+
+    constructor(
+        id: number, tipo: string, denominacion: string,
+        descripcion: string | null, categoira:CategoriaArticulo, precioVenta: number,imagenUrl: string | null,
+        stockDisponible: number){
+        this.id = id;
+        this.tipo = tipo;
+        this.denominacion = denominacion;
+        this.descripcion = descripcion;
+        this.categoria = categoira;
+        this.precioVenta = precioVenta;
+        this.imagenUrl = imagenUrl;
+        this.stockDisponible = stockDisponible;
+    }
+}

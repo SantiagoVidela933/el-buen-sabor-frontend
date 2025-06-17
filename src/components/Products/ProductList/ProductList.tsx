@@ -1,20 +1,20 @@
-import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import ProductCard from '../ProductCard/ProductCard';
 import styles from './ProductList.module.css';
 
 interface ProductListProps {
-  articulosManufacturados: ArticuloManufacturado[];
-  onProductClick: (product: ArticuloManufacturado) => void;
+  articuloVenta: ArticuloVenta[];
+  onProductClick: (product: ArticuloVenta) => void;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ articulosManufacturados, onProductClick }) => {
+const ProductList: React.FC<ProductListProps> = ({ articuloVenta, onProductClick }) => {
   return (
     <div className={styles.productList_wrapper}>
-      {articulosManufacturados.map((artManu) => (
+      {articuloVenta.map((articuloVenta) => (
         <ProductCard 
-          key={artManu.id} 
-          product={artManu} 
-          onClick={() => onProductClick(artManu)}
+          key={articuloVenta.id} 
+          product={articuloVenta} 
+          onClick={() => onProductClick(articuloVenta)}
         />
       ))}
     </div>
