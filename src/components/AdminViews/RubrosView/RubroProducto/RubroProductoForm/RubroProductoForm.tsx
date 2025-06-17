@@ -20,19 +20,29 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
       setEstado(rubro.fechaBaja ? 'Baja' : 'Alta');
     }
   }, [rubro]);
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!descripcion.trim()) {
+      alert("La denominación no puede estar vacía.");
+      return;
+    }
 
     const payload = {
       denominacion: descripcion,
-      categoriaPadreId: rubro?.categoriaPadre?.id ?? null,
+      categoriaPadreId: rubro?.categoriaPadre?.id ?? 3,
       sucursalId: 1, 
-      fechaBaja: estado === 'Baja' ? (rubro?.fechaBaja ?? new Date().toISOString()) : null,
+      fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
     };
 
     if (modo === "editar" && rubro?.id) {
       try {
+        if (estado === 'Baja') {
+          payload.fechaBaja = new Date().toISOString();
+        } else {
+          payload.fechaBaja = null;
+        }
         const result = await updateCategoria(rubro.id, payload);
         onSubmit(result);
       } catch (error) {
@@ -65,19 +75,19 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
             onChange={(e) => setDescripcion(e.target.value)}
           />
         </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Estado</label>
-          <select
-            value={estado}
-            onChange={(e) => setEstado(e.target.value as 'Alta' | 'Baja')}
-          >
-            <option value="Alta">Alta</option>
-            <option value="Baja">Baja</option>
-          </select>
-        </div>
+        {modo === 'crear' && (
+          <div className={styles.fieldGroup}>
+            <label>Estado</label>
+              <select
+                value={estado}
+                onChange={(e) => setEstado(e.target.value as 'Alta' | 'Baja')}
+              >
+                <option value="Alta">Alta</option>
+                <option value="Baja">Baja</option>
+              </select>
+          </div>
+        )}
       </div>
-
       <div className={styles.buttonActions}>
         <button type="button" className={styles.cancelBtn} onClick={onClose}>
           Cancelar

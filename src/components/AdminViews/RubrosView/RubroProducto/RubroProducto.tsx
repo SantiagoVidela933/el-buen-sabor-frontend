@@ -12,7 +12,7 @@ const RubroProducto = () => {
   const [rubroSeleccionado, setRubroSeleccionado] = useState<CategoriaArticulo | undefined>(undefined);
   const [modalConfirmacionAbierto, setModalConfirmacionAbierto] = useState(false);
   const [rubroAEliminar, setRubroAEliminar] = useState<CategoriaArticulo | null>(null);
-
+  const [busqueda, setBusqueda] = useState('');
 
   // Cargar rubros desde el backend al montar
   useEffect(() => {
@@ -72,6 +72,9 @@ const RubroProducto = () => {
     }
   };
 
+  const rubrosFiltrados = rubros.filter((rubro)=> 
+    rubro.denominacion.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   const manejarSubmit = (rubroActualizado: CategoriaArticulo) => {
     if (modoFormulario === 'crear') {
@@ -90,8 +93,9 @@ const RubroProducto = () => {
     try {
       const payload = {
         denominacion: rubro.denominacion,
-        categoriaPadreId: rubro.categoriaPadre?.id ?? null,
-        sucursalId: rubro.sucursal?.id ?? 1, // por si falta
+        categoriaPadreId: 3,
+        sucursalId: rubro.sucursal?.id ?? 1,
+        fechaBaja: null,
       };
 
       const actualizado = await updateCategoria(rubro.id!, payload);
@@ -118,7 +122,7 @@ const RubroProducto = () => {
 
       <div className={styles.searchBar}>
         <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder='Buscar por nombre...' />
+        <input type="text" placeholder='Buscar por nombre...' value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
       </div>
 
       <table className={styles.table}>
@@ -130,7 +134,7 @@ const RubroProducto = () => {
           </tr>
         </thead>
         <tbody>
-        {rubros.map((rubro, index) => (
+        {rubrosFiltrados.map((rubro, index) => (
           <tr key={index} className={rubro.fechaBaja ? styles.filaBaja : ''}>
             <td>{rubro.denominacion}</td>
             <td>{rubro.fechaBaja ? "Baja" : "Alta"}</td>
