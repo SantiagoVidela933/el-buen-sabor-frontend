@@ -3,24 +3,24 @@ import styles from './UserEmpleado.module.css';
 import { Empleado } from '../../../../models/Empleado';
 import Modal from '../../../ui/Modal/Modal';
 import UserEmpleadoForm from './UserEmpleadoForm/UserEmpleadoForm';
-
+import {getEmpleados,eliminarEmpleadoAPI,darDeBajaEmpleadoAPI,reactivarEmpleadoAPI,} from '../../../../api/empleado';
 const UserEmpleado = () => {
-  const [empleados, setEmpleados] = useState<Empleado[]>([]);
+   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState<Empleado | undefined>(undefined);
-  const [filtro, setFiltro] = useState<string>(''); // 🆕 filtro para la búsqueda
+  const [filtro, setFiltro] = useState<string>('');
 
-  const cargarEmpleados = () => {
-    fetch('http://localhost:8080/api/empleados')
-      .then(res => res.json())
-      .then((data: any[]) => {
-        const listado = data
-          .map(item => Empleado.fromJson(item))
-          .filter((e): e is Empleado => e !== null && e.id != null);
-        setEmpleados(listado);
-      })
-      .catch(err => console.error('Error al cargar empleados:', err));
+  const cargarEmpleados = async () => {
+    try {
+      const data = await getEmpleados();
+      const listado = data
+        .map(item => Empleado.fromJson(item))
+        .filter((e): e is Empleado => e !== null && e.id != null);
+      setEmpleados(listado);
+    } catch (err) {
+      console.error('Error al cargar empleados:', err);
+    }
   };
 
   useEffect(() => {
@@ -62,15 +62,8 @@ const UserEmpleado = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8080/api/empleados/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        cargarEmpleados(); // ✅ actualiza la lista
-      } else {
-        console.error(`Error al eliminar empleado con ID ${id}`);
-      }
+      await eliminarEmpleadoAPI(id);
+      cargarEmpleados();
     } catch (error) {
       console.error('Error al eliminar empleado:', error);
     }
@@ -78,17 +71,8 @@ const UserEmpleado = () => {
 
   const darDeBajaEmpleado = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/empleados/${id}/baja`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fechaBaja: new Date().toISOString() })
-      });
-
-      if (response.ok) {
-        cargarEmpleados();
-      } else {
-        console.error(`Error al dar de baja empleado con ID ${id}`);
-      }
+      await darDeBajaEmpleadoAPI(id);
+      cargarEmpleados();
     } catch (error) {
       console.error('Error al dar de baja empleado:', error);
     }
@@ -96,25 +80,18 @@ const UserEmpleado = () => {
 
   const reactivarEmpleado = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/empleados/${id}/reactivar`, {
-        method: 'PUT'
-      });
-
-      if (response.ok) {
-        cargarEmpleados();
-      } else {
-        console.error(`Error al reactivar empleado con ID ${id}`);
-      }
+      await reactivarEmpleadoAPI(id);
+      cargarEmpleados();
     } catch (error) {
       console.error('Error al reactivar empleado:', error);
     }
   };
 
-  // 🆕 Empleados filtrados por nombre o apellido
   const empleadosFiltrados = empleados.filter(emp => {
     const nombreCompleto = `${emp.nombre} ${emp.apellido}`.toLowerCase();
     return nombreCompleto.includes(filtro.toLowerCase());
   });
+
 
   return (
     <div className={styles.container}>
