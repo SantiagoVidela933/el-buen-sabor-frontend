@@ -29,3 +29,58 @@ export async function getCategoriasInsumosBySucursalId(sucursalId: number): Prom
     return [];
   }
 }
+
+// POST - Crear nueva categoría
+export async function createCategoria(categoria: Partial<CategoriaArticulo>): Promise<CategoriaArticulo> {
+  const response = await fetch(`http://localhost:8080/api/categoria`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(categoria)
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al crear la categoría");
+  }
+
+  const data = await response.json();
+  return CategoriaArticulo.fromJson(data);
+}
+
+// PUT - Actualizar categoría existente
+export async function updateCategoria(
+  id: number,
+  data: {
+    denominacion: string;
+    categoriaPadreId?: number | null;
+    sucursalId: number;
+  }
+): Promise<CategoriaArticulo> {
+  const response = await fetch(`http://localhost:8080/api/categoria/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al actualizar la categoría");
+  }
+
+  const json = await response.json();
+  return CategoriaArticulo.fromJson(json);
+}
+
+
+// DELETE - Eliminar categoría por ID
+export async function deleteCategoria(id: number): Promise<void> {
+  const response = await fetch(`http://localhost:8080/api/categoria/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al eliminar la categoría");
+  }
+}

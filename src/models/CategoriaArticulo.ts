@@ -1,25 +1,21 @@
 import { BaseEntity } from "./BaseEntity";
 import { Articulo } from "./Articulo";
 import { SucursalEmpresa } from "./SucursalEmpresa";
-import { Imagen } from "./Imagen";
 
 export class CategoriaArticulo extends BaseEntity {
   denominacion: string;
-  categoriaPadre?: CategoriaArticulo;
+  categoriaPadre?: Partial<CategoriaArticulo> | null;
   articulo: Articulo[];
-  sucursal?: SucursalEmpresa;
-  imagen?: Imagen;
+  sucursal?: Partial<SucursalEmpresa>;
 
   constructor(
     denominacion: string,
-    imagen: Imagen,
     categoriaPadre?: CategoriaArticulo,
-    sucursal?: SucursalEmpresa,
+    sucursal?: Partial<SucursalEmpresa>,
     articulo: Articulo[] = []
   ) {
     super();
     this.denominacion = denominacion;
-    this.imagen = imagen;
     this.categoriaPadre = categoriaPadre;
     this.sucursal = sucursal;
     this.articulo = articulo;
@@ -28,7 +24,9 @@ export class CategoriaArticulo extends BaseEntity {
   static fromJson(json: any): CategoriaArticulo {
     const categoria = new CategoriaArticulo(
       json.denominacion,
-      json.imagen ? new Imagen(json.imagen) : {} as Imagen
+      json.categoriaPadre,
+      json.sucursal,
+      json.articulo || []
     );
     categoria.id = json.id;
     categoria.fechaAlta = json.fechaAlta;
