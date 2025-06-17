@@ -44,20 +44,31 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
       const auth0User = user as Auth0User;
 
       try {
-      
-        await axios.get(`http://localhost:8080/api/clientes/email/${auth0User.email}`);
-        
+        const clienteRes = await axios.get(`http://localhost:8080/api/clientes/email/${auth0User.email}`);
+        const clienteData = clienteRes.data;
+
+        if (clienteData.fechaBaja || clienteData.usuario?.fechaBaja) {
+          alert("Usuario no encontrado o dado de baja.");
+          logout({ logoutParams: { returnTo: "http://localhost:5173" } });
+          return;
+        }
+
         return;
       } catch (errorCliente) {
         if (axios.isAxiosError(errorCliente) && errorCliente.response?.status === 404) {
           try {
-            
-            await axios.get(`http://localhost:8080/api/empleados/email/${auth0User.email}`);
-           
+            const empleadoRes = await axios.get(`http://localhost:8080/api/empleados/email/${auth0User.email}`);
+            const empleadoData = empleadoRes.data;
+
+            if (empleadoData.fechaBaja || empleadoData.usuario?.fechaBaja) {
+              alert("Usuario no encontrado o dado de baja.");
+              logout({ logoutParams: { returnTo: "http://localhost:5173" } });
+              return;
+            }
+
             return;
           } catch (errorEmpleado) {
             if (axios.isAxiosError(errorEmpleado) && errorEmpleado.response?.status === 404) {
-             
               window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
             } else {
               console.error("Error al verificar empleado:", errorEmpleado);
