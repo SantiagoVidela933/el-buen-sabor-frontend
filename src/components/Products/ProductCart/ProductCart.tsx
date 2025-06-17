@@ -1,8 +1,8 @@
-import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import styles from './ProductCart.module.css';
 
 interface ProductCartProps {
-  articuloManufacturado: ArticuloManufacturado;
+  articuloManufacturado: ArticuloVenta;
   quantity: number;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, newQuantity: number) => void;
@@ -28,8 +28,8 @@ const ProductCart = ({
     <div className={styles.card_wrapper}>
       <div className={styles.box_image}>
         <img src={
-            articuloManufacturado.imagenes && articuloManufacturado.imagenes.length > 0
-              ? `http://localhost:8080/api/imagenes/file/${articuloManufacturado.imagenes[0].denominacion}`
+            articuloManufacturado.imagenUrl && articuloManufacturado.imagenUrl.length > 0
+              ? `http://localhost:8080/api/imagenes/file/${articuloManufacturado.imagenUrl}`
               : '/src/assets/images/pizza_example.jpg'
           } alt={articuloManufacturado.denominacion} />
       </div>

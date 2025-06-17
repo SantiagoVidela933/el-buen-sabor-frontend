@@ -1,9 +1,9 @@
 // store/cartSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ArticuloManufacturado } from '../../models/ArticuloManufacturado';
+import { ArticuloVenta } from '../../models/ArticuloVenta';
 
 interface CartItem {
-  articuloManufacturado: ArticuloManufacturado;
+  articuloManufacturado: ArticuloVenta;
   quantity: number;
 }
 
@@ -19,7 +19,7 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<{ articuloManufacturado: ArticuloManufacturado; quantity?: number }>) => {
+    addToCart: (state, action: PayloadAction<{ articuloManufacturado: ArticuloVenta; quantity?: number }>) => {
       const { articuloManufacturado, quantity = 1 } = action.payload;
       const existingItem = state.cartItems.find(item => item.articuloManufacturado.id === articuloManufacturado.id);
       if (existingItem) {

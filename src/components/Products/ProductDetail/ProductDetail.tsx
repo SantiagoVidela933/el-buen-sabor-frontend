@@ -26,8 +26,8 @@ const ProductDetail = ({ articuloVenta, onClose }: ProductDetailProps) => {
       <div className={styles.detail_image}>
         <img 
           src={
-            articuloVenta.imagenes && articuloVenta.imagenes.length > 0
-              ? `http://localhost:8080/api/imagenes/file/${articuloVenta.imagenes[0].denominacion}`
+            articuloVenta.imagenUrl && articuloVenta.imagenUrl.length > 0
+              ? `http://localhost:8080/api/imagenes/file/${articuloVenta.imagenUrl}`
               : '/src/assets/images/pizza_example.jpg'
             }
           alt="Product Image" 
