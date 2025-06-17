@@ -17,6 +17,10 @@ export class Empleado extends BaseEntity {
   pedidosVenta: PedidoVenta[];
 
   constructor(
+    id: number = 0,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
     nombre: string,
     apellido: string,
     telefono: string,
@@ -25,9 +29,9 @@ export class Empleado extends BaseEntity {
     sucursal: SucursalEmpresa,
     domicilio: Domicilio,
     pedidosVenta: PedidoVenta[] = [],
-    rol: Rol,
+    rol: Rol
   ) {
-    super();
+    super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.nombre = nombre;
     this.apellido = apellido;
     this.telefono = telefono;
@@ -40,9 +44,13 @@ export class Empleado extends BaseEntity {
   }
 
   static fromJson(json: any): Empleado | null {
-    if (!json) return null;
+    if (!json || json.id == null) return null;
 
     return new Empleado(
+      json.id,
+      json.fechaAlta,
+      json.fechaModificacion,
+      json.fechaBaja,
       json.nombre,
       json.apellido,
       json.telefono,
@@ -54,5 +62,4 @@ export class Empleado extends BaseEntity {
       json.rol
     );
   }
-
 }
