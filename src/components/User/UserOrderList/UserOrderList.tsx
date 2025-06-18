@@ -6,6 +6,7 @@ import { PedidoVenta } from "../../../models/PedidoVenta";
 import { Estado } from "../../../models/enums/Estado";
 import { getMisPedidosVenta } from "../../../api/pedidoVenta";
 import { useAuth0 } from "@auth0/auth0-react";
+import { descargarFacturaPDF } from "../../../api/factura";
 
 
 interface UserOrderListProps {
@@ -17,6 +18,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -55,6 +57,29 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     return <span style={{ color, fontWeight: "bold" }}>{nombre}</span>;
   };
 
+  // Función para descargar la factura en PDF
+  const handleDownloadFactura = async (facturaId: number) => {
+    try {
+      setIsLoading(true);
+      await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
+    } catch (error) {
+      alert("No se pudo descargar la factura. Intente nuevamente más tarde.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Función para descargar la nota de crédito
+  const handleDownloadNotaCredito = async (facturaId: number) => {
+    try {
+      setIsLoading(true);
+      await descargarFacturaPDF(facturaId, `nota-credito-${facturaId}.pdf`);
+    } catch (error) {
+      alert("No se pudo descargar la nota de crédito. Intente nuevamente más tarde.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Mis Pedidos</h2>
@@ -94,24 +119,25 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
 
                     {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
-                    {order.factura &&
-                      (order.estado === Estado.CANCELADO ? (
+                    {order.factura && order.factura.length > 0 && (
+                      order.estado === Estado.CANCELADO ? (
                         <button
-                          onClick={() =>
-                            alert(`Descargar nota de crédito de ${order.id}`)
-                          }
+                          disabled={isLoading}
+                          onClick={() => handleDownloadNotaCredito(order.factura[0].id)}
+                          className={styles.docButton}
                         >
                           Nota de crédito
                         </button>
                       ) : (
                         <button
-                          onClick={() =>
-                            alert(`Descargar factura de ${order.id}`)
-                          }
+                          disabled={isLoading}
+                          onClick={() => handleDownloadFactura(order.factura[0].id)}
+                          className={styles.docButton}
                         >
                           Factura
                         </button>
-                      ))}
+                      )
+                    )}
                   </td>
                 </tr>
               ))
