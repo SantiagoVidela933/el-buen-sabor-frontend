@@ -22,6 +22,7 @@ export class Domicilio extends BaseEntity {
     this.numero = numero;
     this.codigoPostal = codigoPostal;
     this.localidad = localidad;
+    this.idLocalidad = localidad?.id || 0;
     if (sucursal) this.sucursal = sucursal;
   }
 
