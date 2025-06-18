@@ -94,7 +94,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
 
                     {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
-                    {order.facturas.length > 0 &&
+                    {order.factura &&
                       (order.estado === Estado.CANCELADO ? (
                         <button
                           onClick={() =>

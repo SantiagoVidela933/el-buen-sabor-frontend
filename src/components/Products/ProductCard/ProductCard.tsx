@@ -37,9 +37,6 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
         {product.stockDisponible <=0 && (
           <span className={styles.outOfStock}>Sin Stock</span>
         )}
-        {isDisabled && (
-          <span className={styles.outOfStock}>Sin Stock</span>
-        )}
       </div>
     </div>
   );

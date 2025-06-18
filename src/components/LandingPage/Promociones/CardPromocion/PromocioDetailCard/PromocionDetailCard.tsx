@@ -13,7 +13,7 @@ const PromocionDetailCard = ({ promocion, onClose }: PromocionDetailCardProps) =
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
     const dispatch = useDispatch();
-    console.log("URL de la imagen en PromocionDetailCard:", promocion.imagenUrl);
+    
     const handleIncrease = () => {
         if (quantity < promocion.stockDisponible) {
         setQuantity((prev) => prev + 1);

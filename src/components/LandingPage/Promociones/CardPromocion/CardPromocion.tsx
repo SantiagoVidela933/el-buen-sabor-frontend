@@ -24,7 +24,7 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
   id,
 }) => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-
+  const isDisabled = stockDisponible <= 0;
   const promocion: ArticuloVenta = {
     id,
     tipo: "PROMOCION",
@@ -37,7 +37,9 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
   };
 
   const handleCardClick = () => {
-    setIsDetailOpen(true);
+    if (!isDisabled) {
+      setIsDetailOpen(true);
+    }
   };
 
   const handleCloseDetail = () => {
@@ -46,7 +48,10 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
 
   return (
     <>
-      <div className={styles.card} onClick={handleCardClick}>
+      <div
+      className={`${styles.card} ${isDisabled ? styles.disabled : ''}`} 
+        onClick={handleCardClick}
+        >
         <h3 className={styles.titulo}>{titulo}</h3>
         <p className={styles.descripcion}>{descripcion}</p>
         <div className={styles.precios}>
@@ -56,6 +61,9 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
         <div className={styles.imagenWrapper}>
           <img src={imagenUrl} alt={titulo} className={styles.imagen} />
         </div>
+        {isDisabled && (
+          <span className={styles.outOfStock}>Sin Stock</span>
+        )}
       </div>
 
       {isDetailOpen && (

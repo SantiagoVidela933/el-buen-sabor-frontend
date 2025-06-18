@@ -78,16 +78,11 @@ const ProductSection = () => {
   // Filtrar productos por categoría y búsqueda
   const filteredProducts = articulos.filter((product) => {
     const categoriaId = product.categoriaArticulo?.id ?? 0;
-      console.log(`Comparando categoría del producto (${categoriaId}) con la categoría seleccionada (${selectedCategory})`);
-
     const coincideCategoria = selectedCategory === 0 || categoriaId === selectedCategory;
     const coincideBusqueda = product.denominacion?.toLowerCase().includes(searchQuery);
     return coincideCategoria && coincideBusqueda;
   });
-  console.log("Categorías:", categorias);
-console.log("Productos:", articulos);
-console.log("Categoría seleccionada:", selectedCategory);
-console.log("Productos filtrados:", filteredProducts);
+
 
   return (
     <div>

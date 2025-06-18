@@ -21,7 +21,7 @@ export class PedidoVenta extends BaseEntity {
   totalVenta: number;
 
   pedidosVentaDetalle: PedidoVentaDetalle[];
-  facturas: Factura[];
+  factura: Factura[];
 
   sucursal?: SucursalEmpresa;
   domicilio?: Domicilio;
@@ -56,7 +56,7 @@ export class PedidoVenta extends BaseEntity {
     this.totalCosto = totalCosto;
     this.totalVenta = totalVenta;
     this.pedidosVentaDetalle = pedidosVentaDetalle;
-    this.facturas = facturas;
+    this.factura = facturas;
     this.sucursal = sucursal;
     this.domicilio = domicilio;
     this.cliente = cliente;
@@ -78,7 +78,7 @@ export class PedidoVenta extends BaseEntity {
       PedidoVentaDetalle.fromJson(d)
     );
 
-    const facturas = (json.facturas || []).map((f: any) =>
+    const facturas = (json.factura || []).map((f: any) =>
       Factura.fromJson(f)
     );
 
