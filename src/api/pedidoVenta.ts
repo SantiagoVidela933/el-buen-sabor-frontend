@@ -71,6 +71,23 @@ export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio:
   return await response.json();
 };
 
+// GET PedidoVenta Delivery
+export const getPedidosVentasDelivery = async () => {
+  const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/delivery", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del delivery: ${errorText}`);
+  }
+
+  return await response.json();
+};
+
 // POST PedidoVenta
 export const crearPedidoVenta = async (
   pedido: PedidoVenta, 

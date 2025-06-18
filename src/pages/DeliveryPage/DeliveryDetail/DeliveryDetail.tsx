@@ -1,9 +1,8 @@
-import React from 'react';
 import styles from './DeliveryDetail.module.css';
-import { Order } from '../ordersDelivery';
+import { PedidoVenta } from '../../../models/PedidoVenta';
 
 type DeliveryDetailProps = {
-  pedido: Order;
+  pedido: PedidoVenta;
   onClose?: () => void;
 };
 
@@ -17,24 +16,55 @@ const DeliveryDetail: React.FC<DeliveryDetailProps> = ({ pedido, onClose }) => {
           <tbody>
             <tr>
               <th>Fecha/Hora</th>
-              <td>{pedido.date}</td>
+              <td>
+                {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}{" "}
+                {pedido.horaPedido}
+              </td>
             </tr>
             <tr>
               <th>Forma de Entrega</th>
-              <td>{pedido.deliveryMethod}</td>
+              <td>{pedido.tipoEnvio}</td>
             </tr>
             <tr>
               <th>Forma de Pago</th>
-              <td>{pedido.paymentMethod}</td>
-            </tr>
-            <tr>
-              <th>Pagado</th>
-              <td>{pedido.paid ? 'Sí' : 'No'}</td>
+              <td>{pedido.formaPago}</td>
             </tr>
             <tr>
               <th>Estado</th>
-              <td>{pedido.status}</td>
+              <td>{pedido.estado}</td>
             </tr>
+
+            {/* Datos del cliente */}
+            {pedido.cliente && (
+              <>
+                <tr>
+                  <th>Cliente</th>
+                  <td>{pedido.cliente.nombre} {pedido.cliente.apellido}</td>
+                </tr>
+                <tr>
+                  <th>Teléfono</th>
+                  <td>{pedido.cliente.telefono}</td>
+                </tr>
+              </>
+            )}
+
+            {/* Dirección de entrega */}
+            {(pedido.domicilio || (pedido.cliente && pedido.cliente.domicilio)) && (
+              <tr>
+                <th>Dirección</th>
+                <td>
+                  {pedido.domicilio
+                    ? `${pedido.domicilio.calle} ${pedido.domicilio.numero}, ${pedido.domicilio.localidad?.nombre || ''}`
+                    : pedido.cliente?.domicilio
+                      ? `${pedido.cliente.domicilio.calle} ${pedido.cliente.domicilio.numero}, ${pedido.cliente.domicilio.localidad?.nombre || ''}`
+                      : "No disponible"}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -48,6 +78,7 @@ const DeliveryDetail: React.FC<DeliveryDetailProps> = ({ pedido, onClose }) => {
       )}
     </div>
   );
+
 };
 
 export default DeliveryDetail;
