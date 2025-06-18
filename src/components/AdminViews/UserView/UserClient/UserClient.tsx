@@ -14,6 +14,7 @@ const UserClient = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
   const [clienteSeleccionado, setClienteSeleccionado] = useState<Cliente | undefined>(undefined);
+  const [filtroNombre, setFiltroNombre] = useState('');
 
   useEffect(() => {
     cargarClientes();
@@ -93,6 +94,12 @@ const UserClient = () => {
     }
   };
 
+  // 🔎 Aplica filtro por nombre y apellido
+  const clientesFiltrados = clientes.filter(cliente => {
+    const nombreCompleto = `${cliente.nombre} ${cliente.apellido}`.toLowerCase();
+    return nombreCompleto.includes(filtroNombre.toLowerCase());
+  });
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -101,7 +108,12 @@ const UserClient = () => {
 
       <div className={styles.searchBar}>
         <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Buscar por nombre..." />
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={filtroNombre}
+          onChange={(e) => setFiltroNombre(e.target.value)}
+        />
       </div>
 
       <table className={styles.table}>
@@ -116,7 +128,7 @@ const UserClient = () => {
           </tr>
         </thead>
         <tbody>
-          {clientes.map((cliente) => {
+          {clientesFiltrados.map((cliente) => {
             const estaInactivo = cliente.fechaBaja !== null;
 
             return (
