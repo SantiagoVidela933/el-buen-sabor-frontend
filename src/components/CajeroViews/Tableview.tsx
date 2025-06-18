@@ -5,6 +5,7 @@ import UserOrderDetail from "../User/UserOrdetDetail/UserOrderDetail";
 import { PedidoVenta } from "../../models/PedidoVenta";
 import { cambiarEstadoPedidoVenta, getPedidosVentas } from "../../api/pedidoVenta";
 import { Estado } from "../../models/enums/Estado";
+import { TipoEnvio } from "../../models/enums/TipoEnvio";
 
 export function Table() {
   const [search, setSearch] = useState("");
@@ -20,6 +21,7 @@ export function Table() {
     [Estado.CANCELADO]: "Cancelado",
     [Estado.RECHAZADO]: "Rechazado",
     [Estado.ENTREGADO]: "Entregado",
+    [Estado.EN_DELIVERY]: "En delivery",
   };
 
   // GET Pedidos de Venta
@@ -134,24 +136,60 @@ export function Table() {
                   <td>{estadoLabels[order.estado]}</td>
                   <td className={styles.actions}>
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
-                    {order.estado === Estado.PENDIENTE && (
-                      <>
-                        <button
-                          onClick={async () => {
-                            try {
-                              const nuevoEstado = tieneManufacturados(order)
-                                ? Estado.PREPARACION
-                                : Estado.ENTREGADO;
 
-                              await cambiarEstadoPedidoVenta(order.id, nuevoEstado);
-                              await fetchPedidos(); // refrescar pedidos
-                            } catch (error) {
-                              console.error("Error al cambiar estado:", error);
-                            }
-                          }}
-                        >
-                          {tieneManufacturados(order) ? "Enviar a cocina" : "Marcar como entregado"}
-                        </button>
+                    {order.estado === Estado.PENDIENTE && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            const nuevoEstado = tieneManufacturados(order)
+                              ? Estado.PREPARACION
+                              : Estado.ENTREGADO;
+
+                            await cambiarEstadoPedidoVenta(order.id, nuevoEstado);
+                            await fetchPedidos();
+                          } catch (error) {
+                            console.error("Error al cambiar estado:", error);
+                          }
+                        }}
+                      >
+                        {tieneManufacturados(order) ? "Enviar a cocina" : "Marcar como entregado"}
+                      </button>
+                    )}
+
+                    {order.estado === Estado.PREPARACION && (
+                      <>
+                        {order.tipoEnvio === TipoEnvio.TAKE_AWAY && (
+                          <button
+                            disabled={order.facturas.length === 0}
+                            onClick={async () => {
+                              try {
+                                await cambiarEstadoPedidoVenta(order.id, Estado.ENTREGADO);
+                                await fetchPedidos();
+                              } catch (error) {
+                                console.error("Error al cambiar estado:", error);
+                              }
+                            }}
+                          >
+                            Marcar como entregado
+                          </button>
+                        )}
+
+                        {order.tipoEnvio === TipoEnvio.DELIVERY && (
+                          <button
+                            disabled={order.facturas.length === 0}
+                            onClick={async () => {
+                              try {
+                                const EN_DELIVERY = "EN_DELIVERY";
+                                await cambiarEstadoPedidoVenta(order.id, EN_DELIVERY as Estado);
+                                await fetchPedidos();
+                              } catch (error) {
+                                console.error("Error al cambiar estado:", error);
+                              }
+                            }}
+                          >
+                            Pasar a En delivery
+                          </button>
+                        )}
                       </>
                     )}
                   </td>

@@ -21,7 +21,7 @@ export class PedidoVenta extends BaseEntity {
   totalVenta: number;
 
   pedidosVentaDetalle: PedidoVentaDetalle[];
-  factura: Factura[];
+  facturas: Factura[];
 
   sucursal?: SucursalEmpresa;
   domicilio?: Domicilio;
@@ -56,7 +56,7 @@ export class PedidoVenta extends BaseEntity {
     this.totalCosto = totalCosto;
     this.totalVenta = totalVenta;
     this.pedidosVentaDetalle = pedidosVentaDetalle;
-    this.factura = facturas;
+    this.facturas = facturas;
     this.sucursal = sucursal;
     this.domicilio = domicilio;
     this.cliente = cliente;
