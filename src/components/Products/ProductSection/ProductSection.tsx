@@ -5,31 +5,42 @@ import Modal from '../../ui/Modal/Modal';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import SearchBar from '../../LandingPage/SearchBar/SearchBar';
 
-import { ArticuloManufacturado } from '../../../models/ArticuloManufacturado';
+import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import { CategoriaArticulo } from '../../../models/CategoriaArticulo';
 
-import { getAllArticulosManufacturados } from '../../../api/articuloManufacturado';
+import { getArticulosByTipo } from '../../../api/articuloVenta';
 import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
 
 const ProductSection = () => {
-  const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
+  const [articulos, setArticulos] = useState<ArticuloVenta[]>([]);
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number>(0); 
-  const [selectedProduct, setSelectedProduct] = useState<ArticuloManufacturado | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ArticuloVenta | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const idSucursal = 1; 
 
-  // Cargar productos manufacturados
-  useEffect(() => {
-    getAllArticulosManufacturados()
-      .then(data => {
-        setArticulos(data);
-      })
-      .catch(error => {
-        console.error('Error cargando artículos manufacturados:', error);
-      });
+  // Cargar productos a la venta
+    useEffect(() => {
+    const fetchArticulos = async () => {
+      try {
+        const [insumos, manufacturados] = await Promise.all([
+          getArticulosByTipo(idSucursal, 'insumo'),
+          getArticulosByTipo(idSucursal, 'manufacturado'),
+        ]);
+        // Agrega un log para inspeccionar los productos obtenidos
+        console.log('Insumos obtenidos:', insumos);
+        console.log('Manufacturados obtenidos:', manufacturados);
+        const articulosCombinados =[...insumos, ...manufacturados];
+        console.log('Artículos combinados:', articulosCombinados);
+        setArticulos(articulosCombinados);
+      } catch (error) {
+        console.error('Error cargando artículos:', error);
+      }
+    };
+
+    fetchArticulos();
   }, []);
 
   // Cargar categorías activas para la sucursal
@@ -46,9 +57,11 @@ const ProductSection = () => {
   const handleCategoryChange = (categoryId: number) => {
     setSelectedCategory(categoryId);
     setSearchQuery('');
+      console.log('Categoría seleccionada:', categoryId);
+
   };
 
-  const handleProductClick = (product: ArticuloManufacturado) => {
+  const handleProductClick = (product: ArticuloVenta) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
@@ -64,11 +77,12 @@ const ProductSection = () => {
 
   // Filtrar productos por categoría y búsqueda
   const filteredProducts = articulos.filter((product) => {
-    const categoriaId = product.categoria?.id ?? 0;
+    const categoriaId = product.categoriaArticulo?.id ?? 0;
     const coincideCategoria = selectedCategory === 0 || categoriaId === selectedCategory;
     const coincideBusqueda = product.denominacion?.toLowerCase().includes(searchQuery);
     return coincideCategoria && coincideBusqueda;
   });
+
 
   return (
     <div>
@@ -85,13 +99,13 @@ const ProductSection = () => {
       />
 
       <ProductList
-        articulosManufacturados={filteredProducts}
+        articuloVenta={filteredProducts}
         onProductClick={handleProductClick}
       />
 
       {isModalOpen && selectedProduct && (
         <Modal onClose={closeModal}>
-          <ProductDetail articuloManufacturado={selectedProduct} onClose={closeModal} />
+          <ProductDetail articuloVenta={selectedProduct} onClose={closeModal} />
         </Modal>
       )}
     </div>

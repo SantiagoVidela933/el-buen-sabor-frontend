@@ -18,6 +18,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { getClientesMailJSONFetch } from '../../api/cliente';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 import { crearPagoMercadoPago } from '../../api/mercadoPago';
+import { getLocalidadesJSONFetch } from '../../api/localidades';
 
 interface CartViewProps {
   onClose: () => void;
@@ -28,14 +29,6 @@ const CartView = ({ onClose }: CartViewProps) => {
   // obtiene items del carrito y sus funciones
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const dispatch = useDispatch();
-
-  // Calcula el total
-  const getTotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.articuloManufacturado.precioVenta * item.quantity,
-      0
-    );
-  };
 
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio' | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
@@ -53,9 +46,56 @@ const CartView = ({ onClose }: CartViewProps) => {
   const [numero, setNumero] = useState('');
   const [departamento, setDepartamento] = useState('');
   const [localidad, setLocalidad] = useState('');
+  const [localidadId, setLocalidadId] = useState<number | null>(null);
+  const [localidades, setLocalidades] = useState<any[]>([]);
+  const [loadingLocalidades, setLoadingLocalidades] = useState(false);
 
   const { user, isAuthenticated } = useAuth0();
   const { getAccessTokenSilently } = useAuth0();
+
+
+  // Calcula el total
+  const getTotal = () => {
+    const subtotal = cartItems.reduce(
+      (total, item) => total + (item.articuloVenta.precioVenta ?? 0) * item.quantity,
+      0
+    );
+
+    // Aplicar descuento del 10% si es retiro en el local
+    if (deliveryMethod === 'retiro') {
+      return subtotal * 0.9; // Aplica el 90% del total
+    }
+
+    return subtotal; // Sin descuento
+  };
+
+  // Calcula el descuento
+  const subtotal = cartItems.reduce(
+    (total, item) => total + (item.articuloVenta.precioVenta ?? 0) * item.quantity,
+    0
+  );
+  const descuento = deliveryMethod === 'retiro' ? subtotal * 0.1 : 0; // 10% de descuento si es retiro
+  const totalConDescuento = subtotal - descuento;
+
+    // Obtener las localidades al cargar el componente
+  useEffect(() => {
+    const fetchLocalidades = async () => {
+      setLoadingLocalidades(true);
+      try {
+        const response = await getLocalidadesJSONFetch();
+        setLocalidades(response);
+        console.log("Localidades cargadas:", response);
+      } catch (error) {
+        console.error("Error al cargar localidades:", error);
+      } finally {
+        setLoadingLocalidades(false);
+      }
+    };
+
+    fetchLocalidades();
+  }, []); 
+
+  
 
   const isFormValid = () => {
     // si es retiro, que haya al menos 1 metodo de pago
@@ -72,7 +112,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       return (
         calle.trim() !== '' &&
         numero.trim() !== '' &&
-        localidad.trim() !== '' &&
+        localidad.trim() !== null &&
         paymentMethod === 'mercadoPago'
       );
     }
@@ -96,6 +136,7 @@ const CartView = ({ onClose }: CartViewProps) => {
               setNumero(cliente.domicilio.numero?.toString() || '');
               setDepartamento(cliente.domicilio.piso || '');
               setLocalidad(cliente.domicilio.localidad?.nombre || '');
+              setLocalidadId(cliente.domicilio.localidad?.id || null);
             }
           } else {
             console.log("El cliente no tiene domicilio registrado");
@@ -112,169 +153,252 @@ const CartView = ({ onClose }: CartViewProps) => {
   }, [isAuthenticated, user?.email, useDefaultAddress]);
 
   function mapPedidoToDto(pedido: PedidoVenta): any {
-    return {
+    // Inicializa el objeto base con sus propiedades
+    const pedidoDto: any = {
       fechaPedido: pedido.fechaPedido.toISOString().split("T")[0],
       horaPedido: pedido.horaPedido,
       estado: pedido.estado,
-      tipoEnvio: pedido.tipoEnvio,
-      gastoEnvio: pedido.gastoEnvio,
-      formaPago: pedido.formaPago,
-      descuento: pedido.descuento,
-      totalCosto: pedido.totalCosto,
-      totalVenta: pedido.totalVenta,
-      pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => ({
-        cantidad: detalle.cantidad,
-        subtotal: detalle.subtotal,
-        subtotalCosto: detalle.subtotalCosto,
-        articulo: {
-          id: detalle.articulo!.id,
-          tipoArticulo: (detalle.articulo! as any).tipoArticulo || "manufacturado",
-        },
-      })),
-      // Agregamos el domicilio cuando es necesario
-      domicilio: deliveryMethod === 'envio' ? 
-      useDefaultAddress && clientData?.domicilio ? 
-        clientData.domicilio : 
-        {
-          calle: calle,
-          numero: parseInt(numero) || 0,
-          piso: departamento,
-          localidad: {
-            id: 1, // ID por defecto para localidad
-            nombre: localidad || "Desconocido"
-          }
+      tipoEnvio: pedido.tipoEnvio === TipoEnvio.DELIVERY ? "DELIVERY" : "TAKE_AWAY",
+      formaPago: pedido.formaPago === FormaPago.MERCADO_PAGO ? "MERCADO_PAGO" : "EFECTIVO",
+      sucursal: {
+        id: 1
+      },
+      pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => {
+        // IMPORTANTE: Añadimos un log para diagnosticar el problema
+        console.log("Detalle a mapear:", detalle.articulo);
+        
+        // Verificamos si es una promoción por la propiedad tipo="PROMOCION"
+        if (detalle.articulo && detalle.articulo.tipoArticulo === 'PROMOCION') {
+          console.log("Detectada como promoción:", detalle.articulo.id);
+          return {
+            cantidad: detalle.cantidad,
+            promocion: {
+              id: detalle.articulo.id
+            }
+          };
         } 
-      : null
-  };
-}
+        // Si es un artículo normal
+        else if (detalle.articulo) {
+          console.log("Detectado como artículo:", detalle.articulo.id);
+          return {
+            cantidad: detalle.cantidad,
+            articulo: {
+              id: detalle.articulo.id,
+              tipoArticulo: determinarTipoArticulo(detalle.articulo)
+            }
+          };
+        } 
+        // Si ya tiene un objeto promoción explícito
+        else if (detalle.promocion) {
+          console.log("Tiene objeto promoción explícito:", detalle.promocion.id);
+          return {
+            cantidad: detalle.cantidad,
+            promocion: {
+              id: detalle.promocion.id
+            }
+          };
+        }
+        
+        // Caso por defecto
+        return {
+          cantidad: detalle.cantidad
+        };
+      })
+    };
+
+
+
+    // Solo añadir domicilio si es necesario
+    if (deliveryMethod === 'envio') {
+      pedidoDto.domicilio = useDefaultAddress && clientData?.domicilio 
+        ? { id: clientData.domicilio.id }
+        : {
+            calle: calle,
+            numero: parseInt(numero) || 0,
+            piso: departamento,
+            codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
+            localidad: {
+              id: localidadId || 1,
+              nombre: localidad || "Desconocido"
+            }
+          };
+    }
+
+    // Para el backend podemos añadir el cliente, pero lo hacemos de forma explícita
+    // para evitar incluirlo en la comparación con el formato esperado
+    pedidoDto.cliente = {
+      id: clientData?.id
+    };
+
+    return pedidoDto;
+  }
+
+  // Función para determinar el tipo de artículo
+  function determinarTipoArticulo(articulo: any): string {
+    // Si conocemos explícitamente el tipo
+    if (articulo.tipo === 'MANUFACTURADO') {
+      return "manufacturado";
+    } else if (articulo.tipo === 'INSUMO') {
+      return "insumo";
+    }
+    
+    // Si tenemos una lista de IDs conocidos
+    const idsManufacturados = [1, 2, 3, 27, 48]; // Añade aquí los IDs que sabes que son manufacturados
+    if (idsManufacturados.includes(articulo.id)) {
+      return "manufacturado";
+    }
+    
+    // Por defecto, asumimos que es manufacturado 
+    // (ya que parece ser el caso más común en tu aplicación)
+    return "manufacturado";
+  }
 
   const handleConfirmOrder = async () => {
+    // Validación de autenticación
     if (!isAuthenticated || !user?.email) {
       alert("Debes iniciar sesión para realizar un pedido.");
       return;
     }
+    
+    // Iniciar el proceso de carga
     setLoading(true);
-    const detalles: PedidoVentaDetalle[] = [];
+    
+    try {
+      // Obtener información actualizada del cliente
+      const cliente = await getClientesMailJSONFetch(user.email);
+      if (!cliente || !cliente.id) {
+        throw new Error("No se pudo obtener la información del cliente");
+      }
+      
+      const detalles = cartItems.map((item) => {
+        const cantidadManu = item.quantity;
+        const subtotal = (item.articuloVenta.precioVenta ?? 0) * cantidadManu;
+        const subtotalCosto = subtotal;
+        
+        console.log("Creando detalle para:", item.articuloVenta);
+        
+        // Verificación exacta según cómo está marcada la promoción en CardPromocion.tsx
+        // Nota que en CardPromocion.tsx usas tipo: "PROMOCION" (en mayúsculas)
+        if (item.articuloVenta.tipo === 'PROMOCION') {
+          console.log("Creando detalle de PROMOCION");
+          return new PedidoVentaDetalle(
+            cantidadManu,
+            subtotal,
+            subtotalCosto,
+            { id: item.articuloVenta.id } as any, // promocion
+            undefined,
+            undefined
+          );
+        } else {
+          console.log("Creando detalle de ARTÍCULO");
+          return new PedidoVentaDetalle(
+            cantidadManu,
+            subtotal,
+            subtotalCosto,
+            undefined,
+            undefined,
+            { 
+              id: item.articuloVenta.id,
+              tipo: item.articuloVenta.tipo
+            } as any
+          );
+        }
+      });
 
-    cartItems.forEach((item) => {
-      const cantidadManu = item.quantity;
-
-      detalles.push(
-        new PedidoVentaDetalle(
-          cantidadManu,
-          item.articuloManufacturado.precioVenta * cantidadManu,
-          item.articuloManufacturado.precioCosto * cantidadManu,
-          undefined,
-          undefined,
-          { id: item.articuloManufacturado.id, tipoArticulo: "manufacturado" } as any
-        )
+      // Crear el pedido con los detalles
+      const newPedido = new PedidoVenta(
+        new Date(),
+        new Date().toTimeString().slice(0, 8),
+        Estado.PREPARACION,
+        deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY,
+        deliveryMethod === 'envio' ? 150 : 0,
+        paymentMethod === 'mercadoPago' ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
+        deliveryMethod === 'retiro' ? 0.1 : 0,
+        detalles.reduce((acc, d) => acc + d.subtotalCosto, 0),
+        getTotal(),
+        detalles
       );
 
-      item.articuloManufacturado.detalles.forEach((detalleInsumo) => {
-        const insumo = detalleInsumo.articuloInsumo;
-        const cantidadInsumo = detalleInsumo.cantidad * cantidadManu;
-
-        detalles.push(
-          new PedidoVentaDetalle(
-            cantidadInsumo,
-            0,
-            0,
-            undefined,
-            undefined,
-            { id: insumo.id, tipoArticulo: "insumo" } as any
-          )
-        );
-      });
-    });
-    
-    //Domicilio
-    let domicilioData = null;
-    if (deliveryMethod === 'envio') {
-      if (useDefaultAddress && clientData?.domicilio) {
-        // Usar domicilio existente del cliente
-        domicilioData = clientData.domicilio;
-      } else {
-        // Crear nuevo domicilio con los datos ingresados
-        domicilioData = {
-          calle: calle,
-          numero: parseInt(numero) || 0,
-          piso: departamento,
-          codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
-          localidad: {
-            id: 0,  // Puedes necesitar ajustar esto según tu lógica de backend
-            nombre: localidad || "Desconocido"
-          }
-        };
+      // Domicilio
+      if (deliveryMethod === 'envio') {
+        if (useDefaultAddress && clientData?.domicilio) {
+          newPedido.domicilio = clientData.domicilio;
+        } else {
+          // Asegúrate de crear un objeto Domicilio válido según tu modelo
+          newPedido.domicilio = {
+            id: 0,
+            fechaAlta: new Date(),
+            fechaModificacion: new Date(),
+            fechaBaja: null,
+            calle: calle,
+            numero: parseInt(numero) || 0,
+            piso: departamento,
+            codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
+            localidad: {
+              id: localidadId || 1,
+              nombre: localidad || "Desconocido"
+            }
+          } as any; // Casting para evitar problemas de tipo
+        }
       }
-    }
-
-    const newPedido = new PedidoVenta(
-      new Date(),
-      new Date().toTimeString().slice(0, 8),
-      Estado.PREPARACION,
-      deliveryMethod === 'retiro' ? TipoEnvio.TAKE_AWAY : TipoEnvio.DELIVERY,
-      deliveryMethod === 'envio' ? 150 : 0,
-      paymentMethod ==='mercadoPago' ? FormaPago.MERCADO_PAGO : FormaPago.EFECTIVO,
-      0,
-      detalles.reduce((acc, d) => acc + d.subtotalCosto, 0),
-      getTotal(),
-      detalles
-    );
-
-    
-
-    try {
-      const cliente = await getClientesMailJSONFetch(user.email);
-
-      newPedido.cliente = cliente;
-      // Añadir información del domicilio al pedido
-      if (domicilioData) {
-        newPedido.domicilio = domicilioData;
-      }
-
+      
+      // Preparar DTO para enviar al backend
       const pedidoDto = mapPedidoToDto(newPedido);
+      console.log("Pedido que se va a enviar:", JSON.stringify(pedidoDto, null, 2));
 
+      // Enviar pedido al backend
       const pedidoCreado = await crearPedidoVenta(pedidoDto, getAccessTokenSilently);
       console.log("Pedido creado en backend:", pedidoCreado);
 
-      //MercadoPago
-      if (paymentMethod ==='mercadoPago') {
+      // Si el pago es con MercadoPago, crear preferencia
+      if (paymentMethod === 'mercadoPago') {
         try {
           console.log("Creando preferencia de MercadoPago para pedido ID:", pedidoCreado.id);
 
-          // Wait a moment to ensure the factura is created in the backend
+          // Esperar un momento para asegurar que la factura se haya creado en el backend
           await new Promise(resolve => setTimeout(resolve, 500));
 
-          // Get the pedidoId from the order
+          // Obtener el ID del pedido
           const pedidoId = pedidoCreado.id;
 
           if (!pedidoId) {
-            console.error("No se pudo obtener el ID del pedido");
             throw new Error("ID de pedido no disponible");
           }
 
-          // Use the crearPagoMercadoPago function properly
+          // Crear pago en MercadoPago
           const mercadoPagoData = await crearPagoMercadoPago(pedidoId, getAccessTokenSilently);
-
-          // Set the preferenceId from the response
           setPreferenceId(mercadoPagoData.preferenceId);
           console.log("Preference ID obtenido:", mercadoPagoData.preferenceId);
-
         } catch (mpError) {
           console.error("Error al preparar pago con MercadoPago:", mpError);
           alert("Error al preparar el pago con MercadoPago. Por favor, inténtalo de nuevo.");
           return;
         }
       }
+      
+      // Limpiar carrito y confirmar pedido
       dispatch(clearCart());
       setConfirmed(true);
     } catch (error) {
       console.error("Error al crear pedido:", error);
-      alert("Ocurrió un error al crear el pedido.");
-    }finally{
+      alert("Ocurrió un error al crear el pedido. Por favor, inténtalo de nuevo.");
+    } finally {
       setLoading(false);
       console.log("Estado de carga finalizado. Loading:", false);
+    }
+  };
 
+  // Handler para cuando se selecciona una localidad del dropdown
+  const handleLocalidadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(e.target.value);
+    const selectedLocalidad = localidades.find(loc => loc.id === selectedId);
+    
+    if (selectedLocalidad) {
+      setLocalidadId(selectedId);
+      setLocalidad(selectedLocalidad.nombre);
+    } else {
+      setLocalidadId(null);
+      setLocalidad('');
     }
   };
 
@@ -293,8 +417,8 @@ const CartView = ({ onClose }: CartViewProps) => {
             ) : (
               cartItems.map((item) => (
                 <ProductCart
-                  key={item.articuloManufacturado.id}
-                  articuloManufacturado={item.articuloManufacturado}
+                  key={item.articuloVenta.id}
+                  articuloVenta={item.articuloVenta}
                   quantity={item.quantity}
                   removeFromCart={(productId) => dispatch(removeFromCart(productId))}
                   updateQuantity={(productId, quantity) => dispatch(updateQuantity({ productId, quantity }))}
@@ -305,16 +429,20 @@ const CartView = ({ onClose }: CartViewProps) => {
 
           <div className={styles.cart_resumen}>
             <div className={styles.resumen_amount}>
-              <p>{cartItems.length} artículo(s)</p>
-              <span>${getTotal()}</span>
+              <p>Subtotal</p>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div className={styles.resumen_desc}>
-              <p>Descuento</p>
-              <span>---</span>
-            </div>
+
+            {descuento > 0 && (
+              <div className={styles.resumen_desc}>
+                <p>Descuento (10%)</p>
+                <span>-${descuento.toFixed(2)}</span>
+              </div>
+            )}
+
             <div className={styles.resumen_total}>
-              <p>Total:</p>
-              <span>${getTotal()}</span>
+              <p>Total</p>
+              <span>${totalConDescuento.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -356,12 +484,14 @@ const CartView = ({ onClose }: CartViewProps) => {
                       setNumero(clientData.domicilio.numero?.toString() || '');
                       setDepartamento(clientData.domicilio.piso || '');
                       setLocalidad(clientData.domicilio.localidad?.nombre || '');
+                      setLocalidadId(clientData.domicilio.localidad?.id || null);
                     } else {
                       // Limpiar campos
                       setCalle('');
                       setNumero('');
                       setDepartamento('');
                       setLocalidad('');
+                      setLocalidadId(null);
                     }
                   }}
                 />
@@ -417,8 +547,9 @@ const CartView = ({ onClose }: CartViewProps) => {
                         onChange={() => setUseDefaultAddress(true)}
                       />
                       Usar mi dirección guardada: {clientData.domicilio.calle} {clientData.domicilio.numero}
-                        {clientData.domicilio.piso && `, Piso/Dpto: ${clientData.domicilio.piso}`}
-                      </label>
+                      {clientData.domicilio.piso && `, Piso/Dpto: ${clientData.domicilio.piso}`}
+                      {clientData.domicilio.localidad && `, ${clientData.domicilio.localidad.nombre}`}
+                    </label>
                     
                     <label className={styles.checkboxLabel}>
                       <input
@@ -458,14 +589,21 @@ const CartView = ({ onClose }: CartViewProps) => {
                     disabled={confirmed}
                     className={styles.inputField}
                   />
-                  <input
-                    type="text"
-                    placeholder="Localidad"
-                    value={localidad}
-                    onChange={(e) => setLocalidad(e.target.value)}
-                    disabled={confirmed}
+                  <select 
+                    value={localidadId || ''}
+                    onChange={handleLocalidadChange}
+                    disabled={confirmed || loadingLocalidades}
                     className={styles.inputField}
-                  />
+                  >
+                    <option value="">Seleccione una localidad</option>
+                    {localidades.map(localidad => (
+                      <option key={localidad.id} value={localidad.id}>
+                        {localidad.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  {loadingLocalidades && <p className={styles.loadingText}>Cargando localidades...</p>}
+
                 </div>
               )}
                 

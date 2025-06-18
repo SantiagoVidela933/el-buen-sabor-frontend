@@ -24,10 +24,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
   useEffect(() => {
     const fetchPedidos = async () => {
       if(clienteId === null) return;
-          // Log para verificar las fechas y el clienteId
-          console.log("Buscando pedidos para el cliente:", clienteId);
-          console.log("Fecha inicio:", fechaInicio);
-          console.log("Fecha fin:", fechaFin);
       try {
         const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
         console.log(data);
@@ -73,7 +69,7 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
                   <td>
                     {(() => {
                       if (typeof order.fechaPedido === "string") {
-                        const [year, month, day] = order.fechaPedido.split('-').map(Number);
+                        const [year, month, day] = (order.fechaPedido as string).split('-').map(Number);
                         const date = new Date(year, month - 1, day);
                         return date.toLocaleDateString("es-AR", {
                           day: "2-digit",
@@ -102,12 +98,11 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
         </table>
               {pedidoSeleccionado && (
         <Modal onClose={handleCerrarDetalle}>
-          <OrderDetailRanking pedidoVenta={pedidoSeleccionado} onClose={handleCerrarDetalle} />
+          <OrderDetailRanking pedidoVenta={pedidoSeleccionado} />
         </Modal>
       )}
     </div>
   );
-
 };
 
 export default ClienteStatsDetails;

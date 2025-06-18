@@ -78,7 +78,7 @@ export class PedidoVenta extends BaseEntity {
       PedidoVentaDetalle.fromJson(d)
     );
 
-    const facturas = (json.facturas || []).map((f: any) =>
+    const facturas = (json.factura || []).map((f: any) =>
       Factura.fromJson(f)
     );
 

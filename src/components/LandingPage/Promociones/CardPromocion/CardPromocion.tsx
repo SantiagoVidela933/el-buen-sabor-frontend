@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./CardPromocion.module.css";
+import PromocionDetailCard from "./PromocioDetailCard/PromocionDetailCard";
+import { ArticuloVenta } from "../../../../models/ArticuloVenta";
+import Modal from '../../../ui/Modal/Modal';
 
 interface CardPromocionProps {
   titulo: string;
@@ -7,6 +10,8 @@ interface CardPromocionProps {
   precioActual: string;
   precioAnterior: string;
   imagenUrl: string;
+  stockDisponible?: number;
+  id: number;
 }
 
 const CardPromocion: React.FC<CardPromocionProps> = ({
@@ -15,19 +20,58 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
   precioActual,
   precioAnterior,
   imagenUrl,
+  stockDisponible = 0,
+  id,
 }) => {
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const isDisabled = stockDisponible <= 0;
+  const promocion: ArticuloVenta = {
+    id,
+    tipo: "PROMOCION",
+    denominacion: titulo,
+    descripcion,
+    categoriaArticulo: null,
+    precioVenta: parseFloat(precioActual.slice(1)),
+    imagenUrl,
+    stockDisponible
+  };
+
+  const handleCardClick = () => {
+    if (!isDisabled) {
+      setIsDetailOpen(true);
+    }
+  };
+
+  const handleCloseDetail = () => {
+    setIsDetailOpen(false);
+  };
+
   return (
-    <div className={styles.card}>
-      <h3 className={styles.titulo}>{titulo}</h3>
-      <p className={styles.descripcion}>{descripcion}</p>
-      <div className={styles.precios}>
-        <span className={styles.precioActual}>{precioActual}</span>
-        <span className={styles.precioAnterior}>{precioAnterior}</span>
+    <>
+      <div
+      className={`${styles.card} ${isDisabled ? styles.disabled : ''}`} 
+        onClick={handleCardClick}
+        >
+        <h3 className={styles.titulo}>{titulo}</h3>
+        <p className={styles.descripcion}>{descripcion}</p>
+        <div className={styles.precios}>
+          <span className={styles.precioActual}>{precioActual}</span>
+          <span className={styles.precioAnterior}>{precioAnterior}</span>
+        </div>
+        <div className={styles.imagenWrapper}>
+          <img src={imagenUrl} alt={titulo} className={styles.imagen} />
+        </div>
+        {isDisabled && (
+          <span className={styles.outOfStock}>Sin Stock</span>
+        )}
       </div>
-      <div className={styles.imagenWrapper}>
-        <img src={imagenUrl} alt={titulo} className={styles.imagen} />
-      </div>
-    </div>
+
+      {isDetailOpen && (
+        <Modal onClose={handleCloseDetail}>
+          <PromocionDetailCard promocion={promocion} onClose={handleCloseDetail} />
+        </Modal>      
+      )}
+    </>
   );
 };
 

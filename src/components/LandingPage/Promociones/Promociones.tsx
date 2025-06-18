@@ -1,62 +1,27 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Promociones.module.css";
 import CardPromocion from "./CardPromocion/CardPromocion";
 import { FaChevronLeft, FaChevronRight, FaTags } from "react-icons/fa";
+import { ArticuloVenta } from "../../../models/ArticuloVenta";
+import { getArticulosByTipo } from "../../../api/articuloVenta";
 
-/*IMAGENES*/
-import pizzaCoca from "../../../assets/images/Promos/pizza-coca.webp";
-import hamburguesaPapas from "../../../assets/images/Promos/hamburguesa-papas.jpg";
-import panchoCoca from "../../../assets/images/Promos/pancho-coca.jpeg";
-
-const promociones = [
-  {
-    titulo: "Pizza + Coca Cola 1.5L",
-    descripcion:
-      "Pizza muzzarella grande con una gaseosa Coca Cola de 1.5 litros.",
-    precioActual: "$5.500",
-    precioAnterior: "$6.700",
-    imagenUrl: pizzaCoca,
-  },
-  {
-    titulo: "Hamburguesa con Papas",
-    descripcion: "Hamburguesa clásica con papas fritas medianas.",
-    precioActual: "$4.200",
-    precioAnterior: "$5.100",
-    imagenUrl: hamburguesaPapas,
-  },
-  {
-    titulo: "Pancho + Coca 500ml",
-    descripcion: "Pancho con aderezos y gaseosa Coca Cola de 500ml.",
-    precioActual: "$2.900",
-    precioAnterior: "$3.400",
-    imagenUrl: panchoCoca,
-  },
-  {
-    titulo: "Pizza + Coca Cola 1.5L",
-    descripcion:
-      "Pizza muzzarella grande con una gaseosa Coca Cola de 1.5 litros.",
-    precioActual: "$5.500",
-    precioAnterior: "$6.700",
-    imagenUrl: pizzaCoca,
-  },
-  {
-    titulo: "Hamburguesa con Papas",
-    descripcion: "Hamburguesa clásica con papas fritas medianas.",
-    precioActual: "$4.200",
-    precioAnterior: "$5.100",
-    imagenUrl: hamburguesaPapas,
-  },
-  {
-    titulo: "Pancho + Coca 500ml",
-    descripcion: "Pancho con aderezos y gaseosa Coca Cola de 500ml.",
-    precioActual: "$2.900",
-    precioAnterior: "$3.400",
-    imagenUrl: panchoCoca,
-  },
-];
 
 const Promociones: React.FC = () => {
+  const [promociones, setPromociones] = useState<ArticuloVenta[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchPromociones = async () => {
+      try {
+        const data = await getArticulosByTipo(1, "promocion"); // ID de sucursal = 1
+        setPromociones(data);
+      } catch (error) {
+        console.error("Error al cargar las promociones:", error);
+      }
+    };
+
+    fetchPromociones();
+  }, []);
 
   const scroll = (direction: "left" | "right") => {
     const scrollAmount = 300;
@@ -80,8 +45,17 @@ const Promociones: React.FC = () => {
           <FaChevronLeft />
         </button>
         <div className={styles.carousel} ref={carouselRef}>
-          {promociones.map((promo, index) => (
-            <CardPromocion key={index} {...promo} />
+          {promociones.map((promo) => (
+            <CardPromocion
+                  key={promo.id}
+                  titulo={promo.denominacion}
+                  descripcion={promo.descripcion || "Sin descripción"}
+                  precioActual={`$${promo.precioVenta}`}
+                  precioAnterior={`$${(promo.precioVenta * 1.2).toFixed(2)}`}
+                  imagenUrl={`http://localhost:8080/api/imagenes/file/${promo.imagenUrl}`}
+                  stockDisponible={promo.stockDisponible}
+                  id={promo.id}
+            />
           ))}
         </div>
         <button onClick={() => scroll("right")} className={styles.flecha}>

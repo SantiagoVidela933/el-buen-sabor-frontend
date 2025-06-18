@@ -49,10 +49,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
               ? `${pedidoVenta.domicilio.calle} ${pedidoVenta.domicilio.numero}`
               : "No registrada"}
           </p>
-          <p>
-            <strong>Departamento:</strong>{" "}
-            {pedidoVenta.domicilio ? pedidoVenta.domicilio.departamento : "No registrado"}
-          </p>
         </div>
         <div>
           <p>
@@ -87,26 +83,37 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidoVenta.pedidosVentaDetalle
-            ?.filter((detalle) => detalle.articulo?.tipoArticulo === "manufacturado")
-            .map((detalle, index) => (
-              <tr key={index}>
-                <td>{detalle.articulo?.denominacion || "Producto sin nombre"}</td>
-                <td>{detalle.cantidad}</td>
-                <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
-                <td>{formatoMoneda.format(detalle.subtotal)}</td>
-              </tr>
+          {pedidoVenta.pedidosVentaDetalle.map((detalle, index) => (
+            <tr key={index}>
+              <td>
+                {detalle.promocion
+                  ? detalle.promocion.denominacion
+                  : detalle.articulo?.denominacion}
+              </td>
+              <td>{detalle.cantidad}</td>
+              <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
+              <td>{formatoMoneda.format(detalle.subtotal)}</td>
+            </tr>
           ))}
         </tbody>
       </table>
 
       <div className={styles.summary}>
         <p>
-          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
+          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.pedidosVentaDetalle.reduce((acc, detalle) => acc + detalle.subtotal, 0))}
         </p>
-        <p>
-          <strong>Descuentos:</strong> - - -
-        </p>
+        
+        {pedidoVenta.descuento > 0 && (
+          <p>
+            <strong>Descuentos:</strong> -{formatoMoneda.format((pedidoVenta.totalVenta*(pedidoVenta.descuento/100)))}
+          </p>
+        )}
+        {(!pedidoVenta.descuento || pedidoVenta.descuento === 0) && (
+          <p>
+            <strong>Descuentos:</strong> - - -
+          </p>
+        )}
+        
         <p className={styles.total}>
           <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>

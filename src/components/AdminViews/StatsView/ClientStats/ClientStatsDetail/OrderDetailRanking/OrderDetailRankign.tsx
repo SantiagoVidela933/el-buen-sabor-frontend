@@ -5,10 +5,9 @@ import { TipoEnvio } from '../../../../../../models/enums/TipoEnvio';
 
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
-  onClose: () => void;
 }
 
-const OrderDetailRanking = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+const OrderDetailRanking = ({ pedidoVenta }: OrderDetailProps) => {
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -25,7 +24,7 @@ const OrderDetailRanking = ({ pedidoVenta, onClose }: OrderDetailProps) => {
             <strong>Fecha:</strong>{" "}
             {(() => {
               if (typeof pedidoVenta.fechaPedido === "string") {
-                const [year, month, day] = pedidoVenta.fechaPedido.split('-').map(Number);
+                const [year, month, day] = (pedidoVenta.fechaPedido as string).split('-').map(Number);
                 const date = new Date(year, month - 1, day);
                 return date.toLocaleDateString("es-AR", {
                   day: "2-digit",
@@ -75,11 +74,21 @@ const OrderDetailRanking = ({ pedidoVenta, onClose }: OrderDetailProps) => {
 
       <div className={styles.summary}>
         <p>
-          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
+          <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.pedidosVentaDetalle.reduce((acc, detalle) => acc + detalle.subtotal, 0))}
         </p>
-        <p>
-          <strong>Descuentos:</strong> - - -
-        </p>
+
+        {pedidoVenta.descuento>0 && (
+          <div className={styles.resumen_desc}>
+            <p>Descuento (10%)</p>
+            <span>-${(pedidoVenta.totalVenta*(pedidoVenta.descuento/100)).toFixed(2)}</span>
+          </div>
+        )}
+        {pedidoVenta.descuento == null ||  pedidoVenta.descuento==0 && (
+            <div className={styles.resumen_desc}>
+              <p>Descuento:</p>
+              <span>-----</span>
+            </div>
+          )}
         <p className={styles.total}>
           <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
         </p>
