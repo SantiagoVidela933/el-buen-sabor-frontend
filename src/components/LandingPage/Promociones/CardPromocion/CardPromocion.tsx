@@ -30,7 +30,7 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
     tipo: "PROMOCION",
     denominacion: titulo,
     descripcion,
-    categoria: null,
+    categoriaArticulo: null,
     precioVenta: parseFloat(precioActual.slice(1)),
     imagenUrl,
     stockDisponible
