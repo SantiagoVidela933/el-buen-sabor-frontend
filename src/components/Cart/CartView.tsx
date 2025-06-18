@@ -18,6 +18,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { getClientesMailJSONFetch } from '../../api/cliente';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 import { crearPagoMercadoPago } from '../../api/mercadoPago';
+import { getLocalidadesJSONFetch } from '../../api/localidades';
 
 interface CartViewProps {
   onClose: () => void;
@@ -45,6 +46,9 @@ const CartView = ({ onClose }: CartViewProps) => {
   const [numero, setNumero] = useState('');
   const [departamento, setDepartamento] = useState('');
   const [localidad, setLocalidad] = useState('');
+  const [localidadId, setLocalidadId] = useState<number | null>(null);
+  const [localidades, setLocalidades] = useState<any[]>([]);
+  const [loadingLocalidades, setLoadingLocalidades] = useState(false);
 
   const { user, isAuthenticated } = useAuth0();
   const { getAccessTokenSilently } = useAuth0();
@@ -73,6 +77,23 @@ const CartView = ({ onClose }: CartViewProps) => {
   const descuento = deliveryMethod === 'retiro' ? subtotal * 0.1 : 0; // 10% de descuento si es retiro
   const totalConDescuento = subtotal - descuento;
 
+    // Obtener las localidades al cargar el componente
+  useEffect(() => {
+    const fetchLocalidades = async () => {
+      setLoadingLocalidades(true);
+      try {
+        const response = await getLocalidadesJSONFetch();
+        setLocalidades(response);
+        console.log("Localidades cargadas:", response);
+      } catch (error) {
+        console.error("Error al cargar localidades:", error);
+      } finally {
+        setLoadingLocalidades(false);
+      }
+    };
+
+    fetchLocalidades();
+  }, []); 
 
   
 
@@ -91,7 +112,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       return (
         calle.trim() !== '' &&
         numero.trim() !== '' &&
-        localidad.trim() !== '' &&
+        localidad.trim() !== null &&
         paymentMethod === 'mercadoPago'
       );
     }
@@ -115,6 +136,7 @@ const CartView = ({ onClose }: CartViewProps) => {
               setNumero(cliente.domicilio.numero?.toString() || '');
               setDepartamento(cliente.domicilio.piso || '');
               setLocalidad(cliente.domicilio.localidad?.nombre || '');
+              setLocalidadId(cliente.domicilio.localidad?.id || null);
             }
           } else {
             console.log("El cliente no tiene domicilio registrado");
@@ -196,7 +218,7 @@ const CartView = ({ onClose }: CartViewProps) => {
             piso: departamento,
             codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
             localidad: {
-              id: 1,
+              id: localidadId || 1,
               nombre: localidad || "Desconocido"
             }
           };
@@ -313,7 +335,7 @@ const CartView = ({ onClose }: CartViewProps) => {
             piso: departamento,
             codigoPostal: clientData?.domicilio?.codigoPostal || 5500,
             localidad: {
-              id: 1,
+              id: localidadId || 1,
               nombre: localidad || "Desconocido"
             }
           } as any; // Casting para evitar problemas de tipo
@@ -366,6 +388,19 @@ const CartView = ({ onClose }: CartViewProps) => {
     }
   };
 
+  // Handler para cuando se selecciona una localidad del dropdown
+  const handleLocalidadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(e.target.value);
+    const selectedLocalidad = localidades.find(loc => loc.id === selectedId);
+    
+    if (selectedLocalidad) {
+      setLocalidadId(selectedId);
+      setLocalidad(selectedLocalidad.nombre);
+    } else {
+      setLocalidadId(null);
+      setLocalidad('');
+    }
+  };
 
   return (
     <div className={styles.cartView_wrapper}>
@@ -449,12 +484,14 @@ const CartView = ({ onClose }: CartViewProps) => {
                       setNumero(clientData.domicilio.numero?.toString() || '');
                       setDepartamento(clientData.domicilio.piso || '');
                       setLocalidad(clientData.domicilio.localidad?.nombre || '');
+                      setLocalidadId(clientData.domicilio.localidad?.id || null);
                     } else {
                       // Limpiar campos
                       setCalle('');
                       setNumero('');
                       setDepartamento('');
                       setLocalidad('');
+                      setLocalidadId(null);
                     }
                   }}
                 />
@@ -510,8 +547,9 @@ const CartView = ({ onClose }: CartViewProps) => {
                         onChange={() => setUseDefaultAddress(true)}
                       />
                       Usar mi dirección guardada: {clientData.domicilio.calle} {clientData.domicilio.numero}
-                        {clientData.domicilio.piso && `, Piso/Dpto: ${clientData.domicilio.piso}`}
-                      </label>
+                      {clientData.domicilio.piso && `, Piso/Dpto: ${clientData.domicilio.piso}`}
+                      {clientData.domicilio.localidad && `, ${clientData.domicilio.localidad.nombre}`}
+                    </label>
                     
                     <label className={styles.checkboxLabel}>
                       <input
@@ -551,14 +589,21 @@ const CartView = ({ onClose }: CartViewProps) => {
                     disabled={confirmed}
                     className={styles.inputField}
                   />
-                  <input
-                    type="text"
-                    placeholder="Localidad"
-                    value={localidad}
-                    onChange={(e) => setLocalidad(e.target.value)}
-                    disabled={confirmed}
+                  <select 
+                    value={localidadId || ''}
+                    onChange={handleLocalidadChange}
+                    disabled={confirmed || loadingLocalidades}
                     className={styles.inputField}
-                  />
+                  >
+                    <option value="">Seleccione una localidad</option>
+                    {localidades.map(localidad => (
+                      <option key={localidad.id} value={localidad.id}>
+                        {localidad.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  {loadingLocalidades && <p className={styles.loadingText}>Cargando localidades...</p>}
+
                 </div>
               )}
                 
