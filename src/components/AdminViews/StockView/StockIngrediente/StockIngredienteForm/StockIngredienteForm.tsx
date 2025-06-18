@@ -4,7 +4,7 @@ import { UnidadMedida } from "../../../../../models/UnidadMedida";
 import { CategoriaArticulo } from "../../../../../models/CategoriaArticulo";
 import { ArticuloInsumo } from "../../../../../models/ArticuloInsumo";
 import { Imagen } from "../../../../../models/Imagen";
-import { getCategoriasInsumosBySucursalId } from "../../../../../api/articuloCategoria";
+import { getCategoriasInsumosABM } from "../../../../../api/articuloCategoria";
 import { getUnidadMedida } from "../../../../../api/unidadMedida";
 import { createArticuloInsumo, updateArticuloInsumo } from "../../../../../api/articuloInsumo";
 
@@ -36,7 +36,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
 
   useEffect(() => {
     async function fetchCategorias() {
-      const data = await getCategoriasInsumosBySucursalId(1); 
+      const data = await getCategoriasInsumosABM(1); 
       setCategorias(data);
     }
     fetchCategorias();

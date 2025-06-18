@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styles from './StockProductoForm.module.css';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
-import { getCategoriasMenuBySucursalId } from '../../../../../api/articuloCategoria';
+import { getCategoriasMenuABM } from '../../../../../api/articuloCategoria';
 import { ArticuloManufacturado } from '../../../../../models/ArticuloManufacturado';
 import { createArticuloManufacturado, updateArticuloManufacturado } from '../../../../../api/articuloManufacturado';
 import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
@@ -39,7 +39,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   }, [producto]);
 
-
   // Lista de insumos obtenidos
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   // Estado de insumo seleccionado en formulario
@@ -49,7 +48,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   // GET insumos disponibles
   useEffect(() => {
     const fetchCategorias = async () => {
-      const data = await getCategoriasMenuBySucursalId(1);
+      const data = await getCategoriasMenuABM(1);
       setCategorias(data);
     };
     fetchCategorias();
@@ -106,20 +105,9 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     }
   }));
 
-
-
   const handleEliminarIngrediente = (idInsumo: number) => {
     setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
   };
-
-  // Cargar categorias de articulos manufacturados
-  useEffect(() => {
-    const fetchCategorias = async () => {
-      const data = await getCategoriasMenuBySucursalId(1);
-      setCategorias(data);
-    };
-    fetchCategorias();
-  }, []);
 
   // Submit del formulario
   const handleSubmit = async (e: React.FormEvent) => {

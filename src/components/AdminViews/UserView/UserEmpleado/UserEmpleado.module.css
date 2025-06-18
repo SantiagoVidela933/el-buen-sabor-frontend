@@ -66,3 +66,7 @@
 .deleteBtn span {
   color: #e63946;
 }
+.baja {
+  background-color: #ffcccc; /* rojo clarito */
+  color: #900; /* rojo oscuro para texto */
+}
