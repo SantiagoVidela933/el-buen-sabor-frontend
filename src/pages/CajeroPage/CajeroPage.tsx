@@ -4,9 +4,7 @@ import Table from "../../components/CajeroViews/Tableview";
 const CajeroPage = () => {
   return (
     <div className={styles.cajeroPage_wrapper}>
-      <Table onBack={function (): void {
-        throw new Error("Function not implemented.");
-      } }/>
+      <Table />
     </div>
   );
 };

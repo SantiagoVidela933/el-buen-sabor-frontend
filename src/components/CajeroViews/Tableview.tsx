@@ -3,22 +3,16 @@ import styles from "./TableView.module.css";
 import Modal from "../ui/Modal/Modal";
 import UserOrderDetail from "../User/UserOrdetDetail/UserOrderDetail";
 import { PedidoVenta } from "../../models/PedidoVenta";
-import { getPedidosVentas } from "../../api/pedidoVenta";
+import { cambiarEstadoPedidoVenta, getPedidosVentas } from "../../api/pedidoVenta";
 import { Estado } from "../../models/enums/Estado";
-import { descargarFacturaPDF } from "../../api/factura";
 
-interface TableProps {
-  onBack: () => void;
-}
-
-export function Table({onBack}: TableProps) {
+export function Table() {
   const [search, setSearch] = useState("");
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showEstadoMenu, setShowEstadoMenu] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState<Estado | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const estadoLabels: Record<Estado, string> = {
     [Estado.PREPARACION]: "En cocina",
@@ -29,16 +23,15 @@ export function Table({onBack}: TableProps) {
   };
 
   // GET Pedidos de Venta
+  const fetchPedidos = async () => {
+    try {
+      const data = await getPedidosVentas();
+      setPedidos(data);
+    } catch (error) {
+      console.error("Error al cargar pedidos:", error);
+    }
+  };
   useEffect(() => {
-    const fetchPedidos = async () => {
-      try {
-        const data = await getPedidosVentas();
-        console.log("Pedidos: ",data);
-        setPedidos(data);
-      } catch (error) {
-        console.error("Error al cargar pedidos:", error);
-      }
-    };
     fetchPedidos();
   }, []);
 
@@ -52,41 +45,24 @@ export function Table({onBack}: TableProps) {
     currency: "ARS",
   });
   
-  // Función para descargar la factura en PDF
-  const handleDownloadFactura = async (facturaId: number) => {
-    try {
-      setIsLoading(true);
-      await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
-    } catch (error) {
-      alert("No se pudo descargar la factura. Intente nuevamente más tarde.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Función para descargar la nota de crédito
-  const handleDownloadNotaCredito = async (facturaId: number) => {
-    try {
-      setIsLoading(true);
-      await descargarFacturaPDF(facturaId, `nota-credito-${facturaId}.pdf`);
-    } catch (error) {
-      alert("No se pudo descargar la nota de crédito. Intente nuevamente más tarde.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
-      search.trim() === "" || pedido.id.toString() === search.trim()
+      search.trim() === "" || pedido.id.toString().includes(search.trim())
     )
     .filter((pedido) =>
       estadoFiltro === null ? true : pedido.estado === estadoFiltro
     );
+
+  const tieneManufacturados = (pedido: PedidoVenta): boolean => {
+    return pedido.pedidosVentaDetalle.some(
+      (detalle) => detalle.articulo?.tipoArticulo === "manufacturado"
+    );
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>CAJERO</h2>
@@ -132,7 +108,6 @@ export function Table({onBack}: TableProps) {
           className={styles.searchInput}
         />
       </div>
-
       <table className={styles.table}>
         <thead className={styles.thead}>
           <tr>
@@ -159,37 +134,31 @@ export function Table({onBack}: TableProps) {
                   <td>{estadoLabels[order.estado]}</td>
                   <td className={styles.actions}>
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
+                    {order.estado === Estado.PENDIENTE && (
+                      <>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const nuevoEstado = tieneManufacturados(order)
+                                ? Estado.PREPARACION
+                                : Estado.ENTREGADO;
 
-                    {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
-                    {order.factura && order.factura.length > 0 && (
-                      order.estado === Estado.CANCELADO ? (
-                        <button
-                          disabled={isLoading}
-                          onClick={() => handleDownloadNotaCredito(order.factura[0].id)}
-                          className={styles.docButton}
+                              await cambiarEstadoPedidoVenta(order.id, nuevoEstado);
+                              await fetchPedidos(); // refrescar pedidos
+                            } catch (error) {
+                              console.error("Error al cambiar estado:", error);
+                            }
+                          }}
                         >
-                          Nota de crédito
+                          {tieneManufacturados(order) ? "Enviar a cocina" : "Marcar como entregado"}
                         </button>
-                      ) : (
-                        <button
-                          disabled={isLoading}
-                          onClick={() => handleDownloadFactura(order.factura[0].id)}
-                          className={styles.docButton}
-                        >
-                          Factura
-                        </button>
-                      )
+                      </>
                     )}
                   </td>
                 </tr>
               ))}
           </tbody>
       </table>
-
-      <button className={styles.backButton} onClick={onBack}>
-        Volver
-      </button>
-
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
           <UserOrderDetail
