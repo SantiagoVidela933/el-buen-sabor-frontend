@@ -1,47 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './DeliveryPage.module.css';
-import { mockOrders, Order } from './ordersDelivery';
 import Modal from '../../components/ui/Modal/Modal';
 import DeliveryDetail from './DeliveryDetail/DeliveryDetail';
+import { cambiarEstadoPedidoVenta, getPedidosVentasDelivery } from '../../api/pedidoVenta';
+import { PedidoVenta } from '../../models/PedidoVenta';
+import { Estado } from '../../models/enums/Estado';
 
 const DeliveryPage = () => {
-  const [busquedaId, setBusquedaId] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Order | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
 
-  const filtrarPedidos = (): Order[] => {
-    return mockOrders.filter(order => {
-      const coincideId = busquedaId === '' || order.id.toString().includes(busquedaId);
-      return coincideId;
-    });
+  // GET Pedidos de Venta Delivery
+  const fetchPedidos = async () => {
+    try {
+      const data = await getPedidosVentasDelivery();
+      setPedidos(data);
+    } catch (error) {
+      console.error("Error al cargar pedidos:", error);
+    }
+  };
+  useEffect(() => {
+    fetchPedidos();
+  }, []);
+
+  const handleViewOrder = (pedido: PedidoVenta) => {
+    setSelectedOrder(pedido);
+    setShowModal(true);
   };
 
-  const handleVerDetalle = (pedido: Order) => {
-    setPedidoSeleccionado(pedido);
-    setIsModalOpen(true);
+  // Buscar por número de pedido
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
   };
-
-  const cerrarModal = () => {
-    setIsModalOpen(false);
-    setPedidoSeleccionado(null);
-  };
-
-  const pedidosFiltrados = filtrarPedidos();
+  const pedidosFiltrados = pedidos
+    .filter((pedido) =>
+      search.trim() === "" || pedido.id.toString().includes(search.trim())
+    )
 
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Lista de Pedidos a Entregar</h2>
-
       <div className={styles.filters}>
         <input
           type="text"
           placeholder="Buscar por Nro. de Pedido"
-          value={busquedaId}
-          onChange={(e) => setBusquedaId(e.target.value)}
+          value={search}
+          onChange={handleSearchChange}
           className={styles.input}
         />
       </div>
-
       <table className={styles.table}>
         <thead>
           <tr>
@@ -49,9 +58,6 @@ const DeliveryPage = () => {
             <th>Fecha/Hora</th>
             <th>Forma de Entrega</th>
             <th>Forma de Pago</th>
-            <th>Pagado</th>
-            <th>Estado</th>
-            <th>Detalle</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -59,27 +65,39 @@ const DeliveryPage = () => {
           {pedidosFiltrados.map((pedido) => (
             <tr key={pedido.id}>
               <td>{pedido.id}</td>
-              <td>{pedido.date}</td>
-              <td>{pedido.deliveryMethod}</td>
-              <td>{pedido.paymentMethod}</td>
-              <td>{pedido.paid ? 'Sí' : 'No'}</td>
-              <td>{pedido.status}</td>
               <td>
-                <button className={styles.detailBtn} onClick={() => handleVerDetalle(pedido)}>
-                  Ver Detalle
-                </button>
+                {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })} - {" "}
+                {pedido.horaPedido}
               </td>
-              <td>
-                <button className={styles.actionBtn}>Entregar</button>
+              <td>{pedido.tipoEnvio}</td>
+              <td>{pedido.formaPago}</td>
+              <td className={styles.actions}>
+                <button onClick={() => handleViewOrder(pedido)}>Ver</button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                      await fetchPedidos(); 
+                    } catch (error) {
+                      console.error("Error al marcar como entregado:", error);
+                    }
+                  }}
+                  disabled={pedido.facturas.length === 0} 
+                >
+                  Marcar como entregado
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {isModalOpen && pedidoSeleccionado && (
-        <Modal onClose={cerrarModal}>
-          <DeliveryDetail pedido={pedidoSeleccionado} onClose={cerrarModal} />
+      {showModal && selectedOrder && (
+        <Modal onClose={() => setShowModal(false)}>
+          <DeliveryDetail pedido={selectedOrder} onClose={() => setShowModal(false)} />
         </Modal>
       )}
     </div>

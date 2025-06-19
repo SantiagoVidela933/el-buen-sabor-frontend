@@ -66,3 +66,16 @@
 .deleteBtn span {
   color: #e63946;
 }
+
+.inactivo {
+  background-color: rgba(255, 0, 0, 0.1); /* rojo suave */
+}
+
+.reactivateBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
