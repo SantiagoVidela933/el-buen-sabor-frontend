@@ -1,20 +1,19 @@
 .destacados {
   background: linear-gradient(to right, #ff7c2a, #bdb3ff);
   border-radius: 16px;
-  padding: 1rem 2rem; /* más adaptable */
-  margin: 2rem auto;
+  margin: 2rem auto; /* ahora usamos margin en lugar de padding */
   width: 100%;
   max-width: 1200px;
   box-sizing: border-box;
+  padding-top: 20px;
 }
 
 .contenido {
   display: flex;
   align-items: center;
-  justify-content: center; /* centrado horizontal */
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem; /* separación entre imagen e info */
-  text-align: center; /* centrado de texto */
+  gap: 2rem;
 }
 
 .imagen {
@@ -23,6 +22,7 @@
   border-radius: 12px;
   object-fit: cover;
   height: auto;
+  order: 1; /* por defecto va primero */
 }
 
 .info {
@@ -32,6 +32,7 @@
   gap: 1.5rem;
   min-width: 280px;
   max-width: 600px;
+  order: 2; /* texto después de la imagen */
 }
 
 .item {
@@ -59,16 +60,21 @@
   color: #333;
 }
 
-/* Responsive para tablets y celulares */
+/* Responsive */
 @media (max-width: 768px) {
   .contenido {
     flex-direction: column;
     text-align: center;
   }
 
+  .imagen {
+    order: 2; /* en móvil, la imagen pasa a estar después */
+  }
+
   .info {
-    margin-top: 2rem;
+    order: 1; /* el texto va primero */
     align-items: center;
+    text-align: center;
   }
 
   .item {
