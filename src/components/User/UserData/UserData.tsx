@@ -1,4 +1,4 @@
-import Cliente from '../../../models/prueba/Client';
+import {Cliente} from '../../../models/Cliente';
 import styles from './UserData.module.css';
 import Localidad from '../../../models/prueba/Localidad';
 import { useState, useEffect } from "react";
