@@ -119,20 +119,18 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                     <button onClick={() => handleViewOrder(order)}>Ver</button>
 
                     {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
-                    {order.factura && order.factura.length > 0 && (
-                      <>
                       {order.estado === Estado.CANCELADO ? (
                         <button
                           disabled={isLoading}
                           onClick={() => {
-                              const facturaId = order.factura[order.facturas.length - 1].id;
+                              const facturaId = order.facturas[order.facturas.length - 1].id;
                               handleDownloadNotaCredito(facturaId);
                           }}
                           className={styles.docButton}
                         >
                           Nota de crédito
                         </button>
-                      ) : (
+                      ) : order.estado===Estado.ENTREGADO?(
                         <button
                           disabled={isLoading}
                           onClick={() => handleDownloadFactura(order.facturas[0].id)}
@@ -140,9 +138,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                         >
                           Factura
                         </button>
-                      )}
-                    </>
-                    )}
+                      ):null }
                   </td>
                 </tr>
               ))

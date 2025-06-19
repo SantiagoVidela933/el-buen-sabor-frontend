@@ -72,3 +72,24 @@ export const descargarNotaCreditoPDF = async (
         throw error;
     }
 };
+
+// Anular factura
+export const anularFactura = async (facturaId: number): Promise<void> => {
+    try {
+        const response = await fetch(`http://localhost:8080/api/v1/factura/anular/${facturaId}`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error al anular la factura: ${errorText}`);
+        }
+        
+    } catch (error) {
+        console.error("Error al anular la factura:", error);
+        throw error;
+    }
+};
