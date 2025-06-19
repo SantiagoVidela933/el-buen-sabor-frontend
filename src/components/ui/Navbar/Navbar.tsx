@@ -31,7 +31,6 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const namespace = "https://buensaboroto.com/roles";
   const userRoles: string[] = user?.[namespace] || [];
-  const isAdmin = userRoles.includes("ADMINISTRADOR");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,50 +38,50 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const hasItemsInCart = cartItems.length > 0;
 
   useEffect(() => {
-  const verificarRegistro = async () => {
-    if (isAuthenticated && user && !isLoading) {
-      const auth0User = user as Auth0User;
+    const verificarRegistro = async () => {
+      if (isAuthenticated && user && !isLoading) {
+        const auth0User = user as Auth0User;
 
-      try {
-        const clienteRes = await axios.get(`http://localhost:8080/api/clientes/email/${auth0User.email}`);
-        const clienteData = clienteRes.data;
+        try {
+          const clienteRes = await axios.get(`http://localhost:8080/api/clientes/email/${auth0User.email}`);
+          const clienteData = clienteRes.data;
 
-        if (clienteData.fechaBaja || clienteData.usuario?.fechaBaja) {
-          alert("Usuario no encontrado o dado de baja.");
-          logout({ logoutParams: { returnTo: "http://localhost:5173" } });
-          return;
-        }
-
-        return;
-      } catch (errorCliente) {
-        if (axios.isAxiosError(errorCliente) && errorCliente.response?.status === 404) {
-          try {
-            const empleadoRes = await axios.get(`http://localhost:8080/api/empleados/email/${auth0User.email}`);
-            const empleadoData = empleadoRes.data;
-
-            if (empleadoData.fechaBaja || empleadoData.usuario?.fechaBaja) {
-              alert("Usuario no encontrado o dado de baja.");
-              logout({ logoutParams: { returnTo: "http://localhost:5173" } });
-              return;
-            }
-
+          if (clienteData.fechaBaja || clienteData.usuario?.fechaBaja) {
+            alert("Usuario no encontrado o dado de baja.");
+            logout({ logoutParams: { returnTo: "http://localhost:5173" } });
             return;
-          } catch (errorEmpleado) {
-            if (axios.isAxiosError(errorEmpleado) && errorEmpleado.response?.status === 404) {
-              window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
-            } else {
-              console.error("Error al verificar empleado:", errorEmpleado);
-            }
           }
-        } else {
-          console.error("Error al verificar cliente:", errorCliente);
+
+          return;
+        } catch (errorCliente) {
+          if (axios.isAxiosError(errorCliente) && errorCliente.response?.status === 404) {
+            try {
+              const empleadoRes = await axios.get(`http://localhost:8080/api/empleados/email/${auth0User.email}`);
+              const empleadoData = empleadoRes.data;
+
+              if (empleadoData.fechaBaja || empleadoData.usuario?.fechaBaja) {
+                alert("Usuario no encontrado o dado de baja.");
+                logout({ logoutParams: { returnTo: "http://localhost:5173" } });
+                return;
+              }
+
+              return;
+            } catch (errorEmpleado) {
+              if (axios.isAxiosError(errorEmpleado) && errorEmpleado.response?.status === 404) {
+                window.location.href = `/registro?auth0Id=${encodeURIComponent(auth0User.sub)}`;
+              } else {
+                console.error("Error al verificar empleado:", errorEmpleado);
+              }
+            }
+          } else {
+            console.error("Error al verificar cliente:", errorCliente);
+          }
         }
       }
-    }
-  };
+    };
 
-  verificarRegistro();
-}, [isAuthenticated, user, isLoading]);
+    verificarRegistro();
+  }, [isAuthenticated, user, isLoading]);
 
   useEffect(() => {
     if (isAuthenticated && user && !isLoading) {
@@ -138,7 +137,9 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                   Bienvenido {user?.name ?? user?.email ?? "Usuario"}
                 </span>
                 <button style={{ marginLeft: "10px" }}>
-                  {isAdmin ? "Rol | Admin" : "Mi Cuenta"}
+                  {userRoles.length > 0
+                    ? `Rol | ${userRoles[0].charAt(0) + userRoles[0].slice(1).toLowerCase()}`
+                    : "Mi Cuenta"}
                 </button>
               </div>
 
@@ -148,7 +149,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                     Mis datos personales
                   </button>
 
-                  {!isAdmin && (
+                  {!userRoles.includes("ADMINISTRADOR") && (
                     <button
                       onClick={() => {
                         onViewChange("orders");
@@ -164,7 +165,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
 
               <div className={styles.div_line_profile}></div>
 
-              {isAdmin ? (
+              {userRoles.includes("ADMINISTRADOR") ? (
                 <div className={styles.admin_nav_menu}>
                   <button
                     onClick={handleShowAdminMenu}

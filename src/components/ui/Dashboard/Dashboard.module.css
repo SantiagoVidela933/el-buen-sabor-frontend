@@ -1,52 +1,68 @@
 .sidebar {
-  width: 250px;
+  width: 260px;
   background-color: #fff;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   height: 100vh;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  border-right: 1px solid #ddd;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
+  border-right: 3px solid #ff6609;
   display: flex;
   flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+  border-left: 1px solid #ddd; /* borde lateral sutil */
 }
 
 .section {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd; /* separación entre secciones */
+  padding-bottom: 1rem;
 }
 
 .section > button {
   width: 100%;
-  background: none;
+  background-color: #f1f1f1;
   border: none;
-  font-weight: bold;
+  border-radius: 8px;
+  font-weight: 600;
   text-align: left;
-  padding: 0.75rem 0;
+  padding: 0.8rem 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  color: #ff6609;
   font-size: 1rem;
-  color: #333;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .section > button:hover {
-  background-color: #f2f2f2;
+  background-color: #e65c00;
+  color: white;
+  transform: scale(1.02);
 }
 
 .subsection {
-  padding-left: 1rem;
+  margin-top: 0.5rem;
+  padding-left: 0.8rem;
   display: flex;
   flex-direction: column;
+  border-left: 3px solid #ff6609;
+  background-color: #f9f9f9; /* tono claro con #ddd */
+  border-radius: 4px;
 }
 
 .subsection > button {
-  background: none;
+  background-color: transparent;
   border: none;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.8rem;
   text-align: left;
   cursor: pointer;
-  color: #555;
+  color: #444;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .subsection > button:hover {
-  background-color: #e6e6e6;
+  background-color: #ddd;
+  color: #ff6609;
 }
 
 .adminLayout_content {
