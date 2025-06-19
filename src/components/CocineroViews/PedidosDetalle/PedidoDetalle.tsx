@@ -1,30 +1,41 @@
-import React from "react";
 import styles from "./PedidoDetalle.module.css";
-import { PedidoCocinero } from "../../../../models/Orders/PedidoCocinero";
+import { PedidoVenta } from "../../../models/PedidoVenta";
+import { ArticuloManufacturadoDetalle } from "../../../models/ArticuloManufacturadoDetalle";
+import { ArticuloManufacturado } from "../../../models/ArticuloManufacturado";
 
 type PedidoDetalleProps = {
-  pedido: PedidoCocinero;
+  pedido: PedidoVenta;
 };
 
 const PedidoDetalle = ({ pedido }: PedidoDetalleProps) => {
-  const handleVerReceta = (receta?: string) => {
-    if (!receta) {
+  const handleVerReceta = (receta?: ArticuloManufacturadoDetalle[]) => {
+    if (!receta || receta.length === 0) {
       alert("No hay receta disponible.");
       return;
     }
-    alert(`Receta:\n${receta}`);
+    const texto = receta
+      .map(
+        (detalle) =>
+          `- ${detalle.cantidad} ${detalle.articuloInsumo.unidadMedida.denominacion} de ${detalle.articuloInsumo.denominacion}`
+      )
+      .join("\n");
+
+    alert(`Receta:\n${texto}`);
   };
-
   if (!pedido) return <p>Pedido no disponible</p>;
-
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Detalle del Pedido</h2>
+      <h2 className={styles.title}>Detalle del Pedido #{pedido.id}</h2>
+
+      {/* Tiempo estimado de preparación total */}
       <p className={styles.detail}>
-        <strong>Número de Pedido:</strong> {pedido.pedido}
-      </p>
-      <p className={styles.detail}>
-        <strong>Hora Estimada:</strong> {pedido.horaEstimada || "No disponible"}
+        <strong>Tiempo Estimado Total:</strong>{" "}
+        {
+          pedido.pedidosVentaDetalle
+            .filter((d) => d.articulo?.tipoArticulo === "manufacturado")
+            .reduce((acc, curr) => acc + (curr.articulo?.tiempoEstimadoMinutos || 0), 0)
+        }{" "}
+        min
       </p>
 
       <table className={styles.productTable}>
@@ -36,23 +47,33 @@ const PedidoDetalle = ({ pedido }: PedidoDetalleProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedido.productos && pedido.productos.length > 0 ? (
-            pedido.productos.map(({ product, cantidad }, index) => (
-              <tr key={index}>
-                <td>{product?.title || "Producto desconocido"}</td>
-                <td>
-                  <button
-                    className={styles.recetaButton}
-                    onClick={() =>
-                      handleVerReceta(product?.recipe ? product.recipe.toString() : undefined)
-                    }
-                  >
-                    Ver receta
-                  </button>
-                </td>
-                <td>{cantidad}</td>
-              </tr>
-            ))
+          {pedido.pedidosVentaDetalle.length > 0 ? (
+            pedido.pedidosVentaDetalle.map((detalle, index) => {
+              const articulo = detalle.articulo;
+              if (!articulo) return null; // Evita error si es undefined
+
+              const esManufacturado = articulo.tipoArticulo === "manufacturado";
+              return (
+                <tr key={index}>
+                  <td>{articulo.denominacion}</td>
+                  <td>
+                    {esManufacturado ? (
+                      <button
+                        className={styles.recetaButton}
+                        onClick={() =>
+                          handleVerReceta((articulo as ArticuloManufacturado).detalles)
+                        }
+                      >
+                        Ver receta
+                      </button>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td>{detalle.cantidad}</td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan={3}>No hay productos para este pedido.</td>
@@ -62,6 +83,7 @@ const PedidoDetalle = ({ pedido }: PedidoDetalleProps) => {
       </table>
     </div>
   );
+
 };
 
 export default PedidoDetalle;
