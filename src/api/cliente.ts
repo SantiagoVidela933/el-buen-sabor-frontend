@@ -59,3 +59,25 @@ export async function getClientesMailJSONFetch(email:string) {
   console.log(response);
   return await response.json();
 }
+
+export async function getClientePorPedido(pedidoId: number) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/clientes/por-pedido/${pedidoId}`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      mode: 'cors'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error al obtener cliente por pedido: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener cliente por pedido:", error);
+    throw error;
+  }
+}

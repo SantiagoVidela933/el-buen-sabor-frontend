@@ -1,8 +1,11 @@
 import styles from '../../User/UserOrdetDetail/UserOrderDetail.module.css';
+import { useState, useEffect } from 'react';
 import { PedidoVenta } from '../../../models/PedidoVenta';
 import { FormaPago } from '../../../models/enums/FormaPago';
 import { TipoEnvio } from '../../../models/enums/TipoEnvio';
 import { Estado } from '../../../models/enums/Estado';
+import { getClientePorPedido } from '../../../api/cliente';
+import {Cliente} from '../../../models/Cliente';
 
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
@@ -10,6 +13,28 @@ interface OrderDetailProps {
 }
 
 const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+  const [clienteCompleto, setClienteCompleto] = useState<Cliente | null>(null);
+  const [loadingCliente, setLoadingCliente] = useState<boolean>(false);
+  const [errorCliente, setErrorCliente] = useState<string | null>(null);
+
+  useEffect(() => {
+    const obtenerClienteDetallado = async () => {
+      try {
+        setLoadingCliente(true);
+        setErrorCliente(null);
+        const clienteData = await getClientePorPedido(pedidoVenta.id);
+        setClienteCompleto(clienteData);
+      } catch (error) {
+        console.error("Error al obtener datos del cliente:", error);
+        setErrorCliente("No se pudieron cargar los datos completos del cliente");
+      } finally {
+        setLoadingCliente(false);
+      }
+    };
+
+    obtenerClienteDetallado();
+  }, [pedidoVenta.id]);
+
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -35,19 +60,21 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </p>
           <p>
             <strong>Nombre y Apellido:</strong>{" "}
-            {pedidoVenta.cliente
-              ? `${pedidoVenta.cliente.nombre} ${pedidoVenta.cliente.apellido}`
+            {clienteCompleto
+              ? `${clienteCompleto.nombre} ${clienteCompleto.apellido}`
               : "No registrado"}
           </p>
           <p>
             <strong>Teléfono:</strong>{" "}
-            {pedidoVenta.cliente ? pedidoVenta.cliente.telefono : "No registrado"}
+            {clienteCompleto ? clienteCompleto.telefono : "No registrado"}
           </p>
           <p>
             <strong>Dirección:</strong>{" "}
             {pedidoVenta.domicilio
-              ? `${pedidoVenta.domicilio.calle} ${pedidoVenta.domicilio.numero}`
-              : "No registrada"}
+              ? `${pedidoVenta.domicilio.calle} ${pedidoVenta.domicilio.numero}${pedidoVenta.domicilio.localidad?.nombre ? `, ${pedidoVenta.domicilio.localidad.nombre}` : ""}`
+              : clienteCompleto?.domicilio
+                ? `${clienteCompleto.domicilio.calle} ${clienteCompleto.domicilio.numero}${clienteCompleto.domicilio.localidad?.nombre ? `, ${clienteCompleto.domicilio.localidad.nombre}` : ""}`
+                : "No registrada"}
           </p>
         </div>
         <div>
