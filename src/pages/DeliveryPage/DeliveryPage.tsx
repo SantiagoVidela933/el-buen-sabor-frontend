@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import styles from './DeliveryPage.module.css';
 import Modal from '../../components/ui/Modal/Modal';
 import DeliveryDetail from './DeliveryDetail/DeliveryDetail';
-import { getPedidosVentasDelivery } from '../../api/pedidoVenta';
+import { cambiarEstadoPedidoVenta, getPedidosVentasDelivery } from '../../api/pedidoVenta';
 import { PedidoVenta } from '../../models/PedidoVenta';
+import { Estado } from '../../models/enums/Estado';
 
 const DeliveryPage = () => {
   const [search, setSearch] = useState("");
@@ -57,8 +58,6 @@ const DeliveryPage = () => {
             <th>Fecha/Hora</th>
             <th>Forma de Entrega</th>
             <th>Forma de Pago</th>
-            {/* <th>Pagado</th> */}
-            <th>Detalle</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -76,14 +75,21 @@ const DeliveryPage = () => {
               </td>
               <td>{pedido.tipoEnvio}</td>
               <td>{pedido.formaPago}</td>
-              {/* <td>{pedido. ? 'Sí' : 'No'}</td> */}
-              <td>
-                <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>
-                  Ver Detalle
+              <td className={styles.actions}>
+                <button onClick={() => handleViewOrder(pedido)}>Ver</button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                      await fetchPedidos(); 
+                    } catch (error) {
+                      console.error("Error al marcar como entregado:", error);
+                    }
+                  }}
+                  disabled={pedido.facturas.length === 0} 
+                >
+                  Marcar como entregado
                 </button>
-              </td>
-              <td>
-                <button className={styles.actionBtn}>Entregar</button>
               </td>
             </tr>
           ))}
