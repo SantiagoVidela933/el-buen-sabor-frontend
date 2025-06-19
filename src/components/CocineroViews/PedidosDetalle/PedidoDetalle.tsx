@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./PedidoDetalle.module.css";
-import { PedidoCocinero } from "../../../../../models/Orders/PedidoCocinero";
+import { PedidoCocinero } from "../../../../models/Orders/PedidoCocinero";
 
 type PedidoDetalleProps = {
   pedido: PedidoCocinero;

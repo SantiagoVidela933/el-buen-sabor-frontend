@@ -1,4 +1,4 @@
-import { Column } from "../components/Views/CocineroViews/PedidosView/PedidosView";
+import { Column } from "../components/CocineroViews/PedidosView";
 import { PedidoCocinero } from "../models/Orders/PedidoCocinero";
 import { PedidoProducto } from "../models/Orders/PedidoProducto";
 import { Product } from "../models/Products/Product";

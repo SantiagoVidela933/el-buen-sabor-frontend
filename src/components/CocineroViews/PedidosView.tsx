@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styles from "./PedidosView.module.css";
-import Modal from "../../../ui/Modal/Modal";
-import PedidoDetalle from "./PedidoDetalle/PedidoDetalle";
-import { PedidoCocinero } from "../../../../models/Orders/PedidoCocinero";
+import Modal from "../ui/Modal/Modal";
+import { PedidoCocinero } from "../../models/Orders/PedidoCocinero";
+import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 export type Column<T> = {
   header: string;
   accessor: keyof T;
