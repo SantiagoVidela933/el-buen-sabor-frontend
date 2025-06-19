@@ -23,26 +23,44 @@ const UserData: React.FC<UserDataProps> = ({ cliente }) => {
   }, [cliente]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    if (!clienteEditable) return;
+  if (!clienteEditable) return;
 
-    if (name.startsWith("domicilio.")) {
-      const key = name.split(".")[1];
-      setClienteEditable({
-        ...clienteEditable,
-        domicilio: {
-          ...clienteEditable.domicilio,
-          [key]: key === "numero" || key === "codigoPostal" || key === "idLocalidad" ? Number(value) : value
+  if (name === "domicilio.idLocalidad") {
+    const localidadSeleccionada = localidades.find((loc) => loc.id === Number(value));
+    setClienteEditable({
+      ...clienteEditable,
+      domicilio: {
+        ...clienteEditable.domicilio,
+        idLocalidad: Number(value),
+        localidad: {
+          ...clienteEditable.domicilio.localidad,
+          id: Number(value),
+          nombre: localidadSeleccionada?.nombre || ''
         }
-      });
-    } else {
-      setClienteEditable({
-        ...clienteEditable,
-        [name]: value
-      });
-    }
-  };
+      }
+    });
+    return;
+  }
+
+  if (name.startsWith("domicilio.")) {
+    const key = name.split(".")[1];
+    setClienteEditable({
+      ...clienteEditable,
+      domicilio: {
+        ...clienteEditable.domicilio,
+        [key]: key === "numero" || key === "codigoPostal" ? Number(value) : value
+      }
+    });
+  } else {
+    setClienteEditable({
+      ...clienteEditable,
+      [name]: value
+    });
+  }
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +115,7 @@ const UserData: React.FC<UserDataProps> = ({ cliente }) => {
           </label>
           <label className={styles.label}>
             Departamento
-            <select className={styles.select} name="domicilio.idLocalidad" value={clienteEditable?.domicilio.idLocalidad || ''} onChange={handleInputChange}>
+            <select className={styles.select} name="domicilio.idLocalidad" value={clienteEditable?.domicilio.localidad.id || ''} onChange={handleInputChange}>
               <option value="">-- Selecciona una localidad --</option>
               {localidades.map((loc) => (
                 <option key={loc.id} value={loc.id}>
