@@ -19,12 +19,17 @@ const StockProducto = () => {
 
   // Lista de producto
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
-  
+
+  // --- Lógica de Paginación ---
+  const productosPorPagina = 8; // Define cuántos productos mostrar por página
+  const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
+
   // Carga inicial de productos
   useEffect(() => {
     getAllArticulosManufacturados()
       .then(data => {
         setArticulos(data);
+        setPaginaActual(1); // Resetear a la primera página al cargar nuevos artículos
       })
       .catch(error => {
         console.error('Error cargando artículos manufacturados:', error);
@@ -81,14 +86,14 @@ const StockProducto = () => {
 
   // Cancelar DELETE
   const cancelarEliminacion = () => {
-  setProductoAEliminar(null);
-  setModalConfirmacionAbierto(false);
+    setProductoAEliminar(null);
+    setModalConfirmacionAbierto(false);
   };
 
   // Cerrar modal general
   const cerrarModal = () => setModalAbierto(false);
 
-  const articulosFiltrados = articulos.filter((producto)=> 
+  const articulosFiltrados = articulos.filter((producto) =>
     producto.denominacion.toLowerCase().includes(busqueda.toLowerCase())
   );
 
@@ -122,22 +127,41 @@ const StockProducto = () => {
     }
   };
 
+  // --- Cálculos para la paginación ---
+  const totalPaginas = Math.ceil(articulosFiltrados.length / productosPorPagina);
+  const productosPaginados = articulosFiltrados.slice(
+    (paginaActual - 1) * productosPorPagina,
+    paginaActual * productosPorPagina
+  );
+
+  const cambiarPagina = (numero: number) => {
+    setPaginaActual(numero);
+  };
+
   return (
     <div className={styles.container}>
 
       <div className={styles.header}>
-        <h2 className={styles.title}>Productos</h2>
-        <button className={styles.addBtn} onClick={abrirCrearProducto}>
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </div>
+        {/* Agrupando el título y el botón de añadir para aplicar estilos */}
+        <div className={styles.titleGroup}>
+          <div className={styles.titleBox}>
+            <h2 className={styles.title}>PRODUCTOS</h2> {/* Texto en mayúsculas para consistencia */}
+          </div>
+          <button className={styles.addBtn} onClick={abrirCrearProducto}>
+            <span className="material-symbols-outlined">add</span>
+          </button>
+        </div>
 
-      <div className={styles.searchBar}>
-        <span className="material-symbols-outlined">search</span>
-        <input 
-          type="text" 
-          placeholder='Buscar por nombre...' 
-          value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
+        <div className={styles.searchBar}>
+          <span className="material-symbols-outlined">search</span>
+          <input
+            type="text"
+            placeholder='Buscar por nombre...'
+            value={busqueda} onChange={(e) => {
+              setBusqueda(e.target.value);
+              setPaginaActual(1); // Resetear a la primera página al cambiar el filtro
+            }} />
+        </div>
       </div>
 
       <table className={styles.table}>
@@ -152,18 +176,18 @@ const StockProducto = () => {
           </tr>
         </thead>
         <tbody>
-          {articulosFiltrados.map((producto, index) => (
+          {productosPaginados.map((producto, index) => ( // Usamos productosPaginados
             <tr
               key={index}
               className={producto.fechaBaja ? styles.filaBaja : ''}
             >
               <td>{producto.denominacion}</td>
               <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
-              <td>{producto.precioVenta}</td>  
-              <td>{producto.tiempoEstimadoMinutos}</td>  
+              <td>{producto.precioVenta}</td>
+              <td>{producto.tiempoEstimadoMinutos}</td>
               <td>{producto.fechaBaja ? "Baja" : "Alta"}</td>
               <td>
-              {producto.fechaBaja ? (
+                {producto.fechaBaja ? (
                   <button
                     className={styles.reactivarBtn}
                     onClick={() => handleDarDeAlta(producto.id)}
@@ -189,8 +213,32 @@ const StockProducto = () => {
               </td>
             </tr>
           ))}
+          {productosPaginados.length === 0 && (
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center' }}>No hay productos que coincidan con la búsqueda.</td>
+            </tr>
+          )}
         </tbody>
       </table>
+
+      {/* --- Sección de Paginación --- */}
+      {totalPaginas > 1 && (
+        <div className={styles.pagination}>
+          {Array.from({ length: totalPaginas }, (_, i) => (
+            <button
+              key={i}
+              className={`${styles.paginationButton} ${
+                paginaActual === i + 1 ? styles.activePage : ""
+              }`}
+              onClick={() => cambiarPagina(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
+
+
       {modalAbierto && (
         <Modal onClose={cerrarModal}>
           <StockProductoForm

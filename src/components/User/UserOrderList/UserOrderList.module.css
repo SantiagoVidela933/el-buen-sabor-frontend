@@ -1,43 +1,251 @@
 .container {
   padding: 2rem;
-  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- ESTILOS DE ENCABEZADO (CONSISTENTES) --- */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center; /* Centra horizontalmente el contenido del header si es una columna */
+}
+
+.titleGroup {
+  display: flex; /* Asegura que siga siendo flex para alinear el titleBox */
+  align-items: center;
+  gap: 1rem;
+  justify-content: center; /* Centra el titleBox dentro del titleGroup */
+  width: 100%; /* Asegura que ocupe todo el ancho para centrarlo */
+}
+
+.titleBox {
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #ff6609;
+  display: inline-block; /* Mantiene el tamaño ajustado al contenido */
+  text-align: center; /* Asegura que el texto dentro del titleBox esté centrado */
 }
 
 .title {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  margin: 0;
+  text-align: center; /* Centra el texto del título */
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
+/* --- FIN ESTILOS DE ENCABEZADO --- */
+
 
 .tableWrapper {
+  width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Para border-spacing y border-radius en celdas */
+  border-spacing: 0 0.5rem; /* Espacio entre filas */
+  min-width: 700px; /* Ajusta este valor si tus columnas se ven muy apretadas */
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden; /* Asegura que los bordes redondeados se vean */
+  padding: 10px; /* Padding interno para que las filas no toquen el borde del .table */
 }
 
-.table th,
-.table td {
+.table thead th {
+  background-color: #ddd;
+  text-align: left; /* Alineación a la izquierda para encabezados */
   padding: 0.75rem;
-  border: 1px solid #ccc;
-  text-align: center;
-}
-
-.table th {
-  background-color: #f5f5f5;
   font-weight: bold;
+  color: #333;
+  border-bottom: none; /* Quitamos el borde inferior del thead */
 }
 
-.emptyMessage {
-  text-align: center;
-  padding: 1rem;
+.table tbody tr {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #eee;
+  transition: transform 0.2s ease;
+}
+
+.table tbody td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: none; /* Quitamos los bordes de celda */
+  vertical-align: middle;
+  text-align: left; /* Alineación a la izquierda por defecto para el contenido */
+}
+
+/* Redondeo de celdas en las esquinas para consistencia */
+.table tbody td:first-child { 
+  border-top-left-radius: 8px; 
+  border-bottom-left-radius: 8px; 
+}
+.table tbody td:last-child { 
+  border-top-right-radius: 8px; 
+  border-bottom-right-radius: 8px; 
+}
+
+.noData { /* Antiguo .emptyMessage */
+  text-align: center; /* Centra el texto horizontalmente */
+  padding: 2rem;
   font-style: italic;
+  color: #777;
+  /* Si necesitas centrado vertical en una fila muy alta, descomenta esto: */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* min-height: 100px; */
 }
 
-.actions button {
+.actions {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los botones pasen a la siguiente línea si no hay espacio */
+  gap: 0.5rem; /* Espacio entre los botones */
+  justify-content: flex-start; /* Alinea los botones al inicio de la celda */
+}
+
+/* --- ESTILOS DE BOTONES (CONSISTENTES) --- */
+.viewBtn { /* Botón "Ver" */
+  background-color: yellow; /* Tu color actual */
+  border: none; /* Sin borde */
+  color: black; /* Color de texto */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.viewBtn:hover {
+  background-color: #ced113; /* Color de hover */
+  color: black;
+}
+
+.actionBtn { /* Botón "Factura" (verde) */
+  border: none; /* Sin borde */
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: white;
+  background-color: #66be13; /* Color de fondo verde (base para estos botones) */
+  transition: background-color 0.3s ease;
+}
+
+.actionBtn:hover {
+  background-color: #57a110;
+}
+
+.cancelBtn { /* Botón "Nota de Crédito" (rojo) */
+  background-color: #f44336; /* Rojo para cancelar/Nota de crédito */
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.cancelBtn:hover {
+  background-color: #d32f2f;
+}
+
+.docButton { /* Estilo antiguo que puedes eliminar si ya no lo usas */
   margin: 0 0.25rem;
   padding: 0.3rem 0.6rem;
   font-size: 0.9rem;
   cursor: pointer;
+}
+
+.backButton {
+  background-color: #f1f1f1;
+  color: #ff6609;
+  border: 1px solid #ff6609;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+  display: block; /* Para permitir margin auto */
+  margin-left: auto; /* Centra el botón */
+  margin-right: auto; /* Centra el botón */
+}
+
+.backButton:hover {
+  background-color: #ff6609;
+  color: white;
+}
+
+/* --- ESTILOS DE PAGINACIÓN --- */
+.paginationControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem; /* Espacio antes del botón "Volver" */
+  flex-wrap: wrap; /* Permite que los botones se envuelvan si hay muchos */
+}
+
+.paginationButton {
+  background-color: #f1f1f1;
+  color: #ff6609;
+  border: 1px solid #ff6609;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px; /* Ancho mínimo para números de página */
+  text-align: center;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #ff6609;
+  color: white;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationButton.activePage {
+  background-color: #ff6609;
+  color: white;
+  border-color: #ff6609;
+}
+
+/* ==== MEDIA QUERIES ==== */
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    justify-content: center; /* Ahora el header se centrará todo en pantallas grandes */
+    align-items: center;
+  }
+  /* Si después de esto necesitas que la búsqueda esté a la derecha,
+     necesitaríamos un envoltorio más complejo o reevaluar la estructura del header
+     para pantallas grandes. Por ahora, esto centrará todo el header. */
+  .titleGroup {
+    justify-content: center; /* Sigue centrado en desktop */
+  }
+  .table {
+    min-width: unset;
+  }
 }

@@ -1,46 +1,51 @@
 .destacados {
-  
-  background: linear-gradient(to right ,  #ff7c2a, #bdb3ff);
+  background: linear-gradient(to right, #ff7c2a, #bdb3ff);
   border-radius: 16px;
-  padding: 1rem 10rem 1rem 10rem;
-  margin: 2rem auto;
+  margin: 2rem auto; /* ahora usamos margin en lugar de padding */
+  width: 100%;
   max-width: 1200px;
-  
-  
+  box-sizing: border-box;
+  padding-top: 20px;
 }
 
 .contenido {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
+  gap: 2rem;
 }
 
 .imagen {
-  max-width: 400px;
   width: 100%;
+  max-width: 400px;
   border-radius: 12px;
   object-fit: cover;
+  height: auto;
+  order: 1; /* por defecto va primero */
 }
 
 .info {
   flex: 1;
-  margin-left: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   min-width: 280px;
+  max-width: 600px;
+  order: 2; /* texto después de la imagen */
 }
 
 .item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
+  text-align: left;
 }
 
 .icono {
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
 }
 
 .titulo {
@@ -59,16 +64,26 @@
 @media (max-width: 768px) {
   .contenido {
     flex-direction: column;
+    text-align: center;
+  }
+
+  .imagen {
+    order: 2; /* en móvil, la imagen pasa a estar después */
+  }
+
+  .info {
+    order: 1; /* el texto va primero */
     align-items: center;
     text-align: center;
   }
 
-  .info {
-    margin-left: 0;
-    margin-top: 2rem;
+  .item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .item {
-    justify-content: center;
+  .icono {
+    margin-bottom: 0.5rem;
   }
 }

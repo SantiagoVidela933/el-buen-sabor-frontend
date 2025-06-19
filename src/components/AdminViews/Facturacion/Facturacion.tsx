@@ -139,7 +139,25 @@ const Facturacion = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Gestión de Pedidos</h2>
+      <div className={styles.header}> {/* Añadido .header para el layout */}
+        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
+          <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
+            <h2 className={styles.title}>GESTIÓN DE PEDIDOS</h2> {/* Título ajustado y en mayúsculas */}
+          </div>
+          {/* Filtro por estado - Usando el estilo de dropdown si lo deseas, o select normal */}
+          <div className={styles.selectWrapper}> {/* Wrapper para el select si quieres darle un estilo consistente */}
+            <select
+              value={estadoFiltro}
+              onChange={(e) => setEstadoFiltro(e.target.value)}
+              className={styles.select}
+            >
+              <option value="Todos">Todos</option>
+              <option value="A confirmar">A confirmar</option>
+              <option value="En cocina">En cocina</option>
+              <option value="Entregado">Entregado</option>
+            </select>
+          </div>
+        </div>
 
       <div className={styles.filters}>
         <select
@@ -155,14 +173,18 @@ const Facturacion = () => {
           <option value={Estado.CANCELADO}>Cancelado</option>
         </select>
 
-        <input
-          type="text"
-          placeholder="Buscar por Nro. de Pedido"
-          value={busquedaId}
-          onChange={(e) => setBusquedaId(e.target.value)}
-          className={styles.input}
-        />
-      </div>
+          {/* Barra de búsqueda */}
+          <div className={styles.searchBar}> {/* Usamos .searchBar para el input */}
+            <span className="material-symbols-outlined">search</span> {/* Icono de búsqueda */}
+            <input
+              type="text"
+              placeholder="Buscar por Nro. de Pedido..."
+              value={busquedaId}
+              onChange={(e) => setBusquedaId(e.target.value)}
+            />
+          </div>
+        </div>
+      </div> {/* Fin de .header */}
 
       {pedidosFiltrados.length === 0 ? (
         <p className={styles.noPedidos}>No hay pedidos que coincidan con los filtros</p>
