@@ -161,5 +161,12 @@ export const agregarMinutosExtraPedido = async (id: number, minutosExtra: number
   if (!res.ok) throw new Error("Error actualizando minutos extra");
 };
 
+// PATCH Marcar un PedidoVenta como listo
+export const marcarPedidoListo = async (pedidoId: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${pedidoId}/marcar-listo`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Error al marcar pedido como listo");
+};
 
 
