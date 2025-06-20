@@ -11,6 +11,7 @@ export class Empleado extends BaseEntity {
   telefono: string;
   email: string;
   rol: Rol;
+  password: string; 
   usuario: Usuario;
   sucursal: SucursalEmpresa;
   domicilio: Domicilio;
@@ -25,6 +26,7 @@ export class Empleado extends BaseEntity {
     apellido: string,
     telefono: string,
     email: string,
+    password: string, 
     usuario: Usuario,
     sucursal: SucursalEmpresa,
     domicilio: Domicilio,
@@ -36,6 +38,7 @@ export class Empleado extends BaseEntity {
     this.apellido = apellido;
     this.telefono = telefono;
     this.email = email;
+    this.password = password;
     this.rol = rol;
     this.usuario = usuario;
     this.sucursal = sucursal;
@@ -55,6 +58,7 @@ export class Empleado extends BaseEntity {
       json.apellido,
       json.telefono,
       json.email,
+      json.password, // ✅ Se extrae del JSON
       Usuario.fromJson(json.usuario),
       SucursalEmpresa.fromJson(json.sucursal),
       Domicilio.fromJson(json.domicilio),
