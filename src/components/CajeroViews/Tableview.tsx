@@ -15,6 +15,10 @@ export function Table() {
   const [showEstadoMenu, setShowEstadoMenu] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState<Estado | null>(null);
 
+  // --- Estados para paginación (Aunque no los uses directamente en el renderizado de paginación numérica, la lógica de filtrado los necesita) ---
+  const [currentPage, setCurrentPage] = useState(1); // Necesario para el reseteo al filtrar/buscar
+  const itemsPerPage = 5; // Define cuántos elementos quieres por página
+
   const estadoLabels: Record<Estado, string> = {
     [Estado.PREPARACION]: "En cocina",
     [Estado.PENDIENTE]: "A confirmar",
@@ -51,7 +55,9 @@ export function Table() {
   // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setCurrentPage(1); // Resetear a la primera página al buscar
   };
+
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
       search.trim() === "" || pedido.id.toString().includes(search.trim())
@@ -66,63 +72,113 @@ export function Table() {
     );
   };
 
+  // --- Lógica de paginación para el filtrado ---
+  const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPedidos = pedidosFiltrados.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  // Generar los botones de números de página
+  const getPaginationButtons = () => {
+    const buttons = [];
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`${styles.paginationButton} ${
+            currentPage === i ? styles.activePage : ""
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+    return buttons;
+  };
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>CAJERO</h2>
-      <div className={styles.searchFilterContainer}>
-        <div className={styles.estadoFilter}>
-          <button
-            onClick={() => setShowEstadoMenu(!showEstadoMenu)}
-            className={styles.estadoButton}
-          >
-            Estado ▾
-          </button>
-          {showEstadoMenu && (
-            <div className={styles.estadoDropdown}>
-              {Object.entries(estadoLabels).map(([key, label]) => (
+      {/* HEADER: Título y barra de búsqueda/filtro */}
+      <div className={styles.header}> {/* Añadido .header para el layout */}
+        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
+          <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
+            <h2 className={styles.title}>CAJERO</h2>
+          </div>
+        </div>
+
+        <div className={styles.searchFilterContainer}>
+          {/* Filtro por estado */}
+          <div className={styles.estadoFilter}>
+            <button
+              onClick={() => setShowEstadoMenu(!showEstadoMenu)}
+              className={styles.estadoButton}
+            >
+              Estado ▾
+            </button>
+            {showEstadoMenu && (
+              <div className={styles.estadoDropdown}>
+                {Object.entries(estadoLabels).map(([key, label]) => (
+                  <div
+                    key={key}
+                    className={styles.estadoOption}
+                    onClick={() => {
+                      setEstadoFiltro(key as Estado);
+                      setShowEstadoMenu(false);
+                      setCurrentPage(1); // Resetear a la primera página al cambiar filtro
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
                 <div
-                  key={key}
                   className={styles.estadoOption}
                   onClick={() => {
-                    setEstadoFiltro(key as Estado);
+                    setEstadoFiltro(null);
                     setShowEstadoMenu(false);
+                    setCurrentPage(1); // Resetear a la primera página al ver todos
                   }}
                 >
-                  {label}
+                  Ver todos
                 </div>
-              ))}
-              <div
-                className={styles.estadoOption}
-                onClick={() => {
-                  setEstadoFiltro(null);
-                  setShowEstadoMenu(false);
-                }}
-              >
-                Ver todos
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          {/* Barra de búsqueda */}
+          <div className={styles.searchBar}> {/* Usamos .searchBar para el input */}
+            <span className="material-symbols-outlined">search</span> {/* Icono de búsqueda */}
+            <input
+              type="text"
+              placeholder="Buscar número de pedido..." 
+              value={search}
+              onChange={handleSearchChange}
+              // className={styles.searchInput} <- Reemplazado por estilos en .searchBar input
+            />
+          </div>
         </div>
-        <input
-          type="text"
-          placeholder="Buscar número de pedido"
-          value={search}
-          onChange={handleSearchChange}
-          className={styles.searchInput}
-        />
-      </div>
-      <table className={styles.table}>
-        <thead className={styles.thead}>
-          <tr>
+      </div> {/* Fin de .header */}
+
+      {/* TABLA DE PEDIDOS */}
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead className={styles.thead}>
+            <tr>
               <th>Fecha y Hora</th>
               <th>Nro pedido</th>
               <th>Total</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
-        </thead>
-        <tbody >
-            {pedidosFiltrados.map((order) => (
+          </thead>
+          <tbody>
+            {currentPedidos.length > 0 ? ( // Usamos currentPedidos para la paginación
+              currentPedidos.map((order) => (
                 <tr key={order.id}>
                   <td>
                     {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
@@ -136,10 +192,12 @@ export function Table() {
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{estadoLabels[order.estado]}</td>
                   <td className={styles.actions}>
-                    <button onClick={() => handleViewOrder(order)}>Ver</button>
+                    {/* Botón Ver Detalle - Ahora usa la clase .detailBtn */}
+                    <button className={styles.detailBtn} onClick={() => handleViewOrder(order)}>Ver detalle</button>
 
                     {order.estado === Estado.PENDIENTE && (
                       <button
+                        className={styles.btn} // Usa la clase .btn
                         onClick={async () => {
                           try {
                             const nuevoEstado = tieneManufacturados(order)
@@ -161,6 +219,7 @@ export function Table() {
                       <>
                         {order.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                           <button
+                            className={styles.btn} // Usa la clase .btn
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
@@ -177,6 +236,7 @@ export function Table() {
 
                         {order.tipoEnvio === TipoEnvio.DELIVERY && (
                           <button
+                            className={styles.btn} // Usa la clase .btn
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
@@ -195,9 +255,26 @@ export function Table() {
                     )}
                   </td>
                 </tr>
-              ))}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className={styles.noData}>
+                  No hay pedidos disponibles.
+                </td>
+              </tr>
+            )}
           </tbody>
-      </table>
+        </table>
+      </div>
+
+      {/* --- Controles de paginación numérica --- */}
+      {pedidosFiltrados.length > 0 && totalPages > 1 && (
+        <div className={styles.pagination}>
+          {getPaginationButtons()}
+        </div>
+      )}
+
+      {/* MODAL DE DETALLE DEL PEDIDO */}
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
           <UserOrderDetail

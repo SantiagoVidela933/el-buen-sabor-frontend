@@ -1,28 +1,47 @@
 .container {
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  overflow-x: hidden;
+  padding: 2rem; /* Aumentado padding para consistencia */
+  background-color: #f9f9f9; /* Fondo consistente */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
   width: 100%;
   box-sizing: border-box;
 }
 
-.title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  background-color: #ff6609;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  color: white;
+.header { /* Nuevo contenedor para el título y búsqueda/filtro */
+  display: flex;
+  flex-direction: column; /* Columna por defecto para móvil */
+  gap: 1rem;
+  margin-bottom: 1.5rem; /* Más espacio */
+}
+
+.titleGroup { /* Contenedor para el título, si tienes otros elementos cerca */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between; /* Para separar título y posibles acciones */
+}
+
+.titleBox { /* Estilo del recuadro del título */
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #ff6609; /* Color de la marca */
+  display: inline-block;
+}
+
+.title { /* Estilo para el título h2 */
+  font-size: 1.8rem; /* Tamaño de fuente consistente */
+  margin: 0;
+  text-align: left; /* Alineación por defecto a la izquierda */
+  background-color: transparent; /* El color de fondo lo maneja .titleBox */
+  padding: 0; /* No padding adicional en el título en sí */
+  color: #ff6609; /* Color de la marca, ya que lo quitamos del títuloBox */
 }
 
 .searchFilterContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Columna por defecto */
   gap: 1rem;
-  margin-bottom: 1rem;
   width: 100%;
 }
 
@@ -34,43 +53,76 @@
 }
 
 .estadoButton {
-  background-color: #eee;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
+  background-color: #f1f1f1; /* Fondo consistente */
+  border: 1px solid #ff6609; /* Borde consistente */
+  color: #ff6609; /* Color de texto consistente */
+  padding: 0.9rem 1.2rem; /* Padding consistente */
+  border-radius: 15px; /* Bordes más redondeados y consistentes */
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.estadoButton:hover {
+  background-color: #ff6609; /* Hover consistente */
+  color: white;
 }
 
 .estadoDropdown {
   position: absolute;
-  top: 120%;
+  top: 100%; /* Cambiado de 120% para que esté más cerca */
   left: 0;
   background-color: white;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd; /* Borde más suave */
   border-radius: 8px;
   z-index: 10;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 180px; /* Ancho mínimo para legibilidad */
+  margin-top: 0.5rem; /* Espacio entre el botón y el dropdown */
 }
 
 .estadoOption {
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem; /* Padding consistente */
   cursor: pointer;
+  color: #333;
+  font-weight: 500;
 }
 
 .estadoOption:hover {
   background-color: #f0f0f0;
+  color: #ff6609; /* Color de hover consistente */
 }
 
-.searchInput {
-  min-width: 300px; /* o menos si quieres */
-  width: 100px;     /* ancho fijo */
+.searchBar { /* Nuevo estilo para la barra de búsqueda (contenedor del input) */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #ff6609; /* Borde naranja consistente */
   padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  margin-left: auto;
+  border-radius: 15px; /* Bordes redondeados */
+  width: 100%;
+  max-width: 400px; /* Ajuste para un ancho máximo */
+  background-color: #fff; /* Fondo blanco */
 }
+
+.searchBar span { /* Estilo para el icono de búsqueda */
+  color: #ff6609; /* Color naranja consistente */
+}
+
+.searchBar input { /* Estilo del input dentro de .searchBar */
+  flex: 1; /* Para que ocupe el espacio restante */
+  border: none; /* Sin borde */
+  outline: none; /* Sin outline al enfocar */
+  background: transparent; /* Fondo transparente */
+  padding: 0; /* Sin padding adicional en el input */
+  margin: 0; /* Sin margen adicional en el input */
+  min-width: auto; /* Ancho mínimo flexible */
+}
+
+/* .searchInput - ELIMINADO - sus estilos se movieron a .searchBar input */
 
 .tableWrapper {
   width: 100%;
@@ -81,127 +133,154 @@
 .table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 0.5rem;
-  min-width: 900px;
+  border-spacing: 0 0.5rem; /* Espacio entre filas */
+  min-width: 900px; /* Asegura un ancho mínimo si las columnas son muchas */
   background-color: #ffffff;
-  border-radius: 10px;
-  overflow: hidden;
-  padding: 10px;
+  border-radius: 12px; /* Bordes redondeados de la tabla */
+  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
+  padding: 10px; /* Padding interno de la tabla */
 }
 
 .thead th {
   background-color: #ddd;
   text-align: left;
   padding: 0.75rem;
-  font-weight: 600;
-  border-bottom: 1px solid #ccc;
+  font-weight: bold; /* De vuelta a bold para consistencia */
+  color: #333;
+  border-bottom: none; /* Quitamos el borde inferior, lo maneja el espacio entre filas */
+}
+
+.table td {
+  background-color: #eee; /* Consistencia en el color de fondo */
+  padding: 0.75rem;
+  border-bottom: none; /* Eliminar el borde inferior */
 }
 
 .tbody tr {
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  background-color: #f0f0f0;
+  border-radius: 8px; /* Bordes redondeados para las filas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
+  background-color: #eee;
+  transition: transform 0.2s ease;
+}
+
+.tbody tr:hover {
+  transform: translateY(-2px); /* Efecto hover consistente */
 }
 
 .tbody td {
   padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: none; /* Quitamos el borde inferior, lo maneja el espacio entre filas */
   vertical-align: middle;
+  /* Redondeo de celdas en las esquinas para consistencia */
+  &:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+  &:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-right: -50px;
+  margin-right: 0; /* Ajustado a 0, si necesitas margen negativo, sé específico */
 }
 
+/* Botón "Ver Detalle" - Clase .detailBtn */
+.detailBtn {
+  background-color: yellow; /* Tu color actual */
+  border: none; /* Sin borde */
+  color: black; /* Color de texto */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.detailBtn:hover {
+  background-color: #ced113; /* Color de hover */
+  color: black;
+}
+
+/* Botón genérico de acción - Clase .btn (para Enviar a cocina, Marcar como entregado, Pasar a En delivery) */
 .btn {
-  border: none;
-  padding: 0.4rem 0.8rem;
+  border: none; /* Sin borde */
+  padding: 0.6rem 1rem;
   border-radius: 8px;
   font-weight: bold;
   font-size: 0.85rem;
   cursor: pointer;
   color: white;
+  background-color: #66be13; /* Color de fondo verde (base para estos botones) */
+  transition: background-color 0.3s ease;
 }
 
-.cocina {
-  background-color: #ff9800;
-}
-
-.pagar {
-  background-color: #4caf50;
-}
-
-.verFactura {
-  background-color: #9e9e9e;
-}
-
-.anular {
-  background-color: #f44336;
-}
-
-.detalleButton {
-  background-color: #ffeb3b;
-  border: none;
-  padding: 0.4rem 0.7rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.detalleButton:hover {
-  background-color: #d1d412;
-}
-
-.paginationInfo {
-  font-weight: bold;
-  color: #333;
+.btn:hover {
+  background-color: #57a110; /* Color de hover para el verde */
 }
 
 .noData {
   text-align: center;
-  padding: 1rem;
+  padding: 2rem; /* Aumentado padding para consistencia */
   font-style: italic;
+  color: #777;
 }
 
+/* --- Estilos de Paginación Numérica --- */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  gap: 0.5rem;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
 }
 
 .paginationButton {
-  background-color: #eee;
-  border: none;
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
   padding: 0.5rem 0.9rem;
-  border-radius: 8px;
+  border-radius: 8px; /* Bordes más redondeados */
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.paginationButton:hover {
-  background-color: #dceeff;
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
 }
 
 .activePage {
-  background-color: #333;
-  color: white;
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
 }
 
-/* ==== MEDIA QUERIES ORIGINALES (mantener) ==== */
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+
+
+/* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
-  .searchFilterContainer {
-    flex-direction: row;
+  .header {
+    flex-direction: row; /* Vuelve a fila en pantallas grandes */
     justify-content: space-between;
     align-items: center;
   }
-}
-
-@media (min-width: 768px) {
+  .searchFilterContainer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end; /* Alinea a la derecha */
+    flex-wrap: nowrap;
+  }
+  /* .searchInput - ELIMINADO del media query, ya no es necesario */
   .container {
-    padding: 2rem 3rem;
+    padding: 2rem 3rem; /* Ajuste para pantallas más grandes */
   }
 }
