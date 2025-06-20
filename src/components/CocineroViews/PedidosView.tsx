@@ -87,7 +87,7 @@ const PedidosView = () => {
                       console.error("Error al marcar como entregado:", error);
                     }
                   }}
-                  disabled={pedido.facturas.length === 0} 
+                  disabled={!pedido.facturas || pedido.facturas.length === 0}
                 >
                   Marcar como entregado
                 </button>

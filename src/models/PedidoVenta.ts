@@ -19,6 +19,7 @@ export class PedidoVenta extends BaseEntity {
   descuento: number;
   totalCosto: number;
   totalVenta: number;
+  horaEstimadaEntrega?: string;
 
   pedidosVentaDetalle: PedidoVentaDetalle[];
   facturas: Factura[];

@@ -29,13 +29,8 @@ const PedidoDetalle = ({ pedido }: PedidoDetalleProps) => {
 
       {/* Tiempo estimado de preparación total */}
       <p className={styles.detail}>
-        <strong>Tiempo Estimado Total:</strong>{" "}
-        {
-          pedido.pedidosVentaDetalle
-            .filter((d) => d.articulo?.tipoArticulo === "manufacturado")
-            .reduce((acc, curr) => acc + (curr.articulo?.tiempoEstimadoMinutos || 0), 0)
-        }{" "}
-        min
+        <strong>Hora estimada de entrega:</strong>{" "}
+        {pedido.horaEstimadaEntrega?.slice(0, 5) || "No disponible"}
       </p>
 
       <table className={styles.productTable}>
