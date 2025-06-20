@@ -3,8 +3,7 @@ import styles from "./PedidosView.module.css";
 import Modal from "../ui/Modal/Modal";
 import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
-import { agregarMinutosExtraPedido, cambiarEstadoPedidoVenta, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
-import { Estado } from "../../models/enums/Estado";
+import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 
 const PedidosView = () => {
   const [search, setSearch] = useState("");
