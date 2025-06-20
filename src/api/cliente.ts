@@ -121,6 +121,7 @@ export async function reactivarCliente(id: number) {
 
   return await response.text();
 }
+
 export async function getClientePorPedido(pedidoId: number) {
   try {
     const response = await fetch(`http://localhost:8080/api/clientes/por-pedido/${pedidoId}`, {
