@@ -151,3 +151,15 @@ export const cambiarEstadoPedidoVenta = async (
   }
 };
 
+// PATCH Agregar minutos desde COCINERO al PedidoVenta
+export const agregarMinutosExtraPedido = async (id: number, minutosExtra: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${id}/minutos-extra`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ minutosExtra }), // 👈 CORREGIDO: ahora es un objeto con clave-valor
+  });
+  if (!res.ok) throw new Error("Error actualizando minutos extra");
+};
+
+
+

@@ -3,7 +3,7 @@ import styles from "./PedidosView.module.css";
 import Modal from "../ui/Modal/Modal";
 import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
-import { cambiarEstadoPedidoVenta, getPedidosVentasCocinero } from "../../api/pedidoVenta";
+import { agregarMinutosExtraPedido, cambiarEstadoPedidoVenta, getPedidosVentasCocinero } from "../../api/pedidoVenta";
 import { Estado } from "../../models/enums/Estado";
 
 const PedidosView = () => {
@@ -39,6 +39,15 @@ const PedidosView = () => {
     .filter((pedido) =>
       search.trim() === "" || pedido.id.toString().includes(search.trim())
     )
+
+  const actualizarMinutosExtra = async (pedidoId: number, minutosExtra: number) => {
+    try {
+      await agregarMinutosExtraPedido(pedidoId, minutosExtra);
+      await fetchPedidos();
+    } catch (error) {
+      console.error("Error al actualizar minutos extra:", error);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -98,7 +107,7 @@ const PedidosView = () => {
       </table>
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
-          <PedidoDetalle pedido={selectedOrder} />
+          <PedidoDetalle pedido={selectedOrder} actualizarMinutosExtra={actualizarMinutosExtra} />
         </Modal>
       )}
     </div>
