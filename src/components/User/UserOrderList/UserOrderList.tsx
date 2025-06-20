@@ -6,7 +6,7 @@ import { PedidoVenta } from "../../../models/PedidoVenta";
 import { Estado } from "../../../models/enums/Estado";
 import { getMisPedidosVenta } from "../../../api/pedidoVenta";
 import { useAuth0 } from "@auth0/auth0-react";
-import { descargarFacturaPDF } from "../../../api/factura";
+import { descargarFacturaPDF, descargarNotaCreditoPDF } from "../../../api/factura";
 
 
 interface UserOrderListProps {
@@ -99,7 +99,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   const handleDownloadNotaCredito = async (facturaId: number) => {
     try {
       setIsLoading(true);
-      await descargarFacturaPDF(facturaId, `nota-credito-${facturaId}.pdf`);
+      await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
       alert("No se pudo descargar la nota de crédito. Intente nuevamente más tarde.");
     } finally {
@@ -180,25 +180,27 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                   <td className={styles.actions}>
                     <button className={styles.viewBtn} onClick={() => handleViewOrder(order)}>Ver</button>
 
-                    {order.factura && order.factura.length > 0 && (
-                      order.estado === Estado.CANCELADO ? (
+                    {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
+                      {order.estado === Estado.CANCELADO ? (
                         <button
                           disabled={isLoading}
-                          onClick={() => handleDownloadNotaCredito(order.factura[0].id)}
-                          className={styles.cancelBtn}
+                          onClick={() => {
+                              const facturaId = order.facturas[order.facturas.length - 1].id;
+                              handleDownloadNotaCredito(facturaId);
+                          }}
+                          className={styles.docButton}
                         >
                           Nota de crédito
                         </button>
-                      ) : (
+                      ) : order.estado===Estado.ENTREGADO?(
                         <button
                           disabled={isLoading}
-                          onClick={() => handleDownloadFactura(order.factura[0].id)}
-                          className={styles.actionBtn}
+                          onClick={() => handleDownloadFactura(order.facturas[0].id)}
+                          className={styles.docButton}
                         >
                           Factura
                         </button>
-                      )
-                    )}
+                      ):null }
                   </td>
                 </tr>
               ))

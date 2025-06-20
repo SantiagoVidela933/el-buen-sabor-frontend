@@ -1,4 +1,6 @@
 import {Cliente} from "../models/Cliente";
+
+
 export async function crearCliente(cliente: Cliente) {
   try {
     const response = await fetch("http://localhost:8080/api/clientes", {
@@ -22,8 +24,6 @@ export async function crearCliente(cliente: Cliente) {
   }
 }
 
-
-
 export interface PutClienteDTO {
   id?: number;
   nombre: string;
@@ -38,6 +38,7 @@ export interface PutClienteDTO {
     idLocalidad: number;
   };
 }
+
 
 export async function guardarCliente(cliente: PutClienteDTO): Promise<Cliente> {
   if (!cliente.id) {
@@ -61,8 +62,6 @@ export async function guardarCliente(cliente: PutClienteDTO): Promise<Cliente> {
 }
 
 
-
-
 export async function getClientesMailJSONFetch(email:string) {
   const urlServer = `http://localhost:8080/api/clientes/email/${email}`;
   const response = await fetch(urlServer, {
@@ -77,6 +76,7 @@ export async function getClientesMailJSONFetch(email:string) {
   console.log(response);
   return await response.json();
 }
+
 export async function getClientesJSONFetch() {
   const response = await fetch("http://localhost:8080/api/clientes", {
     method: "GET",
@@ -91,9 +91,6 @@ export async function getClientesJSONFetch() {
 
   return await response.json();
 }
-
-
-
 export async function eliminarCliente(id: number) {
   const response = await fetch(`http://localhost:8080/api/clientes/${id}`, {
     method: "DELETE",
@@ -109,6 +106,7 @@ export async function eliminarCliente(id: number) {
   return await response.text();
 }
 
+
 export async function reactivarCliente(id: number) {
   const response = await fetch(`http://localhost:8080/api/clientes/${id}/reactivar`, {
     method: "PUT",
@@ -123,4 +121,24 @@ export async function reactivarCliente(id: number) {
 
   return await response.text();
 }
-
+export async function getClientePorPedido(pedidoId: number) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/clientes/por-pedido/${pedidoId}`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      mode: 'cors'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error al obtener cliente por pedido: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener cliente por pedido:", error);
+    throw error;
+  }
+}
