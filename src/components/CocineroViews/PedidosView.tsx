@@ -90,15 +90,14 @@ const PedidosView = () => {
                 <button
                   onClick={async () => {
                     try {
-                      await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                      await cambiarEstadoPedidoVenta(pedido.id, Estado.LISTO);
                       await fetchPedidos(); 
                     } catch (error) {
-                      console.error("Error al marcar como entregado:", error);
+                      console.error("Error al marcar como listo:", error);
                     }
                   }}
-                  disabled={!pedido.facturas || pedido.facturas.length === 0}
                 >
-                  Marcar como entregado
+                  Marcar como listo
                 </button>
               </td>
             </tr>
@@ -107,7 +106,11 @@ const PedidosView = () => {
       </table>
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
-          <PedidoDetalle pedido={selectedOrder} actualizarMinutosExtra={actualizarMinutosExtra} />
+          <PedidoDetalle 
+            pedido={selectedOrder} 
+            actualizarMinutosExtra={actualizarMinutosExtra} 
+            onClose={() => setShowModal(false)}
+          />
         </Modal>
       )}
     </div>

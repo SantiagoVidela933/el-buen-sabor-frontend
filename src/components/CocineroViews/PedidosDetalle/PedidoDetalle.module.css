@@ -1,17 +1,3 @@
-.container {
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
-}
-
-.title {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
 .detail {
   margin-bottom: 0.5rem;
   font-size: 1rem;
@@ -20,3 +6,40 @@
 .detail strong {
   font-weight: 700;
 }
+
+.infoBox {
+  margin-bottom: 1rem;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.extraTimeBox {
+  margin-bottom: 1.5rem;
+}
+
+.extraTimeInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.input {
+  width: 5rem;
+  padding: 0.4rem;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+

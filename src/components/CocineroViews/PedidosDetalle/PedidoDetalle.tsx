@@ -7,9 +7,10 @@ import { useState } from "react";
 type PedidoDetalleProps = {
   pedido: PedidoVenta;
   actualizarMinutosExtra: (pedidoId: number, minutosExtra: number) => Promise<void>;
+  onClose: () => void;
 };
 
-const PedidoDetalle = ({ pedido, actualizarMinutosExtra }: PedidoDetalleProps) => {
+const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetalleProps) => {
 
   const [minutosExtra, setMinutosExtra] = useState<number>(pedido.minutosExtra ?? 0);
 
@@ -30,37 +31,50 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra }: PedidoDetalleProps) =
 
   const handleMinutosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    if (isNaN(value) || value < 0) return; // evitar negativos o inválidos
+    if (isNaN(value) || value < 0) return; 
     setMinutosExtra(value);
   };
 
   const handleGuardarMinutosExtra = async () => {
     await actualizarMinutosExtra(pedido.id, minutosExtra);
+    onClose();
   };
 
   if (!pedido) return <p>Pedido no disponible</p>;
+  
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Detalle del Pedido #{pedido.id}</h2>
-      <p className={styles.detail}>
-        <strong>Hora estimada de entrega:</strong>{" "}
-        {pedido.horaEstimadaEntrega?.slice(0, 5) || "No disponible"}
-      </p>
-      <div style={{ marginBottom: "1rem" }}>
-        <label>
-          Minutos extra de demora:
+
+      <div className={styles.infoBox}>
+        <p className={styles.detail}>
+          <strong>Hora estimada de entrega:</strong>{" "}
+          {pedido.horaEstimadaEntrega?.slice(0, 5) || "No disponible"}
+        </p>
+        <p className={styles.detail}>
+          <strong>Minutos extra actuales:</strong> {pedido.minutosExtra ?? 0} minutos
+        </p>
+      </div>
+
+      <div className={styles.extraTimeBox}>
+        <label htmlFor="minutosExtraInput">
+          <strong>Agregar minutos de demora:</strong>
+        </label>
+        <div className={styles.extraTimeInputGroup}>
           <input
+            id="minutosExtraInput"
             type="number"
             min={0}
             value={minutosExtra}
             onChange={handleMinutosChange}
-            style={{ marginLeft: "0.5rem", width: "4rem" }}
+            className={styles.input}
           />
-        </label>
-        <button onClick={handleGuardarMinutosExtra} style={{ marginLeft: "1rem" }}>
-          Guardar
-        </button>
+          <button onClick={handleGuardarMinutosExtra} className={styles.button}>
+            Guardar
+          </button>
+        </div>
       </div>
+
       <table className={styles.productTable}>
         <thead>
           <tr>

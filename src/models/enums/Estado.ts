@@ -5,4 +5,5 @@ export enum Estado {
   RECHAZADO = "RECHAZADO",
   ENTREGADO = "ENTREGADO",
   EN_DELIVERY = "EN_DELIVERY",
+  LISTO = "LISTO",
 }
