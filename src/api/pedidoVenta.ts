@@ -88,6 +88,23 @@ export const getPedidosVentasDelivery = async () => {
   return await response.json();
 };
 
+// GET PedidoVenta Cocinero
+export const getPedidosVentasCocinero = async () => {
+  const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/cocinero", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del cocinero: ${errorText}`);
+  }
+
+  return await response.json();
+};
+
 // POST PedidoVenta
 export const crearPedidoVenta = async (
   pedido: PedidoVenta, 
@@ -133,4 +150,23 @@ export const cambiarEstadoPedidoVenta = async (
     throw new Error("Error al cambiar el estado del pedido");
   }
 };
+
+// PATCH Agregar minutos desde COCINERO al PedidoVenta
+export const agregarMinutosExtraPedido = async (id: number, minutosExtra: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${id}/minutos-extra`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ minutosExtra }), // 👈 CORREGIDO: ahora es un objeto con clave-valor
+  });
+  if (!res.ok) throw new Error("Error actualizando minutos extra");
+};
+
+// PATCH Marcar un PedidoVenta como listo
+export const marcarPedidoListo = async (pedidoId: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${pedidoId}/marcar-listo`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Error al marcar pedido como listo");
+};
+
 

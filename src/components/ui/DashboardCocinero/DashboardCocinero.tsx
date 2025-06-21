@@ -15,15 +15,21 @@ const Dashboard = ({ onSelect }: DashboardProps) => {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.section}>
-        <button onClick={() => onSelect('pedidos')}>Pedidos</button>
+        
+        <button onClick={() => toggleSection('pedidos')}>Pedidos</button>
+        {expanded === 'pedidos' && (
+          <div className={styles.subsection}>
+            <button onClick={() => onSelect('pedidos')}>Grilla de pedidos a cocinar</button>
+          </div>
+        )}
       </div>
 
       <div className={styles.section}>
         <button onClick={() => toggleSection('stock')}>Stock</button>
         {expanded === 'stock' && (
           <div className={styles.subsection}>
-            <button onClick={() => onSelect('productosStock')}>Productos</button>
-            <button onClick={() => onSelect('ingredientesStock')}>Ingredientes</button>
+            <button onClick={() => onSelect('stockProducto')}>Productos</button>
+            <button onClick={() => onSelect('stockIngrediente')}>Ingredientes</button>
           </div>
         )}
       </div>
@@ -32,8 +38,8 @@ const Dashboard = ({ onSelect }: DashboardProps) => {
         <button onClick={() => toggleSection('rubros')}>Rubros</button>
         {expanded === 'rubros' && (
           <div className={styles.subsection}>
-            <button onClick={() => onSelect('productosRubro')}>Productos</button>
-            <button onClick={() => onSelect('ingredientesRubro')}>Ingredientes</button>
+            <button onClick={() => onSelect('rubroProducto')}>Productos</button>
+            <button onClick={() => onSelect('rubroIngrediente')}>Ingredientes</button>
           </div>
         )}
       </div>

@@ -26,6 +26,7 @@ export function Table() {
     [Estado.RECHAZADO]: "Rechazado",
     [Estado.ENTREGADO]: "Entregado",
     [Estado.EN_DELIVERY]: "En delivery",
+    [Estado.LISTO]: "Listo"
   };
 
   // GET Pedidos de Venta

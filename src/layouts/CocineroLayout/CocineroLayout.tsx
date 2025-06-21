@@ -1,32 +1,21 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import Footer from "../../components/ui/Footer/Footer";
 import Navbar from "../../components/ui/Navbar/Navbar";
 import styles from "./CocineroLayout.module.css";
 import PhotoLanding from "../../components/LandingPage/PhotoLanding/PhotoLanding";
-
-import PedidosView from "../../components/Views/CocineroViews/PedidosView/PedidosView";
+import PedidosView from "../../components/CocineroViews/PedidosView";
 import { columns, pedidos } from "../../data/pedidosCocinero";
-import Dashboard from "../../components/Views/CocineroViews/DashboardCocinero/DashboardCocinero";
-import ProductosView from "../../components/Views/CocineroViews/StockView/ProductosView/ProductosView";
-import IngredientesView from "../../components/Views/CocineroViews/StockView/IngredientesView/IngredientesView";
-import ProductosRubrosView from "../../components/Views/CocineroViews/RubrosView/ProductosRubrosView/ProductosRubrosView";
-import IngredientesRubrosView from "../../components/Views/CocineroViews/RubrosView/IngredientesRubrosView/IngredientesRubrosView";
+import Dashboard from "../../components/ui/DashboardCocinero/DashboardCocinero";
+import StockProducto from "../../components/AdminViews/StockView/StockProducto/StockProducto";
+import StockIngrediente from "../../components/AdminViews/StockView/StockIngrediente/StockIngrediente";
+import RubroProducto from "../../components/AdminViews/RubrosView/RubroProducto/RubroProducto";
+import RubroIngrediente from "../../components/AdminViews/RubrosView/RubroIngrediente/RubroIngrediente";
 
-interface CocineroLayoutProps {
-  children: ReactNode;
-}
-
-const CocineroLayout = ({ children }: CocineroLayoutProps) => {
-  const [activeView, setActiveView] = useState<"main" | "cart" | "orders">(
-    "main"
-  );
-  const [selectedDashboardView, setSelectedDashboardView] = useState<
-    string | null
-  >(null);
+const CocineroLayout = () => {
+  const [activeView, setActiveView] = useState<string>("clientes");
 
   const renderActiveView = () => {
-    console.log("selectedDashboardView:", selectedDashboardView);
-    switch (selectedDashboardView) {
+    switch (activeView) {
       case "pedidos":
         return (
           <PedidosView
@@ -36,21 +25,17 @@ const CocineroLayout = ({ children }: CocineroLayoutProps) => {
             itemsPerPage={5}
           />
         );
-      case "productosStock":
-        return <ProductosView />;
-      case "ingredientesStock":
-        return <IngredientesView />;
-      case "productosRubro":
-        return <ProductosRubrosView />;
-      case "ingredientesRubro":
-        return <IngredientesRubrosView />;
+      case "stockProducto":
+        return <StockProducto />; 
+      case "stockIngrediente":
+        return <StockIngrediente />; 
+      case "rubroProducto":
+        return <RubroProducto />;   
+      case "rubroIngrediente":
+        return <RubroIngrediente />; 
       default:
         return <div>Selecciona una opción del panel</div>;
     }
-  };
-
-  const handleDashboardSelect = (view: string) => {
-    setSelectedDashboardView(view);
   };
 
   return (
@@ -61,15 +46,12 @@ const CocineroLayout = ({ children }: CocineroLayoutProps) => {
       />
       <PhotoLanding />
 
-      {activeView === "main" && (
         <div className={styles.dashboard_and_content}>
-          <Dashboard onSelect={handleDashboardSelect} />
+          <Dashboard onSelect={setActiveView} />
           <main className={styles.cocineroLayout_main}>
-            {!selectedDashboardView && children}
-            {selectedDashboardView && renderActiveView()}
+            {renderActiveView()}
           </main>
         </div>
-      )}
 
       <Footer />
     </div>

@@ -4,7 +4,6 @@ import AdminLayout from "../layouts/AdminLayout/AdminLayout";
 import DeliveryLayout from "../layouts/DeliveryLayout/DeliveryLayout";
 import CajeroLayout from "../layouts/CajeroLayout/CajeroLayout";
 import CajeroPage from "../pages/CajeroPage/CajeroPage";
-import CocineroPage from "../pages/CocineroPage/CocineroPage";
 import CocineroLayout from "../layouts/CocineroLayout/CocineroLayout";
 import ClientLayout from "../layouts/ClientLayout/ClientLayout";
 import ProtectedRoute from "./ProtectedRoute";
@@ -42,9 +41,7 @@ const AppRoutes = () => {
         path="/cocinero/*"
         element={
           <ProtectedRoute allowedRoles={["COCINERO", "ADMINISTRADOR"]}>
-            <CocineroLayout>
-              <CocineroPage />
-            </CocineroLayout>
+            <CocineroLayout/>
           </ProtectedRoute>
         }
       />

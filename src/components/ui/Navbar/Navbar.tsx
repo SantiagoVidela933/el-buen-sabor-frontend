@@ -1,3 +1,5 @@
+// NAVBAR COMPLETO (actualizado para enviar cliente y empleado a UserData)
+
 import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
 import CartButton from "./CartButton/CartButton";
@@ -5,9 +7,8 @@ import Modal from "../Modal/Modal";
 import UserData from "../../User/UserData/UserData";
 import { useAuth0 } from "@auth0/auth0-react";
 import Cliente from "../../../models/prueba/Client";
-import { getClientesMailJSONFetch } from "../../../api/cliente";
+import {Empleado} from "../../../models/Empleado";
 import { useNavigate, useLocation } from "react-router-dom";
-
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
@@ -29,11 +30,11 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const [showAdminMenu, setShowAdminMenu] = useState(false);
   const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
   const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [empleado, setEmpleado] = useState<Empleado | null>(null);
   const namespace = "https://buensaboroto.com/roles";
   const userRoles: string[] = user?.[namespace] || [];
   const navigate = useNavigate();
   const location = useLocation();
-
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const hasItemsInCart = cartItems.length > 0;
 
@@ -52,6 +53,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
             return;
           }
 
+          setCliente(clienteData);
           return;
         } catch (errorCliente) {
           if (axios.isAxiosError(errorCliente) && errorCliente.response?.status === 404) {
@@ -65,6 +67,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                 return;
               }
 
+              setEmpleado(empleadoData);
               return;
             } catch (errorEmpleado) {
               if (axios.isAxiosError(errorEmpleado) && errorEmpleado.response?.status === 404) {
@@ -81,17 +84,6 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
     };
 
     verificarRegistro();
-  }, [isAuthenticated, user, isLoading]);
-
-  useEffect(() => {
-    if (isAuthenticated && user && !isLoading) {
-      const auth0User = user as Auth0User;
-      try {
-        getClientesMailJSONFetch(auth0User.email).then(setCliente);
-      } catch (error) {
-        console.log("Error al obtener cliente");
-      }
-    }
   }, [isAuthenticated, user, isLoading]);
 
   const handleOptionUser = () => {
@@ -128,10 +120,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
         <div className={styles.box_user}>
           {isAuthenticated ? (
             <div className={styles.user_actions}>
-              <div
-                className={styles.user_actions_profile}
-                onClick={handleOptionUser}
-              >
+              <div className={styles.user_actions_profile} onClick={handleOptionUser}>
                 <span className="material-symbols-outlined">person</span>
                 <span style={{ marginLeft: "8px", fontSize: "11px" }}>
                   Bienvenido {user?.name ?? user?.email ?? "Usuario"}
@@ -167,35 +156,16 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
 
               {userRoles.includes("ADMINISTRADOR") ? (
                 <div className={styles.admin_nav_menu}>
-                  <button
-                    onClick={handleShowAdminMenu}
-                    className={styles.iconButton}
-                    title="Vistas"
-                  >
+                  <button onClick={handleShowAdminMenu} className={styles.iconButton} title="Vistas">
                     <span className="material-symbols-outlined">visibility</span>
                   </button>
                   {showAdminMenu && (
                     <div className={styles.adminViewsDropdown}>
-                      <button onClick={() => {
-                        navigate("/admin");
-                        setShowAdminMenu(false);
-                      }}>Admin</button>
-                      <button onClick={() => {
-                        navigate("/cajero");
-                        setShowAdminMenu(false);
-                      }}>Cajero</button>
-                      <button onClick={() => {
-                        navigate("/cocinero");
-                        setShowAdminMenu(false);
-                      }}>Cocinero</button>
-                      <button onClick={() => {
-                        navigate("/delivery");
-                        setShowAdminMenu(false);
-                      }}>Delivery</button>
-                      <button onClick={() => {
-                        window.location.href = "/";
-                        setShowAdminMenu(false);
-                      }}>Cliente</button>
+                      <button onClick={() => { navigate("/admin"); setShowAdminMenu(false); }}>Admin</button>
+                      <button onClick={() => { navigate("/cajero"); setShowAdminMenu(false); }}>Cajero</button>
+                      <button onClick={() => { navigate("/cocinero"); setShowAdminMenu(false); }}>Cocinero</button>
+                      <button onClick={() => { navigate("/delivery"); setShowAdminMenu(false); }}>Delivery</button>
+                      <button onClick={() => { window.location.href = "/"; setShowAdminMenu(false); }}>Cliente</button>
                     </div>
                   )}
                 </div>
@@ -212,10 +182,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
             </div>
           ) : (
             <>
-              <div
-                className={styles.user_actions_profile}
-                onClick={() => loginWithRedirect()}
-              >
+              <div className={styles.user_actions_profile} onClick={() => loginWithRedirect()}>
                 <span className="material-symbols-outlined">person</span>
                 <button>Iniciar sesión</button>
               </div>
@@ -240,7 +207,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
             setOptionUser(false);
           }}
         >
-          <UserData cliente={cliente} />
+          <UserData cliente={cliente} empleado={empleado} />
         </Modal>
       )}
     </>
