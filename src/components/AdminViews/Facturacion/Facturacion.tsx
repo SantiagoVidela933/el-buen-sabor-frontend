@@ -144,35 +144,21 @@ const Facturacion = () => {
           <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
             <h2 className={styles.title}>GESTIÓN DE PEDIDOS</h2> {/* Título ajustado y en mayúsculas */}
           </div>
-          {/* Filtro por estado - Usando el estilo de dropdown si lo deseas, o select normal */}
-          <div className={styles.selectWrapper}> {/* Wrapper para el select si quieres darle un estilo consistente */}
+
+          <div className={styles.filters}>
             <select
               value={estadoFiltro}
               onChange={(e) => setEstadoFiltro(e.target.value)}
               className={styles.select}
             >
               <option value="Todos">Todos</option>
-              <option value="A confirmar">A confirmar</option>
-              <option value="En cocina">En cocina</option>
-              <option value="Entregado">Entregado</option>
+              <option value={Estado.PENDIENTE}>Pendiente</option>
+              <option value={Estado.PREPARACION}>En Preparación</option>
+              <option value={Estado.EN_DELIVERY}>En Delivery</option>
+              <option value={Estado.ENTREGADO}>Entregado</option>
+              <option value={Estado.CANCELADO}>Cancelado</option>
             </select>
           </div>
-        </div>
-
-      <div className={styles.filters}>
-        <select
-          value={estadoFiltro}
-          onChange={(e) => setEstadoFiltro(e.target.value)}
-          className={styles.select}
-        >
-          <option value="Todos">Todos</option>
-          <option value={Estado.PENDIENTE}>Pendiente</option>
-          <option value={Estado.PREPARACION}>En Preparación</option>
-          <option value={Estado.EN_DELIVERY}>En Delivery</option>
-          <option value={Estado.ENTREGADO}>Entregado</option>
-          <option value={Estado.CANCELADO}>Cancelado</option>
-        </select>
-
           {/* Barra de búsqueda */}
           <div className={styles.searchBar}> {/* Usamos .searchBar para el input */}
             <span className="material-symbols-outlined">search</span> {/* Icono de búsqueda */}

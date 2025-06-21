@@ -87,7 +87,6 @@
   border: 1px solid #ff6609;
   padding: 0.5rem 7rem;
   border-radius: 15px;
-  width: 100%;
   max-width: 400px; /* Ancho máximo para la barra de búsqueda */
   background-color: #fff;
 }
