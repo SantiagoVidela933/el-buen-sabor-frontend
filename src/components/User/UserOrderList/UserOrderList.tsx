@@ -1,12 +1,12 @@
 import styles from "./UserOrderList.module.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../../../components/ui/Modal/Modal";
 import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
 import { PedidoVenta } from "../../../models/PedidoVenta";
 import { Estado } from "../../../models/enums/Estado";
 import { getMisPedidosVenta } from "../../../api/pedidoVenta";
 import { useAuth0 } from "@auth0/auth0-react";
-import { descargarFacturaPDF } from "../../../api/factura";
+import { descargarFacturaPDF, descargarNotaCreditoPDF } from "../../../api/factura";
 
 
 interface UserOrderListProps {
@@ -14,15 +14,18 @@ interface UserOrderListProps {
 }
 
 const UserOrderList = ({ onBack }: UserOrderListProps) => {
-  
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // --- ESTADOS PARA PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5); // Puedes ajustar este número
+  // --- FIN ESTADOS PARA PAGINACIÓN ---
+
   const { getAccessTokenSilently } = useAuth0();
 
-  // fetch - obtengo categorias de articulos manufacturados
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
@@ -47,17 +50,41 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   });
 
   const renderEstado = (estado: Estado) => {
-    const nombre = Estado[estado];
-    const color =
-      estado === Estado.CANCELADO
-        ? "red"
-        : estado === Estado.ENTREGADO
-        ? "green"
-        : "orange";
+    let nombre = "";
+    let color = "";
+
+    switch (estado) {
+      case Estado.PENDIENTE:
+        nombre = "Pendiente";
+        color = "#ff6609"; // Naranja
+        break;
+      case Estado.APROBADO:
+        nombre = "Aprobado";
+        color = "#2196f3"; // Azul
+        break;
+      case Estado.RECHAZADO:
+        nombre = "Rechazado";
+        color = "#f44336"; // Rojo
+        break;
+      case Estado.EN_CAMINO:
+        nombre = "En Camino";
+        color = "#ffeb3b"; // Amarillo
+        break;
+      case Estado.ENTREGADO:
+        nombre = "Entregado";
+        color = "#4CAF50"; // Verde
+        break;
+      case Estado.CANCELADO:
+        nombre = "Cancelado";
+        color = "#f44336"; // Rojo
+        break;
+      default:
+        nombre = Estado[estado]; // Fallback para otros estados
+        color = "#777";
+    }
     return <span style={{ color, fontWeight: "bold" }}>{nombre}</span>;
   };
 
-  // Función para descargar la factura en PDF
   const handleDownloadFactura = async (facturaId: number) => {
     try {
       setIsLoading(true);
@@ -69,40 +96,75 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     }
   };
 
-  // Función para descargar la nota de crédito
   const handleDownloadNotaCredito = async (facturaId: number) => {
     try {
       setIsLoading(true);
-      await descargarFacturaPDF(facturaId, `nota-credito-${facturaId}.pdf`);
+      await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
       alert("No se pudo descargar la nota de crédito. Intente nuevamente más tarde.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const numeroColumnasTabla = 5;
+
+  // --- LÓGICA DE PAGINACIÓN ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPedidos = pedidos.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(pedidos.length / itemsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const renderPaginationButtons = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => paginate(i)}
+          className={`${styles.paginationButton} ${currentPage === i ? styles.activePage : ''}`}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
+  // --- FIN LÓGICA DE PAGINACIÓN ---
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Mis Pedidos</h2>
+      <div className={styles.header}>
+        <div className={styles.titleGroup}>
+          <div className={styles.titleBox}>
+            <h2 className={styles.title}>MIS PEDIDOS</h2>
+          </div>
+        </div>
+      </div>
+
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
               <th>Fecha y Hora</th>
-              <th>Nro pedido</th>
+              <th>Nro. Pedido</th>
               <th>Total</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {pedidos.length === 0 ? (
+            {currentPedidos.length === 0 ? ( // Usamos currentPedidos aquí
               <tr>
-                <td colSpan={5} className={styles.emptyMessage}>
+                <td colSpan={numeroColumnasTabla} className={styles.noData}>
                   Aún no tenés pedidos
                 </td>
               </tr>
             ) : (
-              pedidos.map((order) => (
+              currentPedidos.map((order) => ( // Iteramos sobre currentPedidos
                 <tr key={order.id}>
                   <td>
                     {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
@@ -116,28 +178,29 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{renderEstado(order.estado)}</td>
                   <td className={styles.actions}>
-                    <button onClick={() => handleViewOrder(order)}>Ver</button>
+                    <button className={styles.viewBtn} onClick={() => handleViewOrder(order)}>Ver</button>
 
                     {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
-                    {order.factura && order.factura.length > 0 && (
-                      order.estado === Estado.CANCELADO ? (
+                      {order.estado === Estado.CANCELADO ? (
                         <button
                           disabled={isLoading}
-                          onClick={() => handleDownloadNotaCredito(order.factura[0].id)}
+                          onClick={() => {
+                              const facturaId = order.facturas[order.facturas.length - 1].id;
+                              handleDownloadNotaCredito(facturaId);
+                          }}
                           className={styles.docButton}
                         >
                           Nota de crédito
                         </button>
-                      ) : (
+                      ) : order.estado===Estado.ENTREGADO?(
                         <button
                           disabled={isLoading}
-                          onClick={() => handleDownloadFactura(order.factura[0].id)}
+                          onClick={() => handleDownloadFactura(order.facturas[0].id)}
                           className={styles.docButton}
                         >
                           Factura
                         </button>
-                      )
-                    )}
+                      ):null }
                   </td>
                 </tr>
               ))
@@ -145,6 +208,15 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
           </tbody>
         </table>
       </div>
+
+      {/* --- CONTROLES DE PAGINACIÓN --- */}
+      {totalPages > 1 && ( // Solo muestra los botones si hay más de una página
+        <div className={styles.paginationControls}>
+          {renderPaginationButtons()}
+        </div>
+      )}
+      {/* --- FIN CONTROLES DE PAGINACIÓN --- */}
+
       <button className={styles.backButton} onClick={onBack}>
         Volver
       </button>
@@ -157,9 +229,8 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
           />
         </Modal>
       )}
-  </div>
+    </div>
   );
-
 };
 
 export default UserOrderList;

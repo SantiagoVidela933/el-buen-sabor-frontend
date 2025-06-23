@@ -1,3 +1,4 @@
+import { Estado } from "../models/enums/Estado";
 import { PedidoVenta } from "../models/PedidoVenta";
 import type { GetTokenSilentlyOptions } from '@auth0/auth0-react';
 
@@ -18,6 +19,7 @@ export const getPedidosVentas = async () => {
   return await response.json();
 };
 
+// GET PedidoVenta para Cliente
 export const getMisPedidosVenta = async (
   getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
 ): Promise<PedidoVenta[]> => {
@@ -41,6 +43,66 @@ export const getMisPedidosVenta = async (
   } catch (error) {
     throw new Error(`Error general al obtener pedidos: ${error}`);
   }
+};
+
+// GET PedidoVenta por idCliente y fechas
+export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio: string, fechaFin: string) => {
+  // Construir la URL con el nuevo endpoint
+  const url = new URL(`http://localhost:8080/api/v1/pedidoVenta/pedidos/cliente/${idCliente}/fechas`);
+  
+  // Agregar parámetros de consulta (fechas)
+  url.searchParams.append('desde', fechaInicio);
+  url.searchParams.append('hasta', fechaFin);
+
+  console.log("URL de la solicitud:", url.toString());
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del cliente: ${errorText}`);
+  }
+
+  return await response.json();
+};
+
+// GET PedidoVenta Delivery
+export const getPedidosVentasDelivery = async () => {
+  const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/delivery", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del delivery: ${errorText}`);
+  }
+
+  return await response.json();
+};
+
+// GET PedidoVenta Cocinero
+export const getPedidosVentasCocinero = async () => {
+  const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/cocinero", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener los pedidos del cocinero: ${errorText}`);
+  }
+
+  return await response.json();
 };
 
 // POST PedidoVenta
@@ -71,28 +133,40 @@ export const crearPedidoVenta = async (
   return await response.json();
 };
 
-// GET PedidoVenta por idCliente y fechas
-export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio: string, fechaFin: string) => {
-  // Construir la URL con el nuevo endpoint
-  const url = new URL(`http://localhost:8080/api/v1/pedidoVenta/pedidos/cliente/${idCliente}/fechas`);
-  
-  // Agregar parámetros de consulta (fechas)
-  url.searchParams.append('desde', fechaInicio);
-  url.searchParams.append('hasta', fechaFin);
-
-  console.log("URL de la solicitud:", url.toString());
-
-  const response = await fetch(url.toString(), {
-    method: "GET",
+// PATCH Cambiar Estado de PedioVenta
+export const cambiarEstadoPedidoVenta = async (
+  id: number,
+  nuevoEstado: Estado
+): Promise<void> => {
+  const response = await fetch(`/api/v1/pedidoVenta/${id}/estado`, {
+    method: "PATCH",
     headers: {
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(nuevoEstado),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error al obtener los pedidos del cliente: ${errorText}`);
+    throw new Error("Error al cambiar el estado del pedido");
   }
-
-  return await response.json();
 };
+
+// PATCH Agregar minutos desde COCINERO al PedidoVenta
+export const agregarMinutosExtraPedido = async (id: number, minutosExtra: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${id}/minutos-extra`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ minutosExtra }), // 👈 CORREGIDO: ahora es un objeto con clave-valor
+  });
+  if (!res.ok) throw new Error("Error actualizando minutos extra");
+};
+
+// PATCH Marcar un PedidoVenta como listo
+export const marcarPedidoListo = async (pedidoId: number) => {
+  const res = await fetch(`/api/v1/pedidoVenta/${pedidoId}/marcar-listo`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Error al marcar pedido como listo");
+};
+
+
