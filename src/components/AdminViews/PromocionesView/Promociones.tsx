@@ -89,10 +89,10 @@ const Promociones = () => {
       } catch (error) {
         if (error instanceof Error) {
           console.error(error);
-          alert(`Error al eliminar el producto: ${error.message}`);
+          alert(`Error al eliminar la promocion: ${error.message}`);
         } else {
           console.error('Error desconocido', error);
-          alert('Ocurrió un error al eliminar el producto.');
+          alert('Ocurrió un error al eliminar la promocion.');
         }
       }
     }
@@ -111,7 +111,7 @@ const Promociones = () => {
       );
     } catch (error) {
       console.error(error);
-      alert('Error al dar de alta el artículo');
+      alert('Error al dar de alta la promocion');
     }
   };
 
