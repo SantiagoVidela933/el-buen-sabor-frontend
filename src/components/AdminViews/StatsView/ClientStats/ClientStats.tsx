@@ -15,22 +15,25 @@ const ClientStats = () => {
   const [tablaClientes, setTablaClientes] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
+  // --- Estados para la paginación ---
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(2); // Cantidad de clientes por página
+
   const obtenerDatos = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
     const desde = fechaInicio || '2000-01-01';
     const hasta = fechaFin || fechaActual;
 
-
     try {
       const data = await fetchRankingClientes(desde, hasta, orden);
 
       const clientesGrafico =
-            data.length > 0
-              ? data.map((item: any) => [item.clienteNome, Number(item.cantidadPedidos)])
-              : [['Sin Ventas', 0]];      
+                data.length > 0
+                  ? data.map((item: any) => [item.clienteNome, Number(item.cantidadPedidos)])
+                  : [['Sin Ventas', 0]];      
       setDatosClientes([['Cliente', 'Cantidad Comprada'], ...clientesGrafico]);
       setTablaClientes(data);
-
+      setCurrentPage(1); // Resetear a la primera página cuando cambian los datos
     } catch (error) {
       console.error('Error al obtener los datos:', error);
     }
@@ -60,10 +63,21 @@ const ClientStats = () => {
   useEffect(() => {
     obtenerDatos();
   }, [fechaInicio, fechaFin, orden]);
+
+  // --- Lógica de Paginación ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentClients = tablaClientes.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(tablaClientes.length / itemsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
   
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Ranking de clientes</h2>
+      {/* SECCIÓN DEL TÍTULO MODIFICADA */}
+      <div className={styles.titleBox}>
+        <h2 className={styles.title}>Ranking de clientes</h2>
+      </div>
 
       <div className={styles.filtros}>
         <label>
@@ -127,42 +141,65 @@ const ClientStats = () => {
             </tr>
           </thead>
           <tbody>
-            {tablaClientes.map((cliente: any) => (
-              <React.Fragment key={cliente.clienteId}>
-              <>
-                <tr key={cliente.clienteId}>
-                  <td>{cliente.clienteNome}</td>
-                  <td>{cliente.cantidadPedidos}</td>
-                  <td>${cliente.importeTotal.toFixed(2)}</td>
-                  <td>
-                    <button
-                      className={styles.verPedidosBtn}
-                      onClick={() => toggleDetalles(cliente.clienteId)}
-                    >
-                      {clienteSeleccionado === cliente.clienteId ? 'Ocultar pedidos' : 'Ver pedidos'}
-                    </button>
-                  </td>
-                </tr>
-                {clienteSeleccionado === cliente.clienteId && (
-                  <tr>
-                    <td colSpan={4}>
-                      <ClientStatsDetails
-                        clienteId={cliente.clienteId}
-                        fechaInicio={fechaInicio || '2000-01-01'} // Usar directamente la cadena seleccionada
-                        fechaFin={fechaFin || new Date().toISOString().split('T')[0]} // Usar directamente la cadena seleccionada
-                      />
+            {/* Usamos currentClients para renderizar los clientes de la página actual */}
+            {currentClients.length === 0 ? (
+              <tr>
+                <td colSpan={4} className={styles.emptyMessage}>
+                  No hay clientes que cumplan los criterios de búsqueda.
+                </td>
+              </tr>
+            ) : (
+              currentClients.map((cliente: any) => (
+                <React.Fragment key={cliente.clienteId}>
+                <>
+                  <tr key={cliente.clienteId}>
+                    <td>{cliente.clienteNome}</td>
+                    <td>{cliente.cantidadPedidos}</td>
+                    <td>${cliente.importeTotal.toFixed(2)}</td>
+                    <td>
+                      <button
+                        className={styles.verPedidosBtn}
+                        onClick={() => toggleDetalles(cliente.clienteId)}
+                      >
+                        {clienteSeleccionado === cliente.clienteId ? 'Ocultar pedidos' : 'Ver pedidos'}
+                      </button>
                     </td>
                   </tr>
-                )}
-              </>
-            </React.Fragment>  
-            ))}
-      
+                  {clienteSeleccionado === cliente.clienteId && (
+                    <tr>
+                      <td colSpan={4}>
+                        <ClientStatsDetails
+                          clienteId={cliente.clienteId}
+                          fechaInicio={fechaInicio || '2000-01-01'} // Usar directamente la cadena seleccionada
+                          fechaFin={fechaFin || new Date().toISOString().split('T')[0]} // Usar directamente la cadena seleccionada
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </>
+                </React.Fragment>      
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* --- Controles de Paginación Numérica --- */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={`${styles.paginationButton} ${currentPage === index + 1 ? styles.activePage : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-export default ClientStats
+export default ClientStats;

@@ -22,7 +22,7 @@ const UserEmpleado = () => {
   const [filtro, setFiltro] = useState<string>("");
 
   // --- Lógica de Paginación ---
-  const empleadosPorPagina = 5; // Define cuántos empleados mostrar por página
+  const empleadosPorPagina = 8; // Define cuántos empleados mostrar por página
   const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
 
   const cargarEmpleados = async () => {

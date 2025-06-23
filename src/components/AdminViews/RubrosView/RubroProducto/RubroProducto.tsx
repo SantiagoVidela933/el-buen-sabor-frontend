@@ -15,7 +15,7 @@ const RubroProducto = () => {
   const [busqueda, setBusqueda] = useState('');
 
   // --- Lógica de Paginación ---
-  const rubrosPorPagina = 5; // Define cuántos rubros mostrar por página
+  const rubrosPorPagina = 8; // Define cuántos rubros mostrar por página
   const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
 
   // Cargar rubros desde el backend al montar

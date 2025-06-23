@@ -17,7 +17,7 @@ const UserClient = () => {
   const [filtroNombre, setFiltroNombre] = useState('');
 
   // --- Lógica de Paginación ---
-  const clientesPorPagina = 5; // Define cuántos clientes mostrar por página
+  const clientesPorPagina = 8; // Define cuántos clientes mostrar por página
   const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
 
 

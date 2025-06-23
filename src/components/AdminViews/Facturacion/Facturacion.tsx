@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './Facturacion.module.css';
 import { getPedidosVentas } from '../../../api/pedidoVenta';
 import { PedidoVenta } from '../../../models/PedidoVenta';
@@ -16,6 +16,15 @@ const Facturacion = () => {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPedido, setSelectedPedido] = useState<PedidoVenta | null>(null);
+
+  // Nuevo estado para controlar la visibilidad del dropdown de estados
+  const [showEstadoDropdown, setShowEstadoDropdown] = useState<boolean>(false);
+  // Ref para detectar clics fuera del dropdown
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(8); // Puedes ajustar esto si lo deseas
 
   useEffect(() => {
     const cargarPedidos = async () => {
@@ -35,6 +44,20 @@ const Facturacion = () => {
     cargarPedidos();
   }, []);
 
+  // useEffect para cerrar el dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowEstadoDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   const filtrarPedidos = (): PedidoVenta[] => {
     return pedidos.filter(pedido => {
       const coincideEstado = estadoFiltro === 'Todos' || pedido.estado === estadoFiltro;
@@ -44,6 +67,19 @@ const Facturacion = () => {
   };
 
   const pedidosFiltrados = filtrarPedidos();
+
+  // Lógica de paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Resetear la página actual a 1 cuando cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [estadoFiltro, busquedaId]);
 
   // Función para formatear la fecha y hora
   const formatearFechaHora = (fecha: string | Date) => {
@@ -58,6 +94,12 @@ const Facturacion = () => {
     setShowModal(true);
   };
 
+  // Función para manejar el cambio de estado desde el dropdown personalizado
+  const handleEstadoChange = (estado: string) => {
+    setEstadoFiltro(estado);
+    setShowEstadoDropdown(false); // Cerrar dropdown después de seleccionar
+  };
+
   // Función para descargar la factura en PDF
   const handleDescargarFactura = async (pedido: PedidoVenta) => {
     if (!pedido.facturas || pedido.facturas.length === 0) {
@@ -67,7 +109,6 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
       await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
     } catch (error) {
@@ -87,7 +128,6 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
       await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
@@ -105,18 +145,15 @@ const Facturacion = () => {
       return;
     }
 
-    // Confirmar antes de anular
     if (!confirm('¿Está seguro que desea anular esta factura? Esta acción no se puede deshacer.')) {
       return;
     }
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
       await anularFactura(facturaId);
       
-      // Actualizar la lista de pedidos después de anular
       const data = await getPedidosVentas();
       setPedidos(data);
       
@@ -139,112 +176,166 @@ const Facturacion = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}> {/* Añadido .header para el layout */}
-        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
-          <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
-            <h2 className={styles.title}>GESTIÓN DE PEDIDOS</h2> {/* Título ajustado y en mayúsculas */}
+      <div className={styles.header}>
+        <div className={styles.titleAndFiltersGroup}>
+          <div className={styles.titleBox}>
+            <h2 className={styles.title}>GESTIÓN DE PEDIDOS</h2>
           </div>
 
-          <div className={styles.filters}>
-            <select
-              value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
-              className={styles.select}
+          <div className={styles.estadoFilter} ref={dropdownRef}>
+            <button
+              className={styles.estadoButton}
+              onClick={() => setShowEstadoDropdown(!showEstadoDropdown)}
             >
-              <option value="Todos">Todos</option>
-              <option value={Estado.PENDIENTE}>Pendiente</option>
-              <option value={Estado.PREPARACION}>En Preparación</option>
-              <option value={Estado.EN_DELIVERY}>En Delivery</option>
-              <option value={Estado.ENTREGADO}>Entregado</option>
-              <option value={Estado.CANCELADO}>Cancelado</option>
-            </select>
-          </div>
-          {/* Barra de búsqueda */}
-          <div className={styles.searchBar}> {/* Usamos .searchBar para el input */}
-            <span className="material-symbols-outlined">search</span> {/* Icono de búsqueda */}
-            <input
-              type="text"
-              placeholder="Buscar por Nro. de Pedido..."
-              value={busquedaId}
-              onChange={(e) => setBusquedaId(e.target.value)}
-            />
+              {estadoFiltro === 'Todos' ? 'Estado' : estadoFiltro}
+              <span className="material-symbols-outlined">
+                {showEstadoDropdown ? 'arrow_drop_up' : 'arrow_drop_down'}
+              </span>
+            </button>
+            {showEstadoDropdown && (
+              <div className={styles.estadoDropdown}>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange(Estado.PENDIENTE)}
+                >
+                  Pendiente
+                </div>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange(Estado.PREPARACION)}
+                >
+                  En Preparación
+                </div>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange(Estado.EN_DELIVERY)}
+                >
+                  En Delivery
+                </div>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange(Estado.ENTREGADO)}
+                >
+                  Entregado
+                </div>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange(Estado.CANCELADO)}
+                >
+                  Cancelado
+                </div>
+                <div 
+                  className={styles.estadoOption} 
+                  onClick={() => handleEstadoChange('Todos')}
+                >
+                  Todos
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div> {/* Fin de .header */}
+
+        <div className={styles.searchBar}>
+          <span className="material-symbols-outlined">search</span>
+          <input
+            type="text"
+            placeholder="Buscar por Nro. de Pedido..."
+            value={busquedaId}
+            onChange={(e) => setBusquedaId(e.target.value)}
+          />
+        </div>
+      </div>
 
       {pedidosFiltrados.length === 0 ? (
         <p className={styles.noPedidos}>No hay pedidos que coincidan con los filtros</p>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>NroPedido</th>
-              <th>Fecha/Hora</th>
-              <th>Forma de Entrega</th>
-              <th>Forma de Pago</th>
-              <th>Total</th>
-              <th>Estado</th>
-              <th>Detalle</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pedidosFiltrados.map((pedido) => (
-              <tr key={pedido.id}>
-                <td>{pedido.id}</td>
-                <td>{formatearFechaHora(pedido.fechaPedido)}</td>
-                <td>{pedido.tipoEnvio}</td>
-                <td>{pedido.formaPago}</td>
-                <td>${pedido.totalVenta?.toFixed(2) || pedido.totalVenta?.toFixed(2)}</td>
-                <td>{pedido.estado}</td>
-                <td>
-                  <button 
-                    className={styles.detailBtn}
-                    onClick={() => handleVerDetalle(pedido)}
-                  >
-                    Ver Detalle
-                  </button>
-                </td>
-                <td>
-                  {pedido.facturas && pedido.facturas.length > 0 && (
-                    <>
-                      {pedido.estado === Estado.CANCELADO ? (
-                        <button 
-                          className={styles.actionBtn}
-                          onClick={() => handleDescargarNotaCredito(pedido)}
-                          disabled={actionLoading}
-                        >
-                          Nota de Crédito
-                        </button>
-                      ) : pedido.estado === Estado.ENTREGADO && (
-                        <>
+        <>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>NroPedido</th>
+                <th>Fecha/Hora</th>
+                <th>Forma de Entrega</th>
+                <th>Forma de Pago</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Detalle</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.map((pedido) => (
+                <tr key={pedido.id}>
+                  <td>{pedido.id}</td>
+                  <td>{formatearFechaHora(pedido.fechaPedido)}</td>
+                  <td>{pedido.tipoEnvio}</td>
+                  <td>{pedido.formaPago}</td>
+                  <td>${pedido.totalVenta?.toFixed(2) || pedido.totalVenta?.toFixed(2)}</td>
+                  <td>{pedido.estado}</td>
+                  <td>
+                    <button 
+                      className={styles.detailBtn}
+                      onClick={() => handleVerDetalle(pedido)}
+                    >
+                      Ver Detalle
+                    </button>
+                  </td>
+                  <td>
+                    {pedido.facturas && pedido.facturas.length > 0 && (
+                      <div className={styles.actionButtonsGroup}>
+                        {pedido.estado === Estado.CANCELADO ? (
                           <button 
                             className={styles.actionBtn}
-                            onClick={() => handleDescargarFactura(pedido)}
+                            onClick={() => handleDescargarNotaCredito(pedido)}
                             disabled={actionLoading}
                           >
-                            Ver Factura
+                            Nota de Crédito
                           </button>
-                          <button 
-                            className={styles.cancelBtn}
-                            onClick={() => handleAnularFactura(pedido)}
-                            disabled={actionLoading}
-                          >
-                            Anular
-                          </button>
-                        </>
-                      )}
-                    </>
-                  )}  
-                  {pedido.estado != Estado.CANCELADO && pedido.estado != Estado.ENTREGADO?(
-                        <span className={styles.disabledAction}>Factura Pendiente</span>
-                      ):null
-                  }
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                        ) : pedido.estado === Estado.ENTREGADO && (
+                          <>
+                            <button 
+                              className={styles.actionBtn}
+                              onClick={() => handleDescargarFactura(pedido)}
+                              disabled={actionLoading}
+                            >
+                              Ver Factura
+                            </button>
+                            <button 
+                              className={styles.cancelBtn}
+                              onClick={() => handleAnularFactura(pedido)}
+                              disabled={actionLoading}
+                            >
+                              Anular
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )} 
+                    {pedido.estado !== Estado.CANCELADO && pedido.estado !== Estado.ENTREGADO ? (
+                      <span className={styles.disabledAction}>Factura Pendiente</span>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Controles de paginación */}
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => paginate(index + 1)}
+                  // Aplica la clase 'activePage' solo si es la página actual
+                  className={`${styles.paginationButton} ${currentPage === index + 1 ? styles.activePage : ''}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {showModal && selectedPedido && (

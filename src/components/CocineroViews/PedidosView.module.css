@@ -1,77 +1,83 @@
+/* --- Estilos Generales del Contenedor --- */
 .container {
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  overflow-x: hidden;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   width: 100%;
   box-sizing: border-box;
 }
 
-.title {
-  font-size: 1.5rem;
+/* --- Estilos de Encabezado (CONSISTENTES) --- */
+.header {
+  display: flex;
+  flex-direction: column; /* Por defecto en columna para móviles */
+  gap: 1.5rem; /* Espacio entre título y barra de búsqueda */
   margin-bottom: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  background-color: #ff6609;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  color: white;
+  align-items: center; /* Centra horizontalmente en columna */
 }
 
-.searchFilterContainer {
+.titleGroup {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
+  justify-content: center; /* Centra el titleBox */
+  width: 100%; /* Asegura que ocupe todo el ancho para centrar */
 }
 
-.estadoFilter {
-  position: relative;
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.estadoButton {
-  background-color: #eee;
-  border: none;
+.titleBox {
+  background-color: #f1f1f1;
   padding: 0.5rem 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.estadoDropdown {
-  position: absolute;
-  top: 120%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
   border-radius: 8px;
-  z-index: 10;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 200px;
+  color: #ff6609;
+  display: inline-block;
+  text-align: center;
 }
 
-.estadoOption {
-  padding: 0.6rem 1rem;
-  cursor: pointer;
+.title {
+  font-size: 1.8rem;
+  margin: 0;
+  text-align: center; /* Centra el texto del título */
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
+/* --- FIN Estilos de Encabezado --- */
 
-.estadoOption:hover {
-  background-color: #f0f0f0;
-}
-
-.searchInput {
-  min-width: 300px; /* o menos si quieres */
-  width: 100px;     /* ancho fijo */
+/* --- Estilos de Barra de Búsqueda (CONSISTENTES) --- */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #ff6609;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  margin-left: auto;
+  border-radius: 15px;
+  width: 100%; /* Ocupa el 100% del espacio disponible */
+  max-width: 400px; /* Ancho máximo para la barra de búsqueda */
+  background-color: #fff;
 }
 
+.searchBar span {
+  color: #ff6609;
+}
+
+.searchBar input {
+  flex: 1; /* Permite que el input ocupe el espacio restante */
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  min-width: auto;
+  color: #333; /* Color del texto del input */
+}
+
+.searchBar input::placeholder {
+  color: #888; /* Color del placeholder */
+}
+/* --- FIN Estilos de Barra de Búsqueda --- */
+
+/* --- Estilos de Tabla (CONSISTENTES) --- */
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
@@ -80,120 +86,167 @@
 
 .table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 0.5rem;
-  min-width: 900px;
+  border-collapse: separate; /* Necesario para border-spacing y border-radius */
+  border-spacing: 0 0.5rem; /* Espacio entre filas */
+  min-width: 900px; /* Asegura que la tabla no sea demasiado pequeña en pantallas medianas */
   background-color: #ffffff;
-  border-radius: 10px;
-  overflow: hidden;
-  padding: 10px;
+  border-radius: 12px; /* Redondea las esquinas de la tabla */
+  overflow: hidden; /* Importante para que el border-radius funcione con la sombra */
+  padding: 10px; /* Padding interno para que las filas no toquen el borde del .table */
 }
 
-.thead th {
+.table thead th { /* Corregido de .thead th a .table thead th */
   background-color: #ddd;
   text-align: left;
   padding: 0.75rem;
-  font-weight: 600;
-  border-bottom: 1px solid #ccc;
+  font-weight: bold; /* Más grueso para encabezados */
+  color: #333;
+  border-bottom: none; /* Quitamos el borde inferior del thead */
 }
 
-.tbody tr {
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  background-color: #f0f0f0;
+.table tbody tr { /* Corregido de .tbody tr a .table tbody tr */
+  border-radius: 8px; /* Redondea las filas individuales */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra para efecto flotante */
+  background-color: #eee;
+  transition: transform 0.2s ease;
 }
 
-.tbody td {
+.table tbody td { /* Corregido de .tbody td a .table tbody td */
   padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: none; /* Quitamos los bordes de celda individuales */
   vertical-align: middle;
+  text-align: left; /* Alineación por defecto para el contenido de la celda */
 }
 
+/* Redondeo de celdas en las esquinas para consistencia */
+.table tbody td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.table tbody td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+/* --- FIN Estilos de Tabla --- */
+
+/* --- Estilos de Botones (CONSISTENTES) --- */
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-right: -50px;
+  gap: 0.5rem; /* Espacio entre los botones */
+  justify-content: flex-start;
+  /* margin-right: -50px; /* Esta regla era específica, la quito para generalizar */
 }
 
-.btn {
+.viewBtn { /* Botón "Ver" (Amarillo como detalle) */
+  background-color: #ffeb3b; /* Amarillo */
   border: none;
-  padding: 0.4rem 0.8rem;
+  color: #333; /* Texto oscuro para contraste */
+  padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.viewBtn:hover {
+  background-color: #d1d412; /* Un amarillo más oscuro al pasar el ratón */
+}
+
+.actionBtn { /* Botón "Marcar como listo" (Verde) */
+  background-color: #66be13; /* Verde para acción principal */
   color: white;
-}
-
-.masmin {
-  background-color: #ff9800;
-}
-
-.listo {
-  background-color: #4caf50;
-}
-
-.detalleButton {
-  background-color: #ffeb3b;
   border: none;
-  padding: 0.4rem 0.7rem;
+  padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
 }
 
-.detalleButton:hover {
-  background-color: #d1d412;
+.actionBtn:hover {
+  background-color: #57a110;
 }
 
-.paginationInfo {
-  font-weight: bold;
-  color: #333;
-}
+/* Puedes mantener .masmin y .listo si son para otros contextos o si quieres clases más específicas
+   Pero he preferido usar actionBtn y viewBtn para consistencia. */
+/* .masmin { background-color: #ff9800; } */
+/* .listo { background-color: #4caf50; } */
+/* .detalleButton { /* Removido, usar .viewBtn */
+/* .btn { /* Removido, usar .viewBtn, .actionBtn, etc. */
 
+
+/* --- Mensaje de "No Data" (CONSISTENTE) --- */
 .noData {
   text-align: center;
-  padding: 1rem;
+  padding: 2rem;
   font-style: italic;
+  color: #777;
 }
 
-.pagination {
+/* --- Estilos de Paginación (CONSISTENTES) --- */
+.paginationControls {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  gap: 0.5rem;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
 }
 
 .paginationButton {
-  background-color: #eee;
-  border: none;
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
   padding: 0.5rem 0.9rem;
-  border-radius: 8px;
+  border-radius: 8px; /* Bordes más redondeados */
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.paginationButton:hover {
-  background-color: #dceeff;
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
 }
 
 .activePage {
-  background-color: #333;
-  color: white;
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
 }
 
-/* ==== MEDIA QUERIES ORIGINALES (mantener) ==== */
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+/* --- FIN Estilos de Paginación --- */
+
+
+/* ==== MEDIA QUERIES (Ajustadas para la nueva estructura) ==== */
 @media (min-width: 768px) {
-  .searchFilterContainer {
-    flex-direction: row;
-    justify-content: space-between;
+  .header {
+    flex-direction: row; /* En desktop, el header es una fila */
+    justify-content: space-between; /* El título a la izquierda, la búsqueda a la derecha */
     align-items: center;
   }
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 2rem 3rem;
+  .titleGroup {
+    justify-content: flex-start; /* Asegura que el titleGroup se alinee a la izquierda */
+  }
+  .titleBox {
+    text-align: left; /* Alinea el texto del título a la izquierda en desktop */
+  }
+  .title {
+    text-align: left; /* Alinea el texto del título a la izquierda en desktop */
+  }
+  .searchBar {
+    max-width: 300px; /* Ajusta el ancho de la barra de búsqueda en desktop */
   }
 }

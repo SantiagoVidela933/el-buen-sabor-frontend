@@ -10,22 +10,18 @@
 .header {
   display: flex;
   flex-direction: column; /* Por defecto en columna para móviles */
-  gap: 1rem;
+  gap: 1.5rem; /* Aumentamos el espacio entre los grupos */
   margin-bottom: 1.5rem;
+  justify-content: space-between; /* Esto empujará los elementos a los extremos en desktop */
+  align-items: flex-start; /* Alineación inicial */
 }
 
-/* Nuevo div para agrupar el título y el select en la izquierda */
-.titleAndSelectGroup {
-    display: flex; /* Hacemos que sea un contenedor flex */
-    align-items: center; /* Centra los items verticalmente */
-    gap: 1.5rem; /* Espacio entre el título y el select */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-}
-
-.titleGroup {
+.titleAndFiltersGroup {
   display: flex;
-  align-items: center;
+  flex-direction: column; /* Columna para móviles */
+  align-items: flex-start; /* Alinea los items a la izquierda */
   gap: 1rem;
+  width: 100%; /* Ocupa todo el ancho en móvil */
 }
 
 .titleBox {
@@ -33,7 +29,7 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   color: #ff6609;
-  display: inline-block;
+  display: inline-block; /* Para que el padding se aplique correctamente al ancho del texto */
 }
 
 .title {
@@ -45,70 +41,94 @@
   color: #ff6609;
 }
 
-
-.searchFilterContainer { /* Contenedor original para filtros y búsqueda - ya no usado para el select */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-}
-
-.selectWrapper {
+/* Estilos para el nuevo filtro de estado (el dropdown personalizado) */
+.estadoFilter {
+  position: relative;
   display: flex;
   justify-content: flex-start;
-  max-width: 180px; /* Ancho máximo para el selectWrapper, hazlo más chico */
+  width: 100%; /* Ocupa el ancho completo de su contenedor en móvil */
+  max-width: 220px; /* Ancho máximo para el filtro */
 }
 
-.select {
-  padding: 0.9rem 1rem;
-  border-radius: 15px;
-  border: 1px solid #ff6609;
-  background-color: #f1f1f1;
-  color: #333; /* Asegura un color de texto oscuro y visible */
-  font-size: 0.9rem;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23ff6609%22%20d%3D%22M5.996%208.204L2.012%204.22c-.2-.2-.2-.512%200-.712s.512-.2.712%200L6%207.135l3.276-3.627c.2-.2.512-.2.712%200s.2.512%200%20.712l-4.004%204.004c-.2.2-.512%20.2-.712%200z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
+.estadoButton {
+  background-color: #f1f1f1; /* Fondo consistente */
+  border: 1px solid #ff6609; /* Borde consistente */
+  color: #ff6609; /* Color de texto consistente */
+  padding: 0.8rem 1.2rem; /* Padding consistente */
+  border-radius: 15px; /* Bordes más redondeados y consistentes */
   cursor: pointer;
+  font-weight: 600;
   transition: all 0.3s ease;
-  width: 100%; /* Para que el select ocupe el ancho de su wrapper */
-}
-
-.select:hover {
-  background-color: white;
-  color: #ff6609;
-}
-
-.searchBar { /* Estilo de la barra de búsqueda */
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%; /* Para que el botón ocupe el ancho del .estadoFilter */
+  justify-content: space-between; /* Para separar el texto del icono */
+  text-align: left; /* Asegura que el texto esté alineado a la izquierda */
+}
+
+.estadoButton:hover {
+  background-color: #ff6609; /* Hover consistente */
+  color: white;
+}
+
+.estadoDropdown {
+  position: absolute;
+  top: 100%; /* Posiciona justo debajo del botón */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd; /* Borde más suave */
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 180px; /* Ancho mínimo para legibilidad */
+  margin-top: 0.5rem; /* Espacio entre el botón y el dropdown */
+  width: 100%; /* El dropdown ocupa el mismo ancho que el botón */
+}
+
+.estadoOption {
+  padding: 0.75rem 1rem; /* Padding consistente */
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+}
+
+.estadoOption:hover {
+  background-color: #f0f0f0;
+  color: #ff6609; /* Color de hover consistente */
+}
+
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Mantiene la lupa y el input a la izquierda */
+  gap: 0.5rem;
   border: 1px solid #ff6609;
-  padding: 0.5rem 7rem;
+  /* Ajuste de padding: '0.5rem' mantiene la altura, '2rem' aumenta el ancho interno */
+  padding: 0.5rem 2rem; /* El primer valor es vertical (altura), el segundo es horizontal (ancho) */
   border-radius: 15px;
-  max-width: 400px; /* Ancho máximo para la barra de búsqueda */
+  width: 100%;
+  /* CAMBIO: Aumenta el ancho máximo significativamente */
+  max-width: 700px; /* Puedes ajustar este valor para controlar qué tan ancha se hace */
   background-color: #fff;
+  box-sizing: border-box;
 }
 
 .searchBar span {
   color: #ff6609;
+  margin-right: 0; /* Asegura que no haya espacio extra a la derecha de la lupa */
 }
 
 .searchBar input {
-  flex: 1;
+  flex: 1; /* Permite que el input ocupe el espacio restante */
   border: none;
   outline: none;
   background: transparent;
   padding: 0;
   margin: 0;
   min-width: auto;
-}
-
-.tableWrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  text-align: left; /* Asegura que el texto comience a la izquierda */
 }
 
 .table {
@@ -120,6 +140,7 @@
   border-radius: 12px;
   overflow: hidden;
   padding: 10px;
+  margin-top: 1.5rem; /* Espacio por encima de la tabla */
 }
 
 .table thead th {
@@ -145,19 +166,10 @@
   text-align: left;
 }
 
-.table tbody td:first-child { 
-  border-top-left-radius: 8px; 
-  border-bottom-left-radius: 8px; 
-}
-.table tbody td:last-child { 
-  border-top-right-radius: 8px; 
-  border-bottom-right-radius: 8px; 
-}
-
-.actions {
+.actionButtonsGroup {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
+  flex-wrap: wrap;
   justify-content: flex-start;
 }
 
@@ -209,37 +221,103 @@
   background-color: #d32f2f;
 }
 
-.noData {
+.disabledAction {
+  font-style: italic;
+  color: #777;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.noPedidos { 
   text-align: center;
   padding: 2rem;
   font-style: italic;
   color: #777;
 }
 
+/* Estilos para loading y error */
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+.error {
+  color: #f44336;
+}
+
+/* --- Estilos de Paginación Numérica --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
+  flex-wrap: wrap; /* Para asegurar que se ajusten en pantallas pequeñas */
+}
+
+.paginationButton {
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Bordes más redondeados */
+  cursor: pointer;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  text-align: center;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
+}
+
+.activePage {
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
+}
+
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+
+
 /* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
   .header {
-    flex-direction: row;
-    justify-content: space-between; /* Esto separa el titleAndSelectGroup de la searchBar */
-    align-items: center;
+    flex-direction: row; 
+    align-items: center; 
   }
 
-  /* El .searchFilterContainer ya no es necesario para la alineación del select y la búsqueda */
-  /* Lo puedes eliminar o dejarlo si planeas agregar más filtros que vayan juntos */
-  .searchFilterContainer {
-    /* Mantengo flex-direction: row para que si añades más filtros, se pongan en fila */
-    flex-direction: row;
+  .titleAndFiltersGroup {
+    flex-direction: row; 
     align-items: center;
-    justify-content: flex-end; /* Alinea sus contenidos a la derecha */
-    flex-wrap: nowrap;
-    gap: 1.5rem;
-    width: auto;
+    width: auto; 
+  }
+
+  /* Ajustes para el nuevo filtro de estado en desktop */
+  .estadoFilter {
+    width: auto; 
+    max-width: 220px; 
+  }
+
+  .searchBar {
+    width: auto; 
+    margin-left: auto; 
   }
 
   .container {
     padding: 2rem 3rem;
-  }
-  .searchBar {
-    max-width: 300px;
   }
 }

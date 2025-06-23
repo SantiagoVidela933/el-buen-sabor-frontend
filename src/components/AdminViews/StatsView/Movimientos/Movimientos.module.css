@@ -1,14 +1,37 @@
 .container {
   padding: 2rem;
-  max-width: 1000px;
+  max-width: 100%; /* Ajustado para no sobrepasar el dashboard */
   margin: auto;
+  background-color: #f9f9f9; /* Fondo consistente */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  box-sizing: border-box; /* Crucial para que padding y borde no sumen al width */
 }
 
-.title {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* --- ESTILOS DEL TÍTULO COMO EN FACTURACIÓN --- */
+.titleBox { /* Contenedor para el título con el fondo */
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #ff6609;
+  display: inline-block; /* Para que el padding se ajuste al contenido */
+  margin-bottom: 1.5rem; /* Espacio debajo del título */
+  /* Centrar el titleBox */
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* Necesario para que margin: auto funcione */
+  width: fit-content; /* Para que el titleBox solo ocupe el ancho de su contenido */
 }
+
+.title { /* Estilo para el texto h2 dentro de titleBox */
+  font-size: 1.8rem;
+  margin: 0; /* Elimina márgenes por defecto del h2 */
+  text-align: center; /* Centra el texto dentro del titleBox */
+  background-color: transparent; /* Asegura que no tenga fondo propio */
+  padding: 0; /* Sin padding adicional en el h2 */
+  color: #ff6609; /* Color del texto */
+}
+/* ------------------------------------------- */
 
 .filtros {
   display: flex;
@@ -29,6 +52,9 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid #ccc;
   border-radius: 8px;
+  /* Añadido para consistencia */
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .exportarBtn {
@@ -42,10 +68,11 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
+  transition: background-color 0.3s ease; /* Transición para hover */
 }
 
 .exportarBtn:hover {
-  background-color: #ff6609;
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón */
 }
 
 .resumen {
@@ -57,19 +84,43 @@
 }
 
 .card {
-  background-color: #f3f3f3;
+  background-color: #ffffff; /* Color de fondo más claro */
   border-radius: 12px;
   padding: 1rem 2rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra ligeramente más pronunciada */
   min-width: 200px;
+  flex: 1; /* Permite que las tarjetas se expandan y contraigan */
+  max-width: 30%; /* Limita el ancho máximo para evitar que una sola ocupe demasiado */
+  box-sizing: border-box; /* Asegura que padding y border estén dentro del ancho */
+  transition: transform 0.2s ease; /* Transición para hover */
+}
+
+.card:hover {
+  transform: translateY(-3px); /* Pequeño efecto de elevación al pasar el ratón */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12); /* Sombra más fuerte al pasar el ratón */
 }
 
 .card h4 {
   margin-bottom: 0.5rem;
+  color: #555; /* Color de texto más suave */
+  font-size: 1.1rem; /* Tamaño de fuente ligeramente más grande */
 }
 
 .card p {
-  font-size: 1.3rem;
+  font-size: 1.5rem; /* Tamaño de fuente ligeramente más grande */
   font-weight: bold;
+  color: #ff6609; /* Color naranja para los valores */
+}
+
+/* MEDIA QUERIES para asegurar que el container no sobrepase */
+@media (max-width: 768px) {
+  .resumen {
+    flex-direction: column; /* Apila las tarjetas en pantallas pequeñas */
+    align-items: center; /* Centra las tarjetas apiladas */
+  }
+
+  .card {
+    max-width: 90%; /* Ocupa más ancho en pantallas pequeñas */
+  }
 }

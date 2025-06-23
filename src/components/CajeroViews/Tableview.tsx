@@ -17,7 +17,7 @@ export function Table() {
 
   // --- Estados para paginación (Aunque no los uses directamente en el renderizado de paginación numérica, la lógica de filtrado los necesita) ---
   const [currentPage, setCurrentPage] = useState(1); // Necesario para el reseteo al filtrar/buscar
-  const itemsPerPage = 5; // Define cuántos elementos quieres por página
+  const itemsPerPage = 8; // Define cuántos elementos quieres por página
 
   const estadoLabels: Record<Estado, string> = {
     [Estado.PREPARACION]: "En cocina",

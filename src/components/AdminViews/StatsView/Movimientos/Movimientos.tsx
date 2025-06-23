@@ -54,7 +54,10 @@ const Movimientos = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Movimientos monetarios</h2>
+      {/* SECCIÓN DEL TÍTULO MODIFICADA */}
+      <div className={styles.titleBox}>
+        <h2 className={styles.title}>Movimientos monetarios</h2>
+      </div>
 
       <div className={styles.filtros}>
         <label>
@@ -96,19 +99,19 @@ const Movimientos = () => {
       <div className={styles.resumen}>
         <div className={styles.card}>
           <h4>Ingresos Totales</h4>
-          <p>${totales.ingreso ? totales.ingreso.toFixed(2) : 0.00}</p>
+          <p>${totales.ingreso ? totales.ingreso.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
         </div>
         <div className={styles.card}>
           <h4>Costos Totales</h4>
-          <p>${totales.costo ? totales.costo.toFixed(2) : 0.00}</p>
+          <p>${totales.costo ? totales.costo.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
         </div>
         <div className={styles.card}>
           <h4>Ganancias</h4>
-          <p>${totales.ganancia ? totales.ganancia.toFixed(2) : 0.00}</p>
+          <p>${totales.ganancia ? totales.ganancia.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
         </div>
       </div>
     </div>
   );
 }
 
-export default Movimientos
+export default Movimientos;

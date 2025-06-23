@@ -1,14 +1,37 @@
 .container {
   padding: 2rem;
-  max-width: 1000px;
+  max-width: 100%; /* Ajustado para no sobrepasar el dashboard */
   margin: auto;
+  background-color: #f9f9f9; /* Fondo consistente */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  box-sizing: border-box; /* Crucial para que padding y borde no sumen al width */
 }
 
-.title {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* --- ESTILOS DEL TÍTULO COMO EN FACTURACIÓN --- */
+.titleBox { /* Contenedor para el título con el fondo */
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #ff6609;
+  display: inline-block; /* Para que el padding se ajuste al contenido */
+  margin-bottom: 1.5rem; /* Espacio debajo del título */
+  /* Centrar el titleBox */
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* Necesario para que margin: auto funcione */
+  width: fit-content; /* Para que el titleBox solo ocupe el ancho de su contenido */
 }
+
+.title { /* Estilo para el texto h2 dentro de titleBox */
+  font-size: 1.8rem;
+  margin: 0; /* Elimina márgenes por defecto del h2 */
+  text-align: center; /* Centra el texto dentro del titleBox */
+  background-color: transparent; /* Asegura que no tenga fondo propio */
+  padding: 0; /* Sin padding adicional en el h2 */
+  color: #ff6609; /* Color del texto */
+}
+/* ------------------------------------------- */
 
 .filtros {
   display: flex;
@@ -30,6 +53,9 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid #ccc;
   border-radius: 8px;
+  /* Añadido para consistencia */
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .exportarBtn {
@@ -43,34 +69,120 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
+  transition: background-color 0.3s ease; /* Transición para hover */
 }
 
 .exportarBtn:hover {
-  background-color: #ff6609;
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón */
 }
 
 .tabla table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Cambiado a separate para border-radius en filas */
+  border-spacing: 0 0.5rem; /* Espacio entre filas */
   margin-top: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px; /* Bordes redondeados de la tabla */
+  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
+  padding: 10px; /* Padding interno de la tabla */
 }
 
 .tabla th,
 .tabla td {
   padding: 0.8rem;
   text-align: center;
-  border-bottom: 1px solid #ccc;
+  border-bottom: none; /* Eliminado para usar el border-spacing */
+}
+
+.tabla thead th {
+  background-color: #ddd;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Estilo para las filas del body */
+.tabla tbody tr {
+  border-radius: 8px; /* Bordes redondeados para las filas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
+  background-color: #eee;
+  transition: transform 0.2s ease;
+}
+
+/* Asegurar que las esquinas de las celdas redondeen las filas */
+.tabla tbody td:first-child { 
+  border-top-left-radius: 8px; 
+  border-bottom-left-radius: 8px; 
+}
+.tabla tbody td:last-child { 
+  border-top-right-radius: 8px; 
+  border-bottom-right-radius: 8px; 
 }
 
 .verPedidosBtn {
-  background-color: #ff6609;
+  background-color: #ff6609; /* Cambiado a un amarillo más estándar */
   color: white;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .verPedidosBtn:hover {
-  background-color: #1976d2;
+  background-color: #d86015; /* Un poco más oscuro al pasar el ratón */
+}
+
+/* --- ESTILOS DE PAGINACIÓN NUMÉRICA (Copiados directamente) --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
+  flex-wrap: wrap; /* Para asegurar que se ajusten en pantallas pequeñas */
+}
+
+.paginationButton {
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Bordes más redondeados */
+  cursor: pointer;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  text-align: center;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
+}
+
+.activePage {
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
+}
+
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+
+/* MEDIA QUERIES para asegurar que el container no sobrepase */
+@media (min-width: 768px) {
+  .container {
+    /* Si tienes un max-width definido para tu dashboard, ajústalo aquí */
+    /* Por ejemplo, si tu dashboard tiene 1200px de ancho, podrías poner 1100px aquí */
+    /* max-width: 1100px; */ 
+    /* Si quieres que simplemente se adapte al 100% de su padre, puedes quitar el max-width o dejarlo en 100% */
+  }
 }

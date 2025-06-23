@@ -1,71 +1,75 @@
 .container {
-  padding: 2rem; /* Aumentado padding para consistencia */
-  background-color: #f9f9f9; /* Fondo consistente */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   width: 100%;
   box-sizing: border-box;
 }
 
-.header { /* Nuevo contenedor para el título y búsqueda */
+.header {
   display: flex;
-  flex-direction: column; /* Columna por defecto para móvil */
+  flex-direction: column;
   gap: 1rem;
-  margin-bottom: 1.5rem; /* Más espacio */
+  margin-bottom: 1.5rem;
 }
 
-.titleGroup { /* Contenedor para el título */
+.titleGroup {
   display: flex;
   align-items: center;
   gap: 1rem;
-  justify-content: space-between; /* Para separar título y posibles acciones, aunque aquí solo es el título */
+  justify-content: space-between;
 }
 
-.titleBox { /* Estilo del recuadro del título */
+.titleBox {
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  color: #ff6609; /* Color de la marca */
+  color: #ff6609;
   display: inline-block;
 }
 
-.title { /* Estilo para el título h2 */
-  font-size: 1.8rem; /* Tamaño de fuente consistente */
+.title {
+  font-size: 1.8rem;
   margin: 0;
-  text-align: left; /* Alineación por defecto a la izquierda */
-  background-color: transparent; /* El color de fondo lo maneja .titleBox */
-  padding: 0; /* No padding adicional en el título en sí */
-  color: #ff6609; /* Color de la marca, ya que lo quitamos del títuloBox */
+  text-align: left;
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
 
-/* El elemento .filters del original se reemplaza por .searchBar directamente en el header */
-.searchBar { /* Nuevo estilo para la barra de búsqueda (contenedor del input) */
+/* --- Ajustes para la barra de búsqueda --- */
+.searchBar {
   display: flex;
   align-items: center;
+  justify-content: flex-start; /* Mantiene la lupa y el input a la izquierda */
   gap: 0.5rem;
-  border: 1px solid #ff6609; /* Borde naranja consistente */
-  padding: 0.5rem 1rem;
-  border-radius: 15px; /* Bordes redondeados */
+  border: 1px solid #ff6609;
+  padding: 0.5rem 1.5rem; /* Ajuste de padding para un ancho interno sin afectar la altura */
+  border-radius: 15px;
   width: 100%;
-  max-width: 400px; /* Ajuste para un ancho máximo */
-  background-color: #fff; /* Fondo blanco */
+  max-width: 700px; /* Aumenta el ancho máximo de la barra */
+  background-color: #fff;
+  box-sizing: border-box;
 }
 
-.searchBar span { /* Estilo para el icono de búsqueda */
-  color: #ff6609; /* Color naranja consistente */
+.searchBar span {
+  color: #ff6609;
+  margin-right: 0; /* Elimina cualquier espacio extra a la derecha de la lupa */
 }
 
-.searchBar input { /* Estilo del input dentro de .searchBar */
-  flex: 1; /* Para que ocupe el espacio restante */
-  border: none; /* Sin borde */
-  outline: none; /* Sin outline al enfocar */
-  background: transparent; /* Fondo transparente */
-  padding: 0; /* Sin padding adicional en el input */
-  margin: 0; /* Sin margen adicional en el input */
-  min-width: auto; /* Ancho mínimo flexible */
+.searchBar input {
+  flex: 1; /* Permite que el input ocupe el espacio restante */
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  min-width: auto;
+  text-align: left; /* Alinea el texto a la izquierda */
 }
 
-.tableWrapper { /* Para manejar el overflow-x en la tabla */
+.tableWrapper {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -74,58 +78,48 @@
 .table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 0.5rem; /* Espacio entre filas */
-  min-width: 900px; /* Asegura un ancho mínimo si las columnas son muchas */
+  border-spacing: 0 0.5rem;
+  min-width: 900px;
   background-color: #ffffff;
-  border-radius: 12px; /* Bordes redondeados de la tabla */
-  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
-  padding: 10px; /* Padding interno de la tabla */
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
 }
 
-.table thead th { /* Más específico para los th del thead */
+.table thead th {
   background-color: #ddd;
-  text-align: left; /* Alineación a la izquierda para encabezados */
+  text-align: left;
   padding: 0.75rem;
   font-weight: bold;
   color: #333;
   border-bottom: none;
 }
 
-.table tbody tr { /* Estilo para las filas del body */
-  border-radius: 8px; /* Bordes redondeados para las filas */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
+.table tbody tr {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   background-color: #eee;
   transition: transform 0.2s ease;
 }
 
-.table tbody td { /* Estilo para las celdas del body */
+.table tbody td {
   padding: 0.75rem 0.5rem;
   border-bottom: none;
   vertical-align: middle;
-  text-align: left; /* Alineación a la izquierda para el contenido de las celdas */
-}
-
-.table tbody td:first-child { 
-  border-top-left-radius: 8px; 
-  border-bottom-left-radius: 8px; 
-}
-.table tbody td:last-child { 
-  border-top-right-radius: 8px; 
-  border-bottom-right-radius: 8px; 
+  text-align: left;
 }
 
 .actions {
   display: flex;
-  flex-wrap: wrap; /* Permite que los botones se envuelvan si no hay espacio */
-  gap: 0.5rem; /* Espacio entre los botones de acción */
-  justify-content: flex-start; /* Alinea los botones al inicio de la celda */
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
 }
 
-/* Botón "Ver Detalle" - Clase .detailBtn */
 .detailBtn {
-  background-color: yellow; /* Tu color actual */
-  border: none; /* Sin borde */
-  color: black; /* Color de texto */
+  background-color: yellow;
+  border: none;
+  color: black;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: bold;
@@ -134,46 +128,88 @@
 }
 
 .detailBtn:hover {
-  background-color: #ced113; /* Color de hover */
+  background-color: #ced113;
   color: black;
 }
 
-/* Botón genérico de acción - Clase .btn (para Enviar a cocina, Marcar como entregado, Pasar a En delivery) */
 .btn {
-  border: none; /* Sin borde */
+  border: none;
   padding: 0.6rem 1rem;
   border-radius: 8px;
   font-weight: bold;
   font-size: 0.85rem;
   cursor: pointer;
   color: white;
-  background-color: #66be13; /* Color de fondo verde (base para estos botones) */
+  background-color: #66be13;
   transition: background-color 0.3s ease;
 }
 
 .btn:hover {
-  background-color: #57a110; /* Color de hover para el verde */
+  background-color: #57a110;
 }
 
-/* Mensaje cuando no hay datos */
 .noData {
   text-align: center;
-  padding: 2rem; /* Aumentado padding para consistencia */
+  padding: 2rem;
   font-style: italic;
   color: #777;
+}
+
+/* --- ESTILOS DE PAGINACIÓN NUMÉRICA (Copiados directamente) --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
+  flex-wrap: wrap; /* Para asegurar que se ajusten en pantallas pequeñas */
+}
+
+.paginationButton {
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Bordes más redondeados */
+  cursor: pointer;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  text-align: center;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
+}
+
+.activePage {
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
+}
+
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
 }
 
 /* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
   .header {
-    flex-direction: row; /* Vuelve a fila en pantallas grandes */
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
   .container {
-    padding: 2rem 3rem; /* Ajuste para pantallas más grandes */
+    padding: 2rem 3rem;
   }
   .searchBar {
-    max-width: 300px; /* Ajuste el ancho de la barra de búsqueda en pantallas grandes */
+    max-width: 500px; /* Puedes ajustar este valor si quieres que sea más ancha en desktop */
   }
 }

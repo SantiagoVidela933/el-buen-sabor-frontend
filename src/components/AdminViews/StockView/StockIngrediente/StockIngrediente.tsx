@@ -19,7 +19,7 @@ export default function StockIngrediente() {
   const [busqueda, setBusqueda] = useState("");
 
   // --- Lógica de Paginación ---
-  const insumosPorPagina = 5; // Define cuántos insumos mostrar por página
+  const insumosPorPagina = 8; // Define cuántos insumos mostrar por página
   const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
 
   useEffect(() => {
