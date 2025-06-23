@@ -17,43 +17,79 @@ export async function getPromociones(): Promise<Promocion[]> {
 }
 
 // POST - Crear nueva categoría
-export async function createPromocion(promocion: Partial<Promocion>): Promise<Promocion> {
-  const response = await fetch(`http://localhost:8080/api/v1/promociones/Create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(promocion)
+export async function createPromocion(
+   promocion: Partial<Promocion>,
+   imagen: File
+): Promise<Promocion> {
+  const formData = new FormData();
+  const promocionBlob = new Blob([JSON.stringify(promocion)], {
+    type: 'application/json',
   });
 
-  if (!response.ok) {
-    throw new Error("Error al crear la promocion");
+  formData.append('promocion', promocionBlob);
+  if (imagen) {
+    formData.append('imagenes', imagen);
   }
+
+  const response = await fetch(`http://localhost:8080/api/v1/promociones/Create`, {
+    method: 'POST',
+    body: formData,
+  });
 
   const data = await response.json();
   return Promocion.fromJson(data);
 }
 
 export async function updatePromocion(
-  // data: {
-  //   denominacion: string;
-  //   sucursalId: number;
-  // }
-  data: Partial<Promocion>,
+  promocion: Partial<Promocion>,
+  imagen: File,
   id?: number
 ): Promise<Promocion> {
-  const response = await fetch(`http://localhost:8080/api/v1/promociones/Update/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+    console.log("ID:", id);
 
-  if (!response.ok) {
-    throw new Error("Error al actualizar la promocion");
-  }
+    const formData = new FormData();
+    const promocionBlob = new Blob([JSON.stringify(promocion)], {
+      type: 'application/json',
+    });
 
-  const json = await response.json();
-  return Promocion.fromJson(json);
+    formData.append('promocion', promocionBlob);
+    if (imagen) {
+      formData.append('imagenes', imagen);
+    }
+
+    const response = await fetch(`http://localhost:8080/api/v1/promociones/Update/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error("Error al actualizar la promocion");
+    }
+    
+    const json = await response.json();
+    const data = Promocion.fromJson(json);
+    return data;
 }
+
+// DELETE Articulo Manufacturado por ID
+export const deletePromocion = async (id?: number): Promise<void> => {
+  const res = await fetch(`http://localhost:8080/api/v1/promociones/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al eliminar artículo manufacturado');
+  }
+};
+
+export const darDeAltaPromocion = async (id: number): Promise<void> => {
+  const res = await fetch(`http://localhost:8080/api/v1/promociones/alta/${id}`, {
+    method: 'PUT',
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR] Backend response:', errorText);
+    throw new Error('Error al dar de alta el artículo manufacturado');
+  }
+};

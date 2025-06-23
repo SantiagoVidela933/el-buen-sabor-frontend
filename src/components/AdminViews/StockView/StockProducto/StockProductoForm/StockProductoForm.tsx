@@ -212,67 +212,67 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </select>
         </div>
         <div className={styles.fieldGroupFull}>
-        <label>Receta</label>
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <select
-            value={selectedInsumoId}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
-              if (id !== 0 && !insumoYaAgregado) {
-                const insumo = insumos.find(i => i.id === id);
-                if (insumo) {
-                  setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+          <label>Receta</label>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <select
+              value={selectedInsumoId}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                if (id !== 0 && !insumoYaAgregado) {
+                  const insumo = insumos.find(i => i.id === id);
+                  if (insumo) {
+                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                  }
                 }
-              }
-              setSelectedInsumoId(0); // Reset select
-            }}
-          >
-            <option value={0}>-- Seleccionar ingrediente --</option>
-            {insumos.map((insumo) => (
-              <option
-                key={insumo.id}
-                value={insumo.id}
-                disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
-              >
-                {insumo.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-        <h4>Ingredientes Agregados:</h4>
-        <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {ingredientes.map(({ insumo, cantidad }, index) => (
-            <li
-              key={insumo.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
+                setSelectedInsumoId(0); // Reset select
               }}
             >
-              <span style={{ flex: 1 }}>
-                {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-              </span>
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={cantidad}
-                onChange={(e) => {
-                  const nuevaCantidad = Number(e.target.value);
-                  setIngredientes((prev) =>
-                    prev.map((ing, i) =>
-                      i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                    )
-                  );
+              <option value={0}>-- Seleccionar ingrediente --</option>
+              {insumos.map((insumo) => (
+                <option
+                  key={insumo.id}
+                  value={insumo.id}
+                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                >
+                  {insumo.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
+          <h4>Ingredientes Agregados:</h4>
+          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {ingredientes.map(({ insumo, cantidad }, index) => (
+              <li
+                key={insumo.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem'
                 }}
-              />
-              <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-            </li>
-          ))}
-        </ul>
-      </div>
+              >
+                <span style={{ flex: 1 }}>
+                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={cantidad}
+                  onChange={(e) => {
+                    const nuevaCantidad = Number(e.target.value);
+                    setIngredientes((prev) =>
+                      prev.map((ing, i) =>
+                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                      )
+                    );
+                  }}
+                />
+                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className={styles.fieldGroupFull}>
           <label htmlFor="imagen">Imágen</label>
           <input

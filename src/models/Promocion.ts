@@ -1,15 +1,15 @@
 import { BaseEntity } from "./BaseEntity";
-import { SucursalEmpresa } from "./SucursalEmpresa";
 import { PromocionDetalle } from "./PromocionDetalle";
 import { PedidoVentaDetalle } from "./PedidoVentaDetalle";
 import { Imagen } from "./Imagen";
+import { SucursalEmpresaPromocion } from "./SucursalEmpresaPromocion";
 
 export class Promocion extends BaseEntity {
   denominacion: string;
   fechaDesde?: Date;
   fechaHasta?: Date;
   descuento: number;
-  sucursal?: SucursalEmpresa;
+  sucursal?: SucursalEmpresaPromocion;
   promocionesDetalle: PromocionDetalle[];
   pedidosVentaDetalle: PedidoVentaDetalle[];
   imagenes: Imagen[];
@@ -23,7 +23,7 @@ export class Promocion extends BaseEntity {
     descuento: number,
     fechaDesde?: Date,
     fechaHasta?: Date,
-    sucursal?: SucursalEmpresa,
+    sucursal?: SucursalEmpresaPromocion,
     promocionesDetalle: PromocionDetalle[] = [],
     pedidosVentaDetalle: PedidoVentaDetalle[] = [],
     imagenes: Imagen[] = [],
@@ -42,7 +42,7 @@ export class Promocion extends BaseEntity {
   static fromJson(json: any): Promocion {
     const fechaDesde = json.fechaDesde ? new Date(json.fechaDesde) : undefined;
     const fechaHasta = json.fechaHasta ? new Date(json.fechaHasta) : undefined;
-    const sucursal = SucursalEmpresa.fromJson(json.sucursal);
+    const sucursal = SucursalEmpresaPromocion.fromJson(json.sucursal);
     const promocionesDetalle = (json.promocionesDetalle ?? []).map((pd: any) => PromocionDetalle.fromJson(pd));
     const pedidosVentaDetalle = (json.pedidosVentaDetalle ?? []).map((pvd: any) => PedidoVentaDetalle.fromJson(pvd));
     const imagenes = (json.imagenes ?? []).map((img: any) => Imagen.fromJson(img));

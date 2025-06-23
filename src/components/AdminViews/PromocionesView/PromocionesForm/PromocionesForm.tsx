@@ -5,6 +5,7 @@ import { createPromocion, updatePromocion } from '../../../../api/promociones';
 import { PromocionDetalle } from '../../../../models/PromocionDetalle';
 import { Articulo } from '../../../../models/Articulo';
 import { getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
+// import { getAllArticulosManufacturadosPromociones } from '../../../../api/articuloManufacturado';
 
 interface PromocionesFormProps {
   promocion?: Promocion;
@@ -17,7 +18,9 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<'Alta' | 'Baja'>(promocion?.fechaBaja ? 'Baja' : 'Alta');
   const [descuento, setDescuento] = useState(0);
+
   const [detallePromocion, setDetallePromocion] = useState<PromocionDetalle[]>([]);
+  const [Promocion, setPromocion] = useState<Promocion>();
   const [selectedArticuloId, setSelectedArticuloId] = useState<number>(0);
 
   const [fechaDesde, setFechaDesde] = useState<string>('');
@@ -26,6 +29,23 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   const [fechaAlta, setFechaAlta] = useState<string>();
 
   const [articulos, setArticulos] = useState<Articulo[]>([]);
+
+  // Muestro imagen (img, nombre) a editar en form
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
+    promocion?.imagenes?.length ? promocion.imagenes[0].denominacion : null
+  );
+  const [imagen, setImagen] = useState<File | null>(null);
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Imagen cambiada:", e.target.files);
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagen(file);
+      setNombreImagenActual(file.name); 
+      setImagenPreview(URL.createObjectURL(file)); 
+    }
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,11 +57,10 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
 
         setFechaDesde(promocion.fechaDesde ? new Date(promocion.fechaDesde).toISOString().slice(0, 10) : ''); 
         setFechaHasta(promocion.fechaHasta ? new Date(promocion.fechaHasta).toISOString().slice(0, 10) : ''); 
-
-        // setFechaAlta(promocion.fechaAlta ?? undefined); 
-
-        // const articulos = await getAllArticulosManufacturados()
-        setArticulos(articulos)
+        setFechaAlta(promocion.fechaAlta ?? undefined);
+        setPromocion(promocion);
+        setImagenPreview(promocion.imagenes?.length ? promocion.imagenes[0].url : null);
+        setNombreImagenActual(promocion.imagenes?.length ? promocion.imagenes[0].denominacion : null);
       }
     };
 
@@ -51,28 +70,23 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   useEffect(() => {
     const fetchData = async () => {
       const articulos = await getAllArticulosManufacturados();
-      console.log("Articulos:", articulos);
+      articulos.map((articulo) => {
+        articulo.detalles = [];
+        articulo.tipoArticulo = 'manufacturado';
+        if ('estado' in articulo) {
+          delete (articulo as any).estado;
+        }
+      });
+      console.log("Artículos obtenidos:", articulos);
       setArticulos(articulos)
     };
     fetchData();
   }, []);
-
-//   useEffect(() => {
-//     console.log("CARGA DETALLE:");
-//       if (modo === 'editar' && promocion?.promocionesDetalle?.length && detallePromocion.length > 0) {
-//       const detallesIniciales: PromocionDetalle[] = promocion.promocionesDetalle.map((detalle) => {
-//         // Buscar el artículo completo en detallePromocion, asegurando que sea de tipo Articulo
-//         const articuloCompleto = detallePromocion.find((i) => i.articulo?.id === detalle.articulo?.id)?.articulo;
-//         return {
-//           ...detalle,
-//           articulo: articuloCompleto ?? detalle.articulo,
-//           cantidad: detalle.cantidad,
-//         };
-//       });
-//       setDetallePromocion(detallesIniciales);
-//       }
-//     }, [modo, promocion, detallePromocion]);
   
+  const handleEliminarArticulo = (idArticulo?: number) => {
+    setDetallePromocion(prev => prev.filter(detalle => detalle.articulo?.id !== idArticulo));
+    console.log("Detalle de promoción:", detallePromocion);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,8 +119,14 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         fechaModificacion: promocion?.fechaModificacion ?? new Date().toISOString(),
         fechaDesde: fechaDesde ? new Date(fechaDesde) : new Date(),
         fechaHasta: fechaHasta ? new Date(fechaHasta) : new Date(),
-        id: promocion?.id ?? 0, 
+        id: promocion?.id ?? undefined, 
     };
+
+    if ('pedidosVentaDetalle' in payload) {
+      delete (payload as any).pedidosVentaDetalle;
+    }
+
+    console.log("Payload de promoción:", payload);
 
     if (modo === "editar") {
       try {
@@ -115,24 +135,28 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         } else {
           payload.fechaBaja = null;
         }
-        const result = await updatePromocion(payload, promocion?.id);
+
+        const result = await updatePromocion(payload, imagen!, promocion?.id);
+        console.log("Promocion actualizada:", result);
+
+        result.sucursal = promocion?.sucursal;
         onSubmit(result);
       } catch (error) {
-        console.error("Error al actualizar la categoría:", error);
+        console.error("Error al actualizar la promocion:", error);
       }
     } else {
       try {
         if (estado === 'Baja') {
           payload.fechaBaja = new Date().toISOString();
         }
-        const result = await createPromocion(payload);
-        // onSubmit(result);
+
+        const result = await createPromocion(payload, imagen!);
+        onSubmit(result);
       } catch (error) {
-        console.error("Error al crear la categoría:", error);
+        console.error("Error al crear la promocion:", error);
       }
     }
   };
-
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -174,68 +198,94 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
           />
         </div>
 
-        <div className={styles.fieldGroupFull}>
-        <label>Detalle</label>
+      <div className={styles.fieldGroupFull}>
+
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <select
-            value={selectedArticuloId}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const articuloYaAgregado = articulos.some(art => art?.id === id);
-              if (id !== 0 && !articuloYaAgregado) {
-                const detalle = detallePromocion.find(i => i.id === id);
-                // if (detalle) {
-                //   setDetallePromocion((prev) => [...prev, { articulo, cantidad: 0 }]);
-                // }
-              }
-              setSelectedArticuloId(0); // Reset select
-            }}
-          >
-            <option value={0}>-- Seleccionar articulo --</option>
-            {articulos.map((articulo) => (
-              <option
-                key={articulo?.id}
-                value={articulo?.id}
-                // disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+          <div style={{ display: 'flex' }}>
+            <select
+              style={{ width: '20rem' }}
+              value={selectedArticuloId}
+              onChange={e => setSelectedArticuloId(Number(e.target.value))}
               >
-                {articulo?.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-        <h4>Articulos Agregados:</h4>
-        <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {detallePromocion.map(({ articulo, cantidad }, index) => (
-            <li
-              key={articulo?.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
-              }}
+              <option value={0}>Seleccionar artículo</option>
+              {articulos.map(art => (
+                <option
+                key={art.id}
+                value={art.id}
+                disabled={detallePromocion.some(det => det.articulo?.id === art.id)}>
+                  {art.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+          style={{ width: '20rem' }}
+            type="button"
+            onClick={() => {
+              if (selectedArticuloId === 0) return alert('Selecciona un artículo');
+              const articulo = articulos.find(a => a.id === selectedArticuloId);
+              if (!articulo) return;
+              setDetallePromocion(prev => [
+                ...prev,
+                {
+                  articulo,
+                  cantidad: 1,
+                  fechaAlta: new Date().toISOString(),
+                  fechaModificacion: null,
+                  fechaBaja: null
+                }
+              ]);
+              setSelectedArticuloId(0);
+            }}
             >
-              <span style={{ flex: 1 }}>
-                {articulo?.denominacion} ({articulo?.unidadMedida?.denominacion ?? ''})
-              </span>
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={cantidad}
-                onChange={(e) => {
-                  const nuevaCantidad = Number(e.target.value);
-                //   setIngredientes((prev) =>
-                //     prev.map((ing, i) =>
-                //       i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                //     )
-                //   );
+            Agregar al detalle
+          </button>
+        </div>
+
+        <div>
+          <h4>Articulos Agregados:</h4>
+            <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {detallePromocion.map((detalle, idx) => (
+                <li key={detalle.articulo?.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem'
+                }}>
+                  {detalle.articulo?.denominacion}
+                  <input
+                    type="number"
+                    min={1}
+                    value={detalle.cantidad}
+                    onChange={e => {
+                      const nuevaCantidad = Number(e.target.value);
+                      setDetallePromocion(prev =>
+                        prev.map((d, i) =>
+                          i === idx ? { ...d, cantidad: nuevaCantidad } : d
+                    )
+                  );
                 }}
-              />
-              {/* <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button> */}
-            </li>
-          ))}
-        </ul>
+                style={{ marginLeft: 8 }}
+                />
+                <button type="button" onClick={() => handleEliminarArticulo(detalle.articulo?.id)}>Eliminar</button>
+                </li>
+              ))}
+            </ul>
+        </div>
       </div>
+
+        <div className={styles.fieldGroupFull}>
+          <label htmlFor="imagen">Imágen</label>
+          <input
+            type="file"
+            id="imagen"
+            className={styles.imageInput}
+            onChange={handleImageChange}
+          />
+          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+        </div>
 
 
         {modo === 'crear' && (
