@@ -214,12 +214,11 @@ export function Table() {
                         {tieneManufacturados(order) ? "Enviar a cocina" : "Marcar como entregado"}
                       </button>
                     )}
-
-                    {order.estado === Estado.PREPARACION && (
+                    {order.estado === Estado.LISTO && (
                       <>
                         {order.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                           <button
-                            className={styles.btn} // Usa la clase .btn
+                            className={styles.btn}
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
@@ -236,12 +235,11 @@ export function Table() {
 
                         {order.tipoEnvio === TipoEnvio.DELIVERY && (
                           <button
-                            className={styles.btn} // Usa la clase .btn
+                            className={styles.btn}
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
-                                const EN_DELIVERY = "EN_DELIVERY";
-                                await cambiarEstadoPedidoVenta(order.id, EN_DELIVERY as Estado);
+                                await cambiarEstadoPedidoVenta(order.id, Estado.EN_DELIVERY);
                                 await fetchPedidos();
                               } catch (error) {
                                 console.error("Error al cambiar estado:", error);
