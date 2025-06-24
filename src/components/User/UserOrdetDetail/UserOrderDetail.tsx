@@ -6,20 +6,75 @@ import { TipoEnvio } from '../../../models/enums/TipoEnvio';
 import { Estado } from '../../../models/enums/Estado';
 import { getClientePorPedido } from '../../../api/cliente';
 import {Cliente} from '../../../models/Cliente';
-
+import { formatearFechaHora } from '../../../api/formatearFechaHora';
+import { getPedidoVentaPorId } from '../../../api/pedidoVenta';
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
   onClose: () => void;
 }
 
 const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
+  const [pedidoCargado, setPedidoCargado] = useState<PedidoVenta | null>(null);
   const [clienteCompleto, setClienteCompleto] = useState<Cliente | null>(null);
+  const [loadingPedido, setLoadingPedido] = useState<boolean>(true);
   const [loadingCliente, setLoadingCliente] = useState<boolean>(false);
   const [errorCliente, setErrorCliente] = useState<string | null>(null);
+  const [errorPedido, setErrorPedido] = useState<string | null>(null);
 
+    useEffect(() => {
+    const cargarPedido = async () => {
+      try {
+        if (pedidoVenta.id === undefined) {
+          console.error("ID de pedido no disponible");
+          setErrorPedido("ID de pedido no disponible");
+          return;
+        }
+        
+        setLoadingPedido(true);
+        console.log('Cargando detalles completos del pedido ID:', pedidoVenta.id);
+        const pedidoCompleto = await getPedidoVentaPorId(pedidoVenta.id);
+        console.log('Datos completos del pedido:', pedidoCompleto);
+        
+        // Validar que el pedido tenga los detalles necesarios
+        if (!pedidoCompleto.pedidosVentaDetalle) {
+          console.error("El pedido no contiene detalles");
+          setErrorPedido("No se encontraron detalles del pedido");
+          return;
+        }
+        
+        // Logging para depuración de detalles
+        pedidoCompleto.pedidosVentaDetalle.forEach((detalle, idx) => {
+          console.log(`Detalle #${idx}:`, {
+            id: detalle.id,
+            subtotal: detalle.subtotal,
+            cantidad: detalle.cantidad,
+            tieneArticulo: !!detalle.articulo,
+            articuloNombre: detalle.articulo?.denominacion,
+            tienePromocion: !!detalle.promocion,
+            promocionNombre: detalle.promocion?.denominacion
+          });
+        });
+        
+        setPedidoCargado(pedidoCompleto);
+      } catch (error) {
+        console.error("Error al cargar el pedido completo:", error);
+        setErrorPedido("Error al cargar los detalles del pedido");
+      } finally {
+        setLoadingPedido(false);
+      }
+    };
+    
+    cargarPedido();
+  }, [pedidoVenta.id]);
+  
+  
   useEffect(() => {
     const obtenerClienteDetallado = async () => {
       try {
+        if (pedidoVenta.id === undefined) {
+          setErrorCliente("ID de pedido no disponible");
+          return;
+        }
         setLoadingCliente(true);
         setErrorCliente(null);
         const clienteData = await getClientePorPedido(pedidoVenta.id);
@@ -35,6 +90,29 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
     obtenerClienteDetallado();
   }, [pedidoVenta.id]);
 
+  // Mostrar estado de carga mientras se obtienen los datos
+  if (loadingPedido) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.title}>Cargando detalles del pedido...</h2>
+        <div className={styles.loadingSpinner}></div>
+      </div>
+    );
+  }
+
+  // Mostrar mensaje de error si hay problemas con el pedido
+  if (errorPedido) {
+    return (
+      <div className={styles.container}>
+        <h2 className={styles.title}>Error</h2>
+        <p>{errorPedido}</p>
+        <button onClick={onClose} className={styles.closeButton}>Cerrar</button>
+      </div>
+    );
+  }
+
+  // Usar pedidoCargado si está disponible, de lo contrario usar pedidoVenta
+  const pedidoMostrar = pedidoCargado || pedidoVenta;
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -43,20 +121,16 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Pedido : {pedidoVenta.id}</h2>
+      <h2 className={styles.title}>Pedido : {pedidoMostrar.id}</h2>
 
       <div className={styles.details}>
         <div>
           <p>
             <strong>Fecha:</strong>{" "}
-            {new Date(pedidoVenta.fechaPedido).toLocaleDateString("es-AR", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
+            {formatearFechaHora(pedidoMostrar)}
           </p>
           <p>
-            <strong>Estado:</strong> {Estado[pedidoVenta.estado]}
+            <strong>Estado:</strong> {Estado[pedidoMostrar.estado]}
           </p>
           <p>
             <strong>Nombre y Apellido:</strong>{" "}
@@ -70,8 +144,8 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </p>
           <p>
             <strong>Dirección:</strong>{" "}
-            {pedidoVenta.domicilio
-              ? `${pedidoVenta.domicilio.calle} ${pedidoVenta.domicilio.numero}${pedidoVenta.domicilio.localidad?.nombre ? `, ${pedidoVenta.domicilio.localidad.nombre}` : ""}`
+            {pedidoMostrar.domicilio
+              ? `${pedidoMostrar.domicilio.calle} ${pedidoMostrar.domicilio.numero}${pedidoMostrar.domicilio.localidad?.nombre ? `, ${pedidoMostrar.domicilio.localidad.nombre}` : ""}`
               : clienteCompleto?.domicilio
                 ? `${clienteCompleto.domicilio.calle} ${clienteCompleto.domicilio.numero}${clienteCompleto.domicilio.localidad?.nombre ? `, ${clienteCompleto.domicilio.localidad.nombre}` : ""}`
                 : "No registrada"}
@@ -79,18 +153,18 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
         </div>
         <div>
           <p>
-            <strong>Forma de Entrega:</strong> {TipoEnvio[pedidoVenta.tipoEnvio]}
+            <strong>Forma de Entrega:</strong> {TipoEnvio[pedidoMostrar.tipoEnvio]}
           </p>
           <p>
-            <strong>Forma de Pago:</strong> {FormaPago[pedidoVenta.formaPago]}
+            <strong>Forma de Pago:</strong> {FormaPago[pedidoMostrar.formaPago]}
           </p>
           <p>
             <strong>Hora estimada:</strong>{" "}
-            {pedidoVenta.horaPedido} -{" "}
+            {pedidoMostrar.horaPedido} -{" "}
             {(() => {
               // Calculo hora estimada + 20 minutos
-              const [h, m] = pedidoVenta.horaPedido.split(":").map(Number);
-              let date = new Date(pedidoVenta.fechaPedido);
+              const [h, m] = pedidoMostrar.horaPedido.split(":").map(Number);
+              let date = new Date(pedidoMostrar.fechaPedido);
               date.setHours(h, m + 20);
               const hh = date.getHours().toString().padStart(2, "0");
               const mm = date.getMinutes().toString().padStart(2, "0");
@@ -110,12 +184,12 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidoVenta.pedidosVentaDetalle.map((detalle, index) => (
+          {pedidoCargado?.pedidosVentaDetalle?.map((detalle, index) => (
             <tr key={index}>
               <td>
-                {detalle.promocion
-                  ? detalle.promocion.denominacion
-                  : detalle.articulo?.denominacion}
+                {detalle.promocion 
+                  ? (detalle.promocion.denominacion || 'Promoción #' + (detalle.promocion.id || 'Sin ID'))
+                  : (detalle.articulo?.denominacion || 'Producto no disponible')}
               </td>
               <td>{detalle.cantidad}</td>
               <td>{formatoMoneda.format(detalle.subtotal / detalle.cantidad)}</td>
@@ -130,19 +204,19 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           <strong>Sub Total:</strong> {formatoMoneda.format(pedidoVenta.pedidosVentaDetalle.reduce((acc, detalle) => acc + detalle.subtotal, 0))}
         </p>
         
-        {pedidoVenta.descuento > 0 && (
+        {pedidoMostrar.descuento > 0 && (
           <p>
             <strong>Descuentos:</strong> -{formatoMoneda.format((pedidoVenta.totalVenta*(pedidoVenta.descuento/100)))}
           </p>
         )}
-        {(!pedidoVenta.descuento || pedidoVenta.descuento === 0) && (
+        {(!pedidoMostrar.descuento || pedidoMostrar.descuento === 0) && (
           <p>
             <strong>Descuentos:</strong> - - -
           </p>
         )}
         
         <p className={styles.total}>
-          <strong>TOTAL:</strong> {formatoMoneda.format(pedidoVenta.totalVenta)}
+          <strong>TOTAL:</strong> {formatoMoneda.format(pedidoMostrar.totalVenta)}
         </p>
       </div>
     </div>

@@ -19,6 +19,28 @@ export const getPedidosVentas = async () => {
   return await response.json();
 };
 
+//GET PedidoVenta por id
+export const getPedidoVentaPorId = async (id: number): Promise<PedidoVenta> => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/v1/pedidoVenta/pedido/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.mensaje || 'Error al obtener el pedido');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getPedidoVentaPorId:', error);
+    throw error;
+  }
+};
+
 // GET PedidoVenta para Cliente
 export const getMisPedidosVenta = async (
   getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
