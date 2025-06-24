@@ -4,6 +4,7 @@ import Modal from '../../components/ui/Modal/Modal';
 import DeliveryDetail from './DeliveryDetail/DeliveryDetail';
 import { cambiarEstadoPedidoVenta, getPedidosVentasDelivery } from '../../api/pedidoVenta';
 import { PedidoVenta } from '../../models/PedidoVenta';
+import { formatearFechaHora } from '../../api/formatearFechaHora'; 
 import { Estado } from '../../models/enums/Estado';
 
 const DeliveryPage = () => {
@@ -82,14 +83,7 @@ const DeliveryPage = () => {
               pedidosFiltrados.map((pedido) => (
                 <tr key={pedido.id}>
                   <td>#{pedido.id}</td> 
-                  <td>
-                    {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })} {" "}
-                    {pedido.horaPedido}
-                  </td>
+                  <td>{formatearFechaHora(pedido)}</td>
                   <td>{pedido.tipoEnvio}</td>
                   <td>{pedido.formaPago}</td>
                   <td className={styles.actions}>
