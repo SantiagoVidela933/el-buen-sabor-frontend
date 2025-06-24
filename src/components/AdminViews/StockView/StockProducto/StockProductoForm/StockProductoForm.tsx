@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './StockProductoForm.module.css';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { getCategoriasMenuABM } from '../../../../../api/articuloCategoria';
@@ -34,7 +34,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
       setTiempoCocina(producto.tiempoEstimadoMinutos || 0);
       setMargenGanancia(producto.margenGanancia || 0);
       setCategoriaId(producto.categoria?.id?.toString() || '');
-      setNombreImagenActual(producto.imagenes?.[0]?.denominacion || null);
+      setNombreImagenActual(producto.imagenes?.[0]?.nombre || null);
       setImagenPreview(null); // Limpia el preview si cambia el producto
     }
   }, [producto]);
@@ -82,8 +82,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     if (modo === 'editar' && producto?.detalles?.length && insumos.length > 0) {
     const ingredientesIniciales: IngredienteReceta[] = producto.detalles.map((detalle) => {
       const insumoCompleto = insumos.find((i) => i.id === detalle.articuloInsumo.id);
-      console.log('detalle.articuloInsumo:', detalle.articuloInsumo);
-      console.log('insumoCompleto:', insumoCompleto);
       return {
         insumo: insumoCompleto ?? detalle.articuloInsumo,
         cantidad: detalle.cantidad,
@@ -167,18 +165,31 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   };
 
   // Muestro imagen (img, nombre) a editar en form
-  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
-    producto?.imagenes?.length ? producto.imagenes[0].denominacion : null
-  );
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+  const didSetPreview = useRef(false);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+  const file = e.target.files?.[0];
+  if (file) {
       setImagen(file);
-      setNombreImagenActual(file.name); 
-      setImagenPreview(URL.createObjectURL(file)); 
+      setNombreImagenActual(file.name);
+      setImagenPreview(URL.createObjectURL(file));
+      didSetPreview.current = true;
     }
   };
+  useEffect(() => {
+    const nombreArchivo = producto?.imagenes?.[0]?.nombre;
+    if (nombreArchivo) {
+      setNombreImagenActual(nombreArchivo);
+      setImagenPreview(`http://localhost:8080/imagenes/${nombreArchivo}`);
+      didSetPreview.current = true;
+    } else {
+      setNombreImagenActual(null);
+      setImagenPreview(null);
+      didSetPreview.current = false;
+    }
+  }, [producto?.imagenes]);
+
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -273,17 +284,32 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           ))}
         </ul>
       </div>
-        <div className={styles.fieldGroupFull}>
-          <label htmlFor="imagen">Imágen</label>
-          <input
-            type="file"
-            id="imagen"
-            className={styles.imageInput}
-            onChange={handleImageChange}
-          />
-          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
-        </div>
+      <div className={styles.fieldGroupFull}>
+        <label htmlFor="imagen">Imágen</label>
+        <input
+          type="file"
+          id="imagen"
+          className={styles.imageInput}
+          onChange={handleImageChange}
+        />
+        {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+        {imagenPreview ? (
+          <>
+            <p>Imagen preview src: {imagenPreview}</p>
+            <img
+              src={imagenPreview}
+              alt="Preview"
+              style={{ maxWidth: 200, border: '1px solid black' }}
+              onError={(e) => {
+                console.error('Error cargando imagen:', e.currentTarget.src);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </>
+        ) : (
+          <p>No hay imagen para mostrar</p>
+        )}
+      </div>
       </div>
       <div className={styles.buttonActions}>
         <button type="submit" className={styles.saveBtn}> 

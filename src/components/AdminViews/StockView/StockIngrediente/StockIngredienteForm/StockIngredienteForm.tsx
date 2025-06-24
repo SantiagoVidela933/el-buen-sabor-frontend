@@ -24,7 +24,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [categoria, setCategoria] = useState<CategoriaArticulo | null>(null);
   const [imagenNombre, setImagenNombre] = useState(
-    ingrediente?.imagenes?.[0]?.denominacion || ""
+    ingrediente?.imagenes?.[0]?.nombre || ""
   );
   const [stockActual, setStockActual] = useState(
     ingrediente?.stockPorSucursal?.[0]?.stockActual || 0
@@ -51,7 +51,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       setDenominacion(ingrediente.denominacion || "");
       setPrecioCompra(ingrediente.precioCompra || 0);
       setMargenGanancia(ingrediente.margenGanancia || 0);
-      setImagenNombre(ingrediente.imagenes?.[0]?.denominacion || "");
+      setImagenNombre(ingrediente.imagenes?.[0]?.nombre || "");
       // setStockActual(ingrediente.stockPorSucursal?.[0]?.stockActual || 0);
       // setStockMinimo(ingrediente.stockPorSucursal?.[0]?.stockMinimo || 0);
       setUnidadMedida(ingrediente.unidadMedida || undefined);
