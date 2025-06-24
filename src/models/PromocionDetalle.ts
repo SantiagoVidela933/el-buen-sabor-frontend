@@ -8,20 +8,26 @@ export class PromocionDetalle extends BaseEntity {
   articulo?: Articulo;
 
   constructor(
+    id: number,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
     cantidad: number,
     promocion?: Promocion,
     articulo?: Articulo
   ) {
-    super();
+    super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.cantidad = cantidad;
     this.promocion = promocion;
     this.articulo = articulo;
   }
 
   static fromJson(json: any): PromocionDetalle {
-    if (!json) return null;
-
     return new PromocionDetalle(
+      json.id ?? 0,
+      json.fechaAlta ?? null,
+      json.fechaModificacion ?? null,
+      json.fechaBaja ?? null,
       json.cantidad,
       json.promocion ? Promocion.fromJson(json.promocion) : undefined,
       json.articulo ? Articulo.fromJson(json.articulo) : undefined

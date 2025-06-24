@@ -40,8 +40,6 @@ export abstract class Articulo extends BaseEntity {
   }
 
    static fromJson(json: any): Articulo {
-    if (!json) return null;
-
     // Para los objetos anidados llamamos sus fromJson respectivos
     const unidadMedida = UnidadMedida.fromJson(json.unidadMedida);
     const sucursal = SucursalEmpresa.fromJson(json.sucursal);

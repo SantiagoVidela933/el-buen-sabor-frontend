@@ -14,6 +14,7 @@ import Movimientos from '../../components/AdminViews/StatsView/Movimientos/Movim
 import ProductStats from '../../components/AdminViews/StatsView/ProductStats/ProductStats';
 import Facturacion from '../../components/AdminViews/Facturacion/Facturacion';
 import Navbar from '../../components/ui/Navbar/Navbar';
+import Promociones from '../../components/AdminViews/PromocionesView/Promociones';
 
 const AdminLayout = () => {
 
@@ -41,6 +42,10 @@ const AdminLayout = () => {
         return <ProductStats />;
       case "facturacion":
         return <Facturacion />; 
+      case "facturacion":
+        return <Facturacion />; 
+      case "promociones":
+        return <Promociones />; 
       default:
         return <div>Selecciona una opción del panel</div>;
     }

@@ -223,93 +223,78 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </select>
         </div>
         <div className={styles.fieldGroupFull}>
-        <label>Receta</label>
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <select
-            value={selectedInsumoId}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
-              if (id !== 0 && !insumoYaAgregado) {
-                const insumo = insumos.find(i => i.id === id);
-                if (insumo) {
-                  setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+          <label>Receta</label>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <select
+              value={selectedInsumoId}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                if (id !== 0 && !insumoYaAgregado) {
+                  const insumo = insumos.find(i => i.id === id);
+                  if (insumo) {
+                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                  }
                 }
-              }
-              setSelectedInsumoId(0); // Reset select
-            }}
-          >
-            <option value={0}>-- Seleccionar ingrediente --</option>
-            {insumos.map((insumo) => (
-              <option
-                key={insumo.id}
-                value={insumo.id}
-                disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
-              >
-                {insumo.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-        <h4>Ingredientes Agregados:</h4>
-        <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {ingredientes.map(({ insumo, cantidad }, index) => (
-            <li
-              key={insumo.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
+                setSelectedInsumoId(0); // Reset select
               }}
             >
-              <span style={{ flex: 1 }}>
-                {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-              </span>
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={cantidad}
-                onChange={(e) => {
-                  const nuevaCantidad = Number(e.target.value);
-                  setIngredientes((prev) =>
-                    prev.map((ing, i) =>
-                      i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                    )
-                  );
+              <option value={0}>-- Seleccionar ingrediente --</option>
+              {insumos.map((insumo) => (
+                <option
+                  key={insumo.id}
+                  value={insumo.id}
+                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                >
+                  {insumo.denominacion}
+                </option>
+              ))}
+            </select>
+          </div>
+          <h4>Ingredientes Agregados:</h4>
+          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {ingredientes.map(({ insumo, cantidad }, index) => (
+              <li
+                key={insumo.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem'
                 }}
-              />
-              <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className={styles.fieldGroupFull}>
-        <label htmlFor="imagen">Imágen</label>
-        <input
-          type="file"
-          id="imagen"
-          className={styles.imageInput}
-          onChange={handleImageChange}
-        />
-        {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-        {imagenPreview ? (
-          <>
-            <p>Imagen preview src: {imagenPreview}</p>
-            <img
-              src={imagenPreview}
-              alt="Preview"
-              style={{ maxWidth: 200, border: '1px solid black' }}
-              onError={(e) => {
-                console.error('Error cargando imagen:', e.currentTarget.src);
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </>
-        ) : (
-          <p>No hay imagen para mostrar</p>
-        )}
-      </div>
+              >
+                <span style={{ flex: 1 }}>
+                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={cantidad}
+                  onChange={(e) => {
+                    const nuevaCantidad = Number(e.target.value);
+                    setIngredientes((prev) =>
+                      prev.map((ing, i) =>
+                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                      )
+                    );
+                  }}
+                />
+                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.fieldGroupFull}>
+          <label htmlFor="imagen">Imágen</label>
+          <input
+            type="file"
+            id="imagen"
+            className={styles.imageInput}
+            onChange={handleImageChange}
+          />
+          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+        </div>
       </div>
       <div className={styles.buttonActions}>
         <button type="submit" className={styles.saveBtn}> 
