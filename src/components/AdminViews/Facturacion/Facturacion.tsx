@@ -4,6 +4,7 @@ import { getPedidosVentas } from '../../../api/pedidoVenta';
 import { PedidoVenta } from '../../../models/PedidoVenta';
 import { Estado } from '../../../models/enums/Estado';
 import { descargarFacturaPDF, descargarNotaCreditoPDF, anularFactura } from '../../../api/factura';
+import { formatearFechaHora } from '../../../api/formatearFechaHora';
 import Modal from '../../ui/Modal/Modal';
 import UserOrderDetail from '../../User/UserOrdetDetail/UserOrderDetail';
 
@@ -83,13 +84,6 @@ const Facturacion = () => {
       );
     }
     return buttons;
-  };
-
-  // Función para formatear la fecha y hora
-  const formatearFechaHora = (fecha: string | Date) => {
-    if (!fecha) return 'N/A';
-    const date = new Date(fecha);
-    return date.toLocaleString('es-AR');
   };
 
   // Función para ver detalle del pedido
@@ -245,7 +239,7 @@ const Facturacion = () => {
             {currentPedidos.map((pedido) => (
               <tr key={pedido.id}>
                 <td>{pedido.id}</td>
-                <td>{formatearFechaHora(pedido.fechaPedido)}</td>
+                <td>{formatearFechaHora(pedido)}</td>
                 <td>{pedido.tipoEnvio}</td>
                 <td>{pedido.formaPago}</td>
                 <td>${pedido.totalVenta?.toFixed(2) || pedido.totalVenta?.toFixed(2)}</td>

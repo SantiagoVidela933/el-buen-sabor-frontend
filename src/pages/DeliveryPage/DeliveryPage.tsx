@@ -29,25 +29,15 @@ const DeliveryPage = () => {
     setSelectedOrder(pedido);
     setShowModal(true);
   };
-
-  // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
-      search.trim() === "" || pedido.id.toString().includes(search.trim())
-    );
-
-  const estadoLabels: Record<Estado, string> = {
-    [Estado.PREPARACION]: "En cocina",
-    [Estado.PENDIENTE]: "A confirmar",
-    [Estado.CANCELADO]: "Cancelado",
-    [Estado.RECHAZADO]: "Rechazado",
-    [Estado.ENTREGADO]: "Entregado",
-    [Estado.EN_DELIVERY]: "En delivery",
-  };
+      search.trim() === "" || (pedido.id !== undefined && pedido.id.toString().includes(search.trim())
+    )
+  );
 
   return (
     <div className={styles.container}>
@@ -75,7 +65,7 @@ const DeliveryPage = () => {
           <thead>
             <tr>
               <th>Pedido</th>
-              <th>Fecha y Hora</th> {/* Consistencia en la columna */}
+              <th>Fecha y Hora</th>
               <th>Forma de Entrega</th>
               <th>Forma de Pago</th>
               <th>Acciones</th>
@@ -84,7 +74,6 @@ const DeliveryPage = () => {
           <tbody>
             {pedidosFiltrados.length === 0 ? (
               <tr>
-                {/* Aquí es donde se aplica colSpan para que la celda abarque todas las columnas */}
                 <td colSpan={5} className={styles.noData}> 
                   No hay pedidos de delivery que coincidan con la búsqueda.
                 </td>
@@ -92,7 +81,7 @@ const DeliveryPage = () => {
             ) : (
               pedidosFiltrados.map((pedido) => (
                 <tr key={pedido.id}>
-                  <td>#{pedido.id}</td> {/* Añadido # para consistencia */}
+                  <td>#{pedido.id}</td> 
                   <td>
                     {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
                       day: "2-digit",
@@ -104,18 +93,23 @@ const DeliveryPage = () => {
                   <td>{pedido.tipoEnvio}</td>
                   <td>{pedido.formaPago}</td>
                   <td className={styles.actions}>
-                    <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button> {/* Clase detailBtn */}
+                    <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
                     <button
-                      className={styles.btn} // Clase btn para el botón de acción principal
+                      className={styles.btn} 
                       onClick={async () => {
                         try {
-                          await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                          console.log('Intentando marcar como entregado el pedido ID:', pedido.id);
+                          console.log('Estado actual del pedido:', pedido.estado);
+                          console.log('Datos del pedido:', pedido);
+                          if (pedido.id !== undefined) {
+                            console.log('Llamando a la API para cambiar estado...');
+                            await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                          }
                           await fetchPedidos(); 
                         } catch (error) {
                           console.error("Error al marcar como entregado:", error);
                         }
                       }}
-                      disabled={pedido.facturas.length === 0} 
                     >
                       Marcar como entregado
                     </button>
