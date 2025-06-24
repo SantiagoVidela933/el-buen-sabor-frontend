@@ -42,8 +42,6 @@ const AdminLayout = () => {
         return <ProductStats />;
       case "facturacion":
         return <Facturacion />; 
-      case "facturacion":
-        return <Facturacion />; 
       case "promociones":
         return <Promociones />; 
       default:

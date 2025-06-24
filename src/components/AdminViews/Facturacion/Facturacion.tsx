@@ -16,6 +16,8 @@ const Facturacion = () => {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPedido, setSelectedPedido] = useState<PedidoVenta | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const cargarPedidos = async () => {
@@ -36,14 +38,52 @@ const Facturacion = () => {
   }, []);
 
   const filtrarPedidos = (): PedidoVenta[] => {
-    return pedidos.filter(pedido => {
+    const pedidosFiltrados = pedidos.filter(pedido => {
       const coincideEstado = estadoFiltro === 'Todos' || pedido.estado === estadoFiltro;
-      const coincideId = busquedaId === '' || pedido.id.toString().includes(busquedaId);
+      const coincideId = busquedaId === '' || (pedido.id?.toString()||'').includes(busquedaId);
       return coincideEstado && coincideId;
+    });
+    return pedidosFiltrados.sort((a, b) =>{
+      if (a.id === undefined) return 1;
+      if (b.id === undefined) return -1;
+      
+      return b.id - a.id;
+
     });
   };
 
   const pedidosFiltrados = filtrarPedidos();
+
+  // Calculamos las propiedades para la paginación
+  const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPedidos = pedidosFiltrados.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  // Generar los botones de números de página
+  const getPaginationButtons = () => {
+    const buttons = [];
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`${styles.paginationButton} ${
+            currentPage === i ? styles.activePage : ""
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+    return buttons;
+  };
 
   // Función para formatear la fecha y hora
   const formatearFechaHora = (fecha: string | Date) => {
@@ -68,8 +108,13 @@ const Facturacion = () => {
     try {
       setActionLoading(true);
       // Obtenemos el ID de la última factura
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+      const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
+    
     } catch (error) {
       alert("Error al descargar la factura. Por favor, intente nuevamente.");
       console.error("Error:", error);
@@ -88,7 +133,11 @@ const Facturacion = () => {
     try {
       setActionLoading(true);
       // Obtenemos el ID de la última factura
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+    const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
       alert("Error al descargar la nota de crédito. Por favor, intente nuevamente.");
@@ -113,7 +162,11 @@ const Facturacion = () => {
     try {
       setActionLoading(true);
       // Obtenemos el ID de la última factura
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+      const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await anularFactura(facturaId);
       
       // Actualizar la lista de pedidos después de anular
@@ -189,7 +242,7 @@ const Facturacion = () => {
             </tr>
           </thead>
           <tbody>
-            {pedidosFiltrados.map((pedido) => (
+            {currentPedidos.map((pedido) => (
               <tr key={pedido.id}>
                 <td>{pedido.id}</td>
                 <td>{formatearFechaHora(pedido.fechaPedido)}</td>
@@ -245,6 +298,13 @@ const Facturacion = () => {
             ))}
           </tbody>
         </table>
+      )}  
+
+      {/* Controles de paginación - agregar después de la tabla */}
+      {pedidosFiltrados.length > 0 && totalPages > 1 && (
+        <div className={styles.pagination}>
+          {getPaginationButtons()}
+        </div>
       )}
 
       {showModal && selectedPedido && (

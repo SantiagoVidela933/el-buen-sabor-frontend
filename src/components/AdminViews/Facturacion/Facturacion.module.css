@@ -216,6 +216,48 @@
   color: #777;
 }
 
+/* --- Estilos de Paginación Numérica --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
+}
+
+.paginationButton {
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Bordes más redondeados */
+  cursor: pointer;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
+}
+
+.activePage {
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
+}
+
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+
+
 /* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
   .header {
