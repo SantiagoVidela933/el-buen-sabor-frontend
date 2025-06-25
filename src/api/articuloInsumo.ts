@@ -30,6 +30,13 @@ export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
   return data.map((item: any) => ArticuloInsumo.fromJson(item));
 }
 
+  // GET Articulos Insumos activos
+export async function getAllArticuloInsumoActivos(): Promise<ArticuloInsumo[]>{
+  const res = await fetch(`${API_URL}/todos/activos`);
+  const data = await res.json();
+  return data.map((item: any) => ArticuloInsumo.fromJson(item));
+}
+
 // POST Articulos Insumo
 export async function createArticuloInsumo(insumoPayload: object): Promise<ArticuloInsumo> {
   const res = await fetch(API_URL, {
