@@ -7,6 +7,7 @@ export async function getPromociones(): Promise<Promocion[]> {
       throw new Error("Error al obtener las promociones del menú");
     }
     const data = await response.json();
+    console.log("Datos obtenidos:", data);
     const dataApi: Promocion[] = data.map((item: any) => Promocion.fromJson(item));
     console.log("Promociones obtenidas API:", data);
     return dataApi;

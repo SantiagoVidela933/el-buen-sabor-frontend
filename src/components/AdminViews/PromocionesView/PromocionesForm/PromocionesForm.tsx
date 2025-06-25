@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './PromocionesForm.module.css';
 import { Promocion } from '../../../../models/Promocion';
 import { createPromocion, updatePromocion } from '../../../../api/promociones';
 import { PromocionDetalle } from '../../../../models/PromocionDetalle';
 import { Articulo } from '../../../../models/Articulo';
-import { getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
+import { getAllArticulosManufacturadosActivos } from '../../../../api/articuloManufacturado';
+import { getAllArticuloInsumoActivos } from '../../../../api/articuloInsumo';
 // import { getAllArticulosManufacturadosPromociones } from '../../../../api/articuloManufacturado';
 
 interface PromocionesFormProps {
@@ -18,34 +19,30 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<'Alta' | 'Baja'>(promocion?.fechaBaja ? 'Baja' : 'Alta');
   const [descuento, setDescuento] = useState(0);
-
   const [detallePromocion, setDetallePromocion] = useState<PromocionDetalle[]>([]);
   const [Promocion, setPromocion] = useState<Promocion>();
   const [selectedArticuloId, setSelectedArticuloId] = useState<number>(0);
-
+  const [imagen, setImagen] = useState<File | null>(null);
   const [fechaDesde, setFechaDesde] = useState<string>('');
   const [fechaHasta, setFechaHasta] = useState<string>('');
-
   const [fechaAlta, setFechaAlta] = useState<string>();
 
+  const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
 
-  // Muestro imagen (img, nombre) a editar en form
-  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(
-    promocion?.imagenes?.length ? promocion.imagenes[0].denominacion : null
-  );
-  const [imagen, setImagen] = useState<File | null>(null);
+ // Muestro imagen (img, nombre) a editar en form
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+  const didSetPreview = useRef(false);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Imagen cambiada:", e.target.files);
-    const file = e.target.files?.[0];
-    if (file) {
+  const file = e.target.files?.[0];
+  if (file) {
       setImagen(file);
-      setNombreImagenActual(file.name); 
-      setImagenPreview(URL.createObjectURL(file)); 
+      setNombreImagenActual(file.name);
+      setImagenPreview(URL.createObjectURL(file));
+      didSetPreview.current = true;
     }
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,8 +56,8 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         setFechaHasta(promocion.fechaHasta ? new Date(promocion.fechaHasta).toISOString().slice(0, 10) : ''); 
         setFechaAlta(promocion.fechaAlta ?? undefined);
         setPromocion(promocion);
-        setImagenPreview(promocion.imagenes?.length ? promocion.imagenes[0].url : null);
-        setNombreImagenActual(promocion.imagenes?.length ? promocion.imagenes[0].denominacion : null);
+        setNombreImagenActual(promocion.imagenes?.length ? promocion.imagenes[0].nombre : null);
+        setImagenPreview(null); // Limpia el preview si cambia el producto
       }
     };
 
@@ -68,17 +65,40 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   }, [promocion]);
 
   useEffect(() => {
+    const nombreArchivo = promocion?.imagenes?.[0]?.nombre;
+
+    console.log("Nombre de archivo:", nombreArchivo);
+    if (nombreArchivo) {
+      setNombreImagenActual(nombreArchivo);
+      setImagenPreview(`http://localhost:8080/imagenes/${nombreArchivo}`);
+      didSetPreview.current = true;
+    } else {
+      setNombreImagenActual(null);
+      setImagenPreview(null);
+      didSetPreview.current = false;
+    }
+  }, [promocion?.imagenes]);
+
+
+  useEffect(() => {
     const fetchData = async () => {
-      const articulos = await getAllArticulosManufacturados();
-      articulos.map((articulo) => {
+      const manufacturados = await getAllArticulosManufacturadosActivos();
+      manufacturados.map((articulo) => {
         articulo.detalles = [];
         articulo.tipoArticulo = 'manufacturado';
         if ('estado' in articulo) {
           delete (articulo as any).estado;
         }
       });
-      console.log("Artículos obtenidos:", articulos);
-      setArticulos(articulos)
+      
+      const insumosVenta = await getAllArticuloInsumoActivos();
+      insumosVenta.map((articulo) => {
+        articulo.tipoArticulo = 'insumo';
+        if ('estado' in articulo) {
+          delete (articulo as any).estado;
+        }
+      });
+      setArticulos([...manufacturados, ...insumosVenta]);
     };
     fetchData();
   }, []);
@@ -277,35 +297,55 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
 
         <div className={styles.fieldGroupFull}>
           <label htmlFor="imagen">Imágen</label>
-          <input
-            type="file"
-            id="imagen"
-            className={styles.imageInput}
-            onChange={handleImageChange}
-          />
-          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
-        </div>
-
-
-        {modo === 'crear' && (
-          <div className={styles.fieldGroup}>
-            <label>Estado</label>
-              <select
-                value={estado}
-                onChange={(e) => setEstado(e.target.value as 'Alta' | 'Baja')}
+          {nombreImagenActual && !mostrarInputImagen ? (
+            <>
+              <p>Imagen seleccionada: {nombreImagenActual}</p>
+              <button
+                type="button"
+                onClick={() => setMostrarInputImagen(true)}
+                className={styles.saveBtn}
+                style={{ marginBottom: '1em' }}
               >
-                <option value="Alta">Alta</option>
-                <option value="Baja">Baja</option>
-              </select>
-          </div>
-        )}
+                Cambiar imagen
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                type="file"
+                id="imagen"
+                className={styles.imageInput}
+                onChange={handleImageChange}
+              />
+              {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+            </>
+          )}
+          {imagenPreview ? (
+            <div style={{ margin: '1em auto' }}>
+              <img
+                src={imagenPreview}
+                alt="Preview"
+                style={{ maxWidth: 200, border: '1px solid black' }}
+                onError={(e) => {
+                  console.error('Error cargando imagen:', e.currentTarget.src);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          ) : (
+            <p>No hay imagen para mostrar</p>
+          )}
+        </div>
       </div>
-      <div className={styles.buttonActions}>
-        <button type="button" className={styles.cancelBtn} onClick={onClose}>
+
+
+        <div className={styles.buttonActions}>
+        <button type="submit" className={styles.saveBtn}> 
+          {modo === "crear" ? "Crear" : "Actualizar"}
+        </button>
+        <button type="button" onClick={onClose} className={styles.cancelBtn}>
           Cancelar
         </button>
-        <button type="submit" className={styles.saveBtn}>Guardar</button>
       </div>
     </form>
   );
