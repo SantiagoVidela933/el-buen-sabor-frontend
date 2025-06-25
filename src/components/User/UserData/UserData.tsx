@@ -7,6 +7,7 @@ import { actualizarEmpleado } from '../../../api/empleado';
 import { Cliente } from '../../../models/Cliente';
 import { Empleado } from '../../../models/Empleado';
 import { EmpleadoRequest } from '../../../api/empleado';
+import { useAuth0 } from "@auth0/auth0-react"; // 👈 Importamos el hook
 
 interface UserDataProps {
   cliente: Cliente | null;
@@ -18,6 +19,8 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
   const [esEmpleado, setEsEmpleado] = useState<boolean>(false);
   const [editableEmpleado, setEditableEmpleado] = useState<Empleado | null>(null);
   const [editableCliente, setEditableCliente] = useState<Cliente | null>(null);
+
+  const { loginWithRedirect } = useAuth0(); // 👈 Lo usamos para refrescar el perfil
 
   useEffect(() => {
     getLocalidadesJSONFetch().then(setLocalidades);
@@ -107,40 +110,43 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    if (esEmpleado && editableEmpleado) {
-      const req: EmpleadoRequest = {
-        nombre: editableEmpleado.nombre,
-        apellido: editableEmpleado.apellido,
-        telefono: editableEmpleado.telefono,
-        email: editableEmpleado.email,
-        rol: editableEmpleado.rol, 
-        sucursalId: 1, 
-        password: editableEmpleado.password || "unchanged", 
-        domicilio: {
-          calle: editableEmpleado.domicilio.calle,
-          numero: editableEmpleado.domicilio.numero,
-          codigoPostal: editableEmpleado.domicilio.codigoPostal,
-          idLocalidad: editableEmpleado.domicilio.idLocalidad
-        }
-      };
+    try {
+      if (esEmpleado && editableEmpleado) {
+        const req: EmpleadoRequest = {
+          nombre: editableEmpleado.nombre,
+          apellido: editableEmpleado.apellido,
+          telefono: editableEmpleado.telefono,
+          email: editableEmpleado.email,
+          rol: editableEmpleado.rol,
+          sucursalId: 1,
+          password: editableEmpleado.password || "unchanged",
+          domicilio: {
+            calle: editableEmpleado.domicilio.calle,
+            numero: editableEmpleado.domicilio.numero,
+            codigoPostal: editableEmpleado.domicilio.codigoPostal,
+            idLocalidad: editableEmpleado.domicilio.idLocalidad
+          }
+        };
 
-      await actualizarEmpleado(editableEmpleado.id, req);
-      alert("Empleado actualizado correctamente.");
-    } else if (!esEmpleado && editableCliente) {
-      await guardarCliente(editableCliente);
-      alert("Cliente actualizado correctamente.");
+        await actualizarEmpleado(editableEmpleado.id, req);
+        alert("Empleado actualizado correctamente.");
+      } else if (!esEmpleado && editableCliente) {
+        await guardarCliente(editableCliente);
+        alert("Cliente actualizado correctamente.");
+      }
+
+      // 👇 Refrescar perfil Auth0 para actualizar email y que Navbar no redirija
+      await loginWithRedirect({
+        prompt: "none",
+        appState: { returnTo: "/" }
+      });
+
+    } catch (error) {
+      alert("Ocurrió un error al guardar los datos.");
     }
-
-    window.location.href = "/";
-
-  } catch (error) {
-    alert("Ocurrió un error al guardar los datos.");
-  }
-};
-
+  };
 
   const entity = esEmpleado ? editableEmpleado : editableCliente;
 
