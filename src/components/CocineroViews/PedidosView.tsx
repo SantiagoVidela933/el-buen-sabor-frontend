@@ -5,6 +5,7 @@ import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
 import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 import { formatearFechaHora } from "../../api/formatearFechaHora";
+
 const PedidosView = () => {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
@@ -40,10 +41,11 @@ const PedidosView = () => {
     setSearch(e.target.value);
     setCurrentPage(1); // Resetear a la primera página en cada búsqueda
   };
+
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
       search.trim() === "" || (pedido.id !== undefined && pedido.id !== null && pedido.id.toString().includes(search.trim()))
-    )
+    );
 
   const actualizarMinutosExtra = async (pedidoId: number, minutosExtra: number) => {
     try {
@@ -112,74 +114,49 @@ const PedidosView = () => {
           </tr>
         </thead>
         <tbody>
-          {pedidosFiltrados.map((pedido) => (
-            <tr key={pedido.id}>
-              <td>{pedido.id}</td>
-              <td>{formatearFechaHora(pedido)}</td>
-              <td>{pedido.tipoEnvio}</td>
-              <td>{pedido.formaPago}</td>
-              <td className={styles.actions}>
-                <button onClick={() => handleViewOrder(pedido)}>Ver</button>
-                <button
-                  onClick={async () => {
-                    try {
-                      if (pedido.id !== undefined) {
-                        await marcarPedidoListo(pedido.id);
-                        await fetchPedidos();
-                      }
-                    } catch (error) {
-                      console.error("Error al marcar como listo:", error);
-                    }
-                  }}
-                >
-                  Marcar como listo
-                </button>
+          {currentPedidos.length === 0 ? (
+            <tr>
+              <td colSpan={numeroColumnasTabla} className={styles.noData}>
+                No hay pedidos para mostrar.
               </td>
             </tr>
-          </thead>
-          <tbody>
-            {currentPedidos.length === 0 ? (
-              <tr>
-                <td colSpan={numeroColumnasTabla} className={styles.noData}>
-                  No hay pedidos para mostrar.
+          ) : (
+            currentPedidos.map((pedido) => (
+              <tr key={pedido.id}>
+                <td>#{pedido.id}</td>
+                <td>
+                  {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  - {pedido.horaPedido}
                 </td>
-              </tr>
-            ) : (
-              currentPedidos.map((pedido) => (
-                <tr key={pedido.id}>
-                  <td>#{pedido.id}</td>
-                  <td>
-                    {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
-                    - {pedido.horaPedido}
-                  </td>
-                  <td>{pedido.tipoEnvio}</td>
-                  <td>{pedido.formaPago}</td>
-                  <td className={styles.actions}>
-                    <button className={styles.viewBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
-                    <button
-                      className={styles.actionBtn} // Usamos actionBtn para "Marcar como listo"
-                      onClick={async () => {
-                        try {
+                <td>{pedido.tipoEnvio}</td>
+                <td>{pedido.formaPago}</td>
+                <td className={styles.actions}>
+                  <button className={styles.viewBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
+                  <button
+                    className={styles.actionBtn} // Usamos actionBtn para "Marcar como listo"
+                    onClick={async () => {
+                      try {
+                        if (pedido.id !== undefined) {
                           await marcarPedidoListo(pedido.id);
                           await fetchPedidos();
-                        } catch (error) {
-                          console.error("Error al marcar como listo:", error);
                         }
-                      }}
-                    >
-                      Marcar como listo
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                      } catch (error) {
+                        console.error("Error al marcar como listo:", error);
+                      }
+                    }}
+                  >
+                    Marcar como listo
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
 
       {/* Controles de paginación */}
       {totalPages > 1 && (

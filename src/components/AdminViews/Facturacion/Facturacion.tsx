@@ -17,8 +17,6 @@ const Facturacion = () => {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPedido, setSelectedPedido] = useState<PedidoVenta | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   // Nuevo estado para controlar la visibilidad del dropdown de estados
   const [showEstadoDropdown, setShowEstadoDropdown] = useState<boolean>(false);
