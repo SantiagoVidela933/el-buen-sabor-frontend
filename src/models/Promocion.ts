@@ -1,30 +1,34 @@
 import { BaseEntity } from "./BaseEntity";
-import { SucursalEmpresa } from "./SucursalEmpresa";
 import { PromocionDetalle } from "./PromocionDetalle";
 import { PedidoVentaDetalle } from "./PedidoVentaDetalle";
 import { Imagen } from "./Imagen";
+import { SucursalEmpresaPromocion } from "./SucursalEmpresaPromocion";
 
 export class Promocion extends BaseEntity {
   denominacion: string;
   fechaDesde?: Date;
   fechaHasta?: Date;
   descuento: number;
-  sucursal?: SucursalEmpresa;
+  sucursal?: SucursalEmpresaPromocion;
   promocionesDetalle: PromocionDetalle[];
   pedidosVentaDetalle: PedidoVentaDetalle[];
   imagenes: Imagen[];
 
   constructor(
+    id: number,
+    fechaAlta: string | null = null,
+    fechaModificacion: string | null = null,
+    fechaBaja: string | null = null,
     denominacion: string,
     descuento: number,
     fechaDesde?: Date,
     fechaHasta?: Date,
-    sucursal?: SucursalEmpresa,
+    sucursal?: SucursalEmpresaPromocion,
     promocionesDetalle: PromocionDetalle[] = [],
     pedidosVentaDetalle: PedidoVentaDetalle[] = [],
-    imagenes: Imagen[] = []
+    imagenes: Imagen[] = [],
   ) {
-    super();
+    super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.denominacion = denominacion;
     this.descuento = descuento;
     this.fechaDesde = fechaDesde;
@@ -36,16 +40,18 @@ export class Promocion extends BaseEntity {
   }
 
   static fromJson(json: any): Promocion {
-    if (!json) return null;
-
     const fechaDesde = json.fechaDesde ? new Date(json.fechaDesde) : undefined;
     const fechaHasta = json.fechaHasta ? new Date(json.fechaHasta) : undefined;
-    const sucursal = json.sucursal ? SucursalEmpresa.fromJson(json.sucursal) : undefined;
+    const sucursal = SucursalEmpresaPromocion.fromJson(json.sucursal);
     const promocionesDetalle = (json.promocionesDetalle ?? []).map((pd: any) => PromocionDetalle.fromJson(pd));
     const pedidosVentaDetalle = (json.pedidosVentaDetalle ?? []).map((pvd: any) => PedidoVentaDetalle.fromJson(pvd));
     const imagenes = (json.imagenes ?? []).map((img: any) => Imagen.fromJson(img));
 
     return new Promocion(
+      json.id ?? 0,
+      json.fechaAlta ?? null,
+      json.fechaModificacion ?? null, 
+      json.fechaBaja ?? null,
       json.denominacion,
       json.descuento,
       fechaDesde,

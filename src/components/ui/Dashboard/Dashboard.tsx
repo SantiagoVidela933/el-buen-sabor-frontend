@@ -45,6 +45,15 @@ const Dashboard = ({ onSelect }: DashboardProps) => {
       </div>
 
       <div className={styles.section}>
+        <button onClick={() => toggleSection('promociones')}>Promociones</button>
+        {expanded === 'promociones' && (
+          <div className={styles.subsection}>
+            <button onClick={() => onSelect('promociones')}>Promociones de la sucursal</button>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.section}>
         <button onClick={() => toggleSection('rubros')}>Rubros</button>
         {expanded === 'rubros' && (
           <div className={styles.subsection}>

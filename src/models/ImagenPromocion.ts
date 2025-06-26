@@ -3,7 +3,7 @@ import { ArticuloManufacturado } from "./ArticuloManufacturado";
 import { ArticuloInsumo } from "./ArticuloInsumo";
 import { Promocion } from "./Promocion";
 
-export class Imagen extends BaseEntity {
+export class ImagenPromocion extends BaseEntity {
   nombre: string;
   articuloManufacturado?: ArticuloManufacturado | null;
   articuloInsumo?: ArticuloInsumo | null;
@@ -22,8 +22,8 @@ export class Imagen extends BaseEntity {
     this.promocion = promocion ?? null;
   }
 
-  static fromJson(json: any): Imagen {
-    return new Imagen(
+  static fromJson(json: any): ImagenPromocion {
+    return new ImagenPromocion(
       json.nombre,
       null,
       null,

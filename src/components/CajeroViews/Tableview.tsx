@@ -6,6 +6,7 @@ import { PedidoVenta } from "../../models/PedidoVenta";
 import { cambiarEstadoPedidoVenta, getPedidosVentas } from "../../api/pedidoVenta";
 import { Estado } from "../../models/enums/Estado";
 import { TipoEnvio } from "../../models/enums/TipoEnvio";
+import {formatearFechaHora} from "../../api/formatearFechaHora";
 
 export function Table() {
   const [search, setSearch] = useState("");
@@ -60,16 +61,29 @@ export function Table() {
 
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
-      search.trim() === "" || pedido.id.toString().includes(search.trim())
+      search.trim() === "" || (pedido.id !== undefined && pedido.id.toString().includes(search.trim()))
     )
     .filter((pedido) =>
       estadoFiltro === null ? true : pedido.estado === estadoFiltro
     );
 
   const tieneManufacturados = (pedido: PedidoVenta): boolean => {
-    return pedido.pedidosVentaDetalle.some(
-      (detalle) => detalle.articulo?.tipoArticulo === "manufacturado"
-    );
+    return pedido.pedidosVentaDetalle.some(detalle => {
+      // Caso 1: El detalle tiene un artículo manufacturado directamente
+      if (detalle.articulo?.tipoArticulo === "manufacturado") {
+        return true;
+      }
+      
+      // Caso 2: El detalle tiene una promoción con artículos manufacturados
+      if (detalle.promocion && detalle.promocion.promocionesDetalle) {
+        // Verificar si algún artículo de la promoción es manufacturado
+        return detalle.promocion.promocionesDetalle.some(
+          promoArticulo => promoArticulo.articulo?.tipoArticulo === "manufacturado"
+        );
+      }
+      
+      return false;
+    });
   };
 
   // --- Lógica de paginación para el filtrado ---
@@ -180,14 +194,7 @@ export function Table() {
             {currentPedidos.length > 0 ? ( // Usamos currentPedidos para la paginación
               currentPedidos.map((order) => (
                 <tr key={order.id}>
-                  <td>
-                    {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
-                    {order.horaPedido}
-                  </td>
+                  <td>{formatearFechaHora(order)}</td>
                   <td>#{order.id}</td>
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{estadoLabels[order.estado]}</td>
@@ -204,8 +211,10 @@ export function Table() {
                               ? Estado.PREPARACION
                               : Estado.ENTREGADO;
 
-                            await cambiarEstadoPedidoVenta(order.id, nuevoEstado);
-                            await fetchPedidos();
+                            if (order.id !== undefined) {
+                              await cambiarEstadoPedidoVenta(order.id, nuevoEstado);
+                              await fetchPedidos();
+                            }
                           } catch (error) {
                             console.error("Error al cambiar estado:", error);
                           }
@@ -214,17 +223,18 @@ export function Table() {
                         {tieneManufacturados(order) ? "Enviar a cocina" : "Marcar como entregado"}
                       </button>
                     )}
-
-                    {order.estado === Estado.PREPARACION && (
+                    {order.estado === Estado.LISTO && (
                       <>
                         {order.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                           <button
-                            className={styles.btn} // Usa la clase .btn
+                            className={styles.btn}
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
-                                await cambiarEstadoPedidoVenta(order.id, Estado.ENTREGADO);
-                                await fetchPedidos();
+                                if (order.id !== undefined) {
+                                  await cambiarEstadoPedidoVenta(order.id, Estado.ENTREGADO);
+                                  await fetchPedidos();
+                                }
                               } catch (error) {
                                 console.error("Error al cambiar estado:", error);
                               }
@@ -236,13 +246,14 @@ export function Table() {
 
                         {order.tipoEnvio === TipoEnvio.DELIVERY && (
                           <button
-                            className={styles.btn} // Usa la clase .btn
+                            className={styles.btn}
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
-                                const EN_DELIVERY = "EN_DELIVERY";
-                                await cambiarEstadoPedidoVenta(order.id, EN_DELIVERY as Estado);
-                                await fetchPedidos();
+                                if (order.id !== undefined) {
+                                  await cambiarEstadoPedidoVenta(order.id, Estado.EN_DELIVERY);
+                                  await fetchPedidos();
+                                }
                               } catch (error) {
                                 console.error("Error al cambiar estado:", error);
                               }

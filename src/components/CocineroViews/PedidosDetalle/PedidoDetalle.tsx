@@ -2,13 +2,18 @@ import styles from "./PedidoDetalle.module.css";
 import { PedidoVenta } from "../../../models/PedidoVenta";
 import { ArticuloManufacturadoDetalle } from "../../../models/ArticuloManufacturadoDetalle";
 import { ArticuloManufacturado } from "../../../models/ArticuloManufacturado";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type PedidoDetalleProps = {
   pedido: PedidoVenta;
   actualizarMinutosExtra: (pedidoId: number, minutosExtra: number) => Promise<void>;
   onClose: () => void;
 };
+
+interface ArticuloConCantidad {
+  articulo: any; // Puedes usar un tipo más específico si lo tienes disponible
+  cantidad: number;
+}
 
 const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetalleProps) => {
 
@@ -36,12 +41,64 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
   };
 
   const handleGuardarMinutosExtra = async () => {
-    await actualizarMinutosExtra(pedido.id, minutosExtra);
-    onClose();
+    if (pedido.id !== undefined) {
+      await actualizarMinutosExtra(pedido.id, minutosExtra);
+      onClose();
+    }
   };
 
+  // Procesar artículos agrupados
+  const articulosUnicos = useMemo(() => {
+    if (!pedido || !pedido.pedidosVentaDetalle) return [];
+
+    const articulosAgrupados: Record<number, ArticuloConCantidad> = {};
+    
+    // Recorrer todos los detalles del pedido
+    pedido.pedidosVentaDetalle.forEach((detalle) => {
+      // Si el detalle tiene un artículo directo
+      if (detalle.articulo && detalle.articulo.id) {
+        const id = detalle.articulo.id;
+        if (articulosAgrupados[id]) {
+          // Si ya existe, sumamos la cantidad
+          articulosAgrupados[id].cantidad += detalle.cantidad;
+        } else {
+          // Si no existe, lo agregamos al objeto
+          articulosAgrupados[id] = {
+            articulo: detalle.articulo,
+            cantidad: detalle.cantidad
+          };
+        }
+      }
+      
+      // Si el detalle tiene una promoción, extraer sus artículos
+      if (detalle.promocion && detalle.promocion.promocionesDetalle) {
+        detalle.promocion.promocionesDetalle.forEach(promoDetalle => {
+          if (promoDetalle.articulo && promoDetalle.articulo.id) {
+            const id = promoDetalle.articulo.id;
+            const cantidadTotal = promoDetalle.cantidad * detalle.cantidad;
+            
+            if (articulosAgrupados[id]) {
+              // Si ya existe, sumamos la cantidad
+              articulosAgrupados[id].cantidad += cantidadTotal;
+            } else {
+              // Si no existe, lo agregamos al objeto
+              articulosAgrupados[id] = {
+                articulo: promoDetalle.articulo,
+                cantidad: cantidadTotal
+              };
+            }
+          }
+        });
+      }
+    });
+    
+    // Convertir el objeto de artículos agrupados a un array
+    return Object.values(articulosAgrupados);
+  }, [pedido]);
+
   if (!pedido) return <p>Pedido no disponible</p>;
-  
+
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Detalle del Pedido #{pedido.id}</h2>
@@ -83,14 +140,14 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
             <th>Cantidad</th>
           </tr>
         </thead>
-        <tbody>
-          {pedido.pedidosVentaDetalle.length > 0 ? (
-            pedido.pedidosVentaDetalle.map((detalle, index) => {
-              const articulo = detalle.articulo;
-              if (!articulo) return null;
+                <tbody>
+          {articulosUnicos.length > 0 ? (
+            articulosUnicos.map((item, index) => {
+              const articulo = item.articulo;
               const esManufacturado = articulo.tipoArticulo === "manufacturado";
+              
               return (
-                <tr key={index}>
+                <tr key={`articulo-${index}`}>
                   <td>{articulo.denominacion}</td>
                   <td>
                     {esManufacturado ? (
@@ -106,7 +163,7 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
                       "-"
                     )}
                   </td>
-                  <td>{detalle.cantidad}</td>
+                  <td>{item.cantidad}</td>
                 </tr>
               );
             })

@@ -2,6 +2,7 @@ import styles from './OrderDetailRanking.module.css';
 import { PedidoVenta } from '../../../../../../models/PedidoVenta';
 import { FormaPago } from '../../../../../../models/enums/FormaPago';
 import { TipoEnvio } from '../../../../../../models/enums/TipoEnvio';
+import { formatearFechaHora } from '../../../../../../api/formatearFechaHora';
 
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
@@ -22,19 +23,7 @@ const OrderDetailRanking = ({ pedidoVenta }: OrderDetailProps) => {
         <div>
           <p>
             <strong>Fecha:</strong>{" "}
-            {(() => {
-              if (typeof pedidoVenta.fechaPedido === "string") {
-                const [year, month, day] = (pedidoVenta.fechaPedido as string).split('-').map(Number);
-                const date = new Date(year, month - 1, day);
-                return date.toLocaleDateString("es-AR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                });
-              }
-              return "Fecha inválida";
-            })()}{" "}
-            {pedidoVenta.horaPedido}
+            {formatearFechaHora(pedidoVenta)}
           </p>
         </div>
         <div>

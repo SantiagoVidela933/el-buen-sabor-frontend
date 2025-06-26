@@ -4,6 +4,7 @@ import { getPedidosVentas } from '../../../api/pedidoVenta';
 import { PedidoVenta } from '../../../models/PedidoVenta';
 import { Estado } from '../../../models/enums/Estado';
 import { descargarFacturaPDF, descargarNotaCreditoPDF, anularFactura } from '../../../api/factura';
+import { formatearFechaHora } from '../../../api/formatearFechaHora';
 import Modal from '../../ui/Modal/Modal';
 import UserOrderDetail from '../../User/UserOrdetDetail/UserOrderDetail';
 
@@ -16,6 +17,8 @@ const Facturacion = () => {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPedido, setSelectedPedido] = useState<PedidoVenta | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Nuevo estado para controlar la visibilidad del dropdown de estados
   const [showEstadoDropdown, setShowEstadoDropdown] = useState<boolean>(false);
@@ -59,33 +62,51 @@ const Facturacion = () => {
   }, [dropdownRef]);
 
   const filtrarPedidos = (): PedidoVenta[] => {
-    return pedidos.filter(pedido => {
+    const pedidosFiltrados = pedidos.filter(pedido => {
       const coincideEstado = estadoFiltro === 'Todos' || pedido.estado === estadoFiltro;
-      const coincideId = busquedaId === '' || pedido.id.toString().includes(busquedaId);
+      const coincideId = busquedaId === '' || (pedido.id?.toString()||'').includes(busquedaId);
       return coincideEstado && coincideId;
+    });
+    return pedidosFiltrados.sort((a, b) =>{
+      if (a.id === undefined) return 1;
+      if (b.id === undefined) return -1;
+      
+      return b.id - a.id;
+
     });
   };
 
   const pedidosFiltrados = filtrarPedidos();
 
-  // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  // Calculamos las propiedades para la paginación
   const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPedidos = pedidosFiltrados.slice(startIndex, endIndex);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const handlePageChange = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
-  // Resetear la página actual a 1 cuando cambian los filtros
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [estadoFiltro, busquedaId]);
-
-  // Función para formatear la fecha y hora
-  const formatearFechaHora = (fecha: string | Date) => {
-    if (!fecha) return 'N/A';
-    const date = new Date(fecha);
-    return date.toLocaleString('es-AR');
+  // Generar los botones de números de página
+  const getPaginationButtons = () => {
+    const buttons = [];
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`${styles.paginationButton} ${
+            currentPage === i ? styles.activePage : ""
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+    return buttons;
   };
 
   // Función para ver detalle del pedido
@@ -109,8 +130,14 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+      // Obtenemos el ID de la última factura
+      const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
+    
     } catch (error) {
       alert("Error al descargar la factura. Por favor, intente nuevamente.");
       console.error("Error:", error);
@@ -128,7 +155,12 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+      // Obtenemos el ID de la última factura
+    const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
       alert("Error al descargar la nota de crédito. Por favor, intente nuevamente.");
@@ -151,7 +183,12 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      const facturaId = pedido.facturas[pedido.facturas.length - 1].id;
+      // Obtenemos el ID de la última factura
+      const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
+      if (!ultimaFactura || ultimaFactura.id === undefined) {
+        throw new Error('ID de factura no disponible');
+      }
+      const facturaId = ultimaFactura.id;
       await anularFactura(facturaId);
       
       const data = await getPedidosVentas();
@@ -249,41 +286,49 @@ const Facturacion = () => {
       {pedidosFiltrados.length === 0 ? (
         <p className={styles.noPedidos}>No hay pedidos que coincidan con los filtros</p>
       ) : (
-        <>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>NroPedido</th>
-                <th>Fecha/Hora</th>
-                <th>Forma de Entrega</th>
-                <th>Forma de Pago</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Detalle</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((pedido) => (
-                <tr key={pedido.id}>
-                  <td>{pedido.id}</td>
-                  <td>{formatearFechaHora(pedido.fechaPedido)}</td>
-                  <td>{pedido.tipoEnvio}</td>
-                  <td>{pedido.formaPago}</td>
-                  <td>${pedido.totalVenta?.toFixed(2) || pedido.totalVenta?.toFixed(2)}</td>
-                  <td>{pedido.estado}</td>
-                  <td>
-                    <button 
-                      className={styles.detailBtn}
-                      onClick={() => handleVerDetalle(pedido)}
-                    >
-                      Ver Detalle
-                    </button>
-                  </td>
-                  <td>
-                    {pedido.facturas && pedido.facturas.length > 0 && (
-                      <div className={styles.actionButtonsGroup}>
-                        {pedido.estado === Estado.CANCELADO ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>NroPedido</th>
+              <th>Fecha/Hora</th>
+              <th>Forma de Entrega</th>
+              <th>Forma de Pago</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Detalle</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentPedidos.map((pedido) => (
+              <tr key={pedido.id}>
+                <td>{pedido.id}</td>
+                <td>{formatearFechaHora(pedido)}</td>
+                <td>{pedido.tipoEnvio}</td>
+                <td>{pedido.formaPago}</td>
+                <td>${pedido.totalVenta?.toFixed(2) || pedido.totalVenta?.toFixed(2)}</td>
+                <td>{pedido.estado}</td>
+                <td>
+                  <button 
+                    className={styles.detailBtn}
+                    onClick={() => handleVerDetalle(pedido)}
+                  >
+                    Ver Detalle
+                  </button>
+                </td>
+                <td>
+                  {pedido.facturas && pedido.facturas.length > 0 && (
+                    <>
+                      {pedido.estado === Estado.CANCELADO ? (
+                        <button 
+                          className={styles.actionBtn}
+                          onClick={() => handleDescargarNotaCredito(pedido)}
+                          disabled={actionLoading}
+                        >
+                          Nota de Crédito
+                        </button>
+                      ) : pedido.estado === Estado.ENTREGADO && (
+                        <>
                           <button 
                             className={styles.actionBtn}
                             onClick={() => handleDescargarNotaCredito(pedido)}
@@ -291,51 +336,33 @@ const Facturacion = () => {
                           >
                             Nota de Crédito
                           </button>
-                        ) : pedido.estado === Estado.ENTREGADO && (
-                          <>
-                            <button 
-                              className={styles.actionBtn}
-                              onClick={() => handleDescargarFactura(pedido)}
-                              disabled={actionLoading}
-                            >
-                              Ver Factura
-                            </button>
-                            <button 
-                              className={styles.cancelBtn}
-                              onClick={() => handleAnularFactura(pedido)}
-                              disabled={actionLoading}
-                            >
-                              Anular
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )} 
-                    {pedido.estado !== Estado.CANCELADO && pedido.estado !== Estado.ENTREGADO ? (
-                      <span className={styles.disabledAction}>Factura Pendiente</span>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                          <button 
+                            className={styles.cancelBtn}
+                            onClick={() => handleAnularFactura(pedido)}
+                            disabled={actionLoading}
+                          >
+                            Anular
+                          </button>
+                        </>
+                      )}
+                    </>
+                  )}  
+                  {pedido.estado != Estado.CANCELADO && pedido.estado != Estado.ENTREGADO?(
+                        <span className={styles.disabledAction}>Factura Pendiente</span>
+                      ):null
+                  }
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}  
 
-          {/* Controles de paginación */}
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => paginate(index + 1)}
-                  // Aplica la clase 'activePage' solo si es la página actual
-                  className={`${styles.paginationButton} ${currentPage === index + 1 ? styles.activePage : ''}`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          )}
-        </>
+      {/* Controles de paginación - agregar después de la tabla */}
+      {pedidosFiltrados.length > 0 && totalPages > 1 && (
+        <div className={styles.pagination}>
+          {getPaginationButtons()}
+        </div>
       )}
 
       {showModal && selectedPedido && (

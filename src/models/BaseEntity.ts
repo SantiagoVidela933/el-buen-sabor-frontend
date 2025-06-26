@@ -1,5 +1,5 @@
 export abstract class BaseEntity {
-  id: number;
+  id?: number;
   fechaAlta: string | null;
   fechaModificacion: string | null;
   fechaBaja: string | null;

@@ -1,5 +1,5 @@
 import styles from "./UserOrderList.module.css";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../../components/ui/Modal/Modal";
 import UserOrderDetail from "../UserOrdetDetail/UserOrderDetail";
 import { PedidoVenta } from "../../../models/PedidoVenta";
@@ -7,6 +7,7 @@ import { Estado } from "../../../models/enums/Estado";
 import { getMisPedidosVenta } from "../../../api/pedidoVenta";
 import { useAuth0 } from "@auth0/auth0-react";
 import { descargarFacturaPDF, descargarNotaCreditoPDF } from "../../../api/factura";
+import { formatearFechaHora } from "../../../api/formatearFechaHora";
 
 
 interface UserOrderListProps {
@@ -58,15 +59,15 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
         nombre = "Pendiente";
         color = "#ff6609"; // Naranja
         break;
-      case Estado.APROBADO:
-        nombre = "Aprobado";
+      case Estado.PREPARACION:
+        nombre = "En Preparación";
         color = "#2196f3"; // Azul
         break;
       case Estado.RECHAZADO:
         nombre = "Rechazado";
         color = "#f44336"; // Rojo
         break;
-      case Estado.EN_CAMINO:
+      case Estado.EN_DELIVERY:
         nombre = "En Camino";
         color = "#ffeb3b"; // Amarillo
         break;
@@ -166,14 +167,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
             ) : (
               currentPedidos.map((order) => ( // Iteramos sobre currentPedidos
                 <tr key={order.id}>
-                  <td>
-                    {new Date(order.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
-                    {order.horaPedido}
-                  </td>
+                  <td>{formatearFechaHora(order)}</td>
                   <td>#{order.id}</td>
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{renderEstado(order.estado)}</td>
@@ -186,7 +180,11 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                           disabled={isLoading}
                           onClick={() => {
                               const facturaId = order.facturas[order.facturas.length - 1].id;
-                              handleDownloadNotaCredito(facturaId);
+                              if (facturaId !== undefined) {
+                                handleDownloadNotaCredito(facturaId);
+                              } else {
+                                alert("ID de factura no disponible");
+                              }
                           }}
                           className={styles.docButton}
                         >
@@ -195,7 +193,14 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                       ) : order.estado===Estado.ENTREGADO?(
                         <button
                           disabled={isLoading}
-                          onClick={() => handleDownloadFactura(order.facturas[0].id)}
+                          onClick={() => {
+                            const facturaId = order.facturas[0]?.id;
+                            if (facturaId !== undefined) {
+                              handleDownloadFactura(facturaId);
+                            } else {
+                              alert("ID de factura no disponible");
+                            }
+                          }}
                           className={styles.docButton}
                         >
                           Factura

@@ -4,6 +4,7 @@ import Modal from '../../components/ui/Modal/Modal';
 import DeliveryDetail from './DeliveryDetail/DeliveryDetail';
 import { cambiarEstadoPedidoVenta, getPedidosVentasDelivery } from '../../api/pedidoVenta';
 import { PedidoVenta } from '../../models/PedidoVenta';
+import { formatearFechaHora } from '../../api/formatearFechaHora'; 
 import { Estado } from '../../models/enums/Estado';
 
 const DeliveryPage = () => {
@@ -33,8 +34,6 @@ const DeliveryPage = () => {
     setSelectedOrder(pedido);
     setShowModal(true);
   };
-
-  // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     // IMPORTANTE: Reiniciar la página a 1 cuando cambia la búsqueda
@@ -43,25 +42,9 @@ const DeliveryPage = () => {
 
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
-      search.trim() === "" || pedido.id.toString().includes(search.trim())
-    );
-
-  // --- CÁLCULOS PARA LA PAGINACIÓN ---
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  const estadoLabels: Record<Estado, string> = {
-    [Estado.PREPARACION]: "En cocina",
-    [Estado.PENDIENTE]: "A confirmar",
-    [Estado.CANCELADO]: "Cancelado",
-    [Estado.RECHAZADO]: "Rechazado",
-    [Estado.ENTREGADO]: "Entregado",
-    [Estado.EN_DELIVERY]: "En delivery",
-  };
+      search.trim() === "" || (pedido.id !== undefined && pedido.id.toString().includes(search.trim())
+    )
+  );
 
   return (
     <div className={styles.container}>
@@ -98,37 +81,35 @@ const DeliveryPage = () => {
             {/* Renderiza los ítems de la página actual */}
             {currentItems.length === 0 ? (
               <tr>
-                <td colSpan={5} className={styles.noData}>
+                <td colSpan={5} className={styles.noData}> 
                   No hay pedidos de delivery que coincidan con la búsqueda.
                 </td>
               </tr>
             ) : (
               currentItems.map((pedido) => (
                 <tr key={pedido.id}>
-                  <td>#{pedido.id}</td>
-                  <td>
-                    {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}{" "}
-                    {pedido.horaPedido}
-                  </td>
+                  <td>#{pedido.id}</td> 
+                  <td>{formatearFechaHora(pedido)}</td>
                   <td>{pedido.tipoEnvio}</td>
                   <td>{pedido.formaPago}</td>
                   <td className={styles.actions}>
                     <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
                     <button
-                      className={styles.btn}
+                      className={styles.btn} 
                       onClick={async () => {
                         try {
-                          await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
-                          await fetchPedidos();
+                          console.log('Intentando marcar como entregado el pedido ID:', pedido.id);
+                          console.log('Estado actual del pedido:', pedido.estado);
+                          console.log('Datos del pedido:', pedido);
+                          if (pedido.id !== undefined) {
+                            console.log('Llamando a la API para cambiar estado...');
+                            await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
+                          }
+                          await fetchPedidos(); 
                         } catch (error) {
                           console.error("Error al marcar como entregado:", error);
                         }
                       }}
-                      disabled={pedido.facturas.length === 0}
                     >
                       Marcar como entregado
                     </button>

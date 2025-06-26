@@ -10,6 +10,14 @@ export const getAllArticulosManufacturados = async (): Promise<ArticuloManufactu
   return data.map((item: any) => ArticuloManufacturado.fromJson(item));
 };
 
+// GET Articulos Manufacturados activos
+export const getAllArticulosManufacturadosActivos = async (): Promise<ArticuloManufacturado[]> =>{
+  const res = await fetch(`${API_URL}/todos/activos`);
+  if (!res.ok) throw new Error('Error al traer los artículos manufacturados');
+  const data = await res.json();
+  return data.map((item: any) => ArticuloManufacturado.fromJson(item));
+};
+
 // POST Articulo Manufacturado con imagen
 export const createArticuloManufacturado = async (
   articuloPayload: object,

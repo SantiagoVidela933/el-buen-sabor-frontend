@@ -4,7 +4,7 @@ import Modal from "../ui/Modal/Modal";
 import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
 import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
-
+import { formatearFechaHora } from "../../api/formatearFechaHora";
 const PedidosView = () => {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
@@ -40,10 +40,10 @@ const PedidosView = () => {
     setSearch(e.target.value);
     setCurrentPage(1); // Resetear a la primera página en cada búsqueda
   };
-
-  const pedidosFiltrados = pedidos.filter((pedido) =>
-    search.trim() === "" || pedido.id.toString().includes(search.trim())
-  );
+  const pedidosFiltrados = pedidos
+    .filter((pedido) =>
+      search.trim() === "" || (pedido.id !== undefined && pedido.id !== null && pedido.id.toString().includes(search.trim()))
+    )
 
   const actualizarMinutosExtra = async (pedidoId: number, minutosExtra: number) => {
     try {
@@ -101,16 +101,40 @@ const PedidosView = () => {
             />
         </div>
       </div>
-
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Pedido</th>
-              <th>Fecha y Hora</th>
-              <th>Forma de Entrega</th>
-              <th>Forma de Pago</th>
-              <th>Acciones</th>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Fecha/Hora</th>
+            <th>Forma de Entrega</th>
+            <th>Forma de Pago</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pedidosFiltrados.map((pedido) => (
+            <tr key={pedido.id}>
+              <td>{pedido.id}</td>
+              <td>{formatearFechaHora(pedido)}</td>
+              <td>{pedido.tipoEnvio}</td>
+              <td>{pedido.formaPago}</td>
+              <td className={styles.actions}>
+                <button onClick={() => handleViewOrder(pedido)}>Ver</button>
+                <button
+                  onClick={async () => {
+                    try {
+                      if (pedido.id !== undefined) {
+                        await marcarPedidoListo(pedido.id);
+                        await fetchPedidos();
+                      }
+                    } catch (error) {
+                      console.error("Error al marcar como listo:", error);
+                    }
+                  }}
+                >
+                  Marcar como listo
+                </button>
+              </td>
             </tr>
           </thead>
           <tbody>
