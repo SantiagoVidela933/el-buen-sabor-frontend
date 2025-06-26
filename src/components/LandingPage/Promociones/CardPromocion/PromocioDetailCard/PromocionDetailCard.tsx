@@ -41,11 +41,7 @@ const PromocionDetailCard = ({ promocion, onClose }: PromocionDetailCardProps) =
         <div className={styles.detail_wrapper}>
             <div className={styles.detail_image}>
             <img
-                src={
-                promocion.imagenUrl && promocion.imagenUrl.length > 0
-                    ? `http://localhost:8080/api/imagenes/file/${promocion.imagenUrl}`
-                    : "/src/assets/images/pizza_example.jpg" // Imagen por defecto
-                }
+                src={promocion.imagenUrl || "/src/assets/images/pizza_example.jpg"}
                 alt="Promoción"
             />
             </div>

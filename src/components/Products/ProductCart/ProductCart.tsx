@@ -32,15 +32,25 @@ const ProductCart = ({
       updateQuantity(articuloVenta.id, quantity - 1);
     }
   };
+  // Function to determine correct image URL
+  const getImageUrl = () => {
+    if (!articuloVenta.imagenUrl || articuloVenta.imagenUrl.length === 0) {
+      return '/src/assets/images/pizza_example.jpg';
+    }
+    
+    // If URL already contains the base path, use it as is
+    if (articuloVenta.imagenUrl.startsWith('http')) {
+      return articuloVenta.imagenUrl;
+    }
+    
+    // Otherwise, construct the full URL
+    return `http://localhost:8080/api/imagenes/file/${articuloVenta.imagenUrl}`;
+  };
 
   return (
     <div className={styles.card_wrapper}>
       <div className={styles.box_image}>
-        <img src={
-            articuloVenta.imagenUrl && articuloVenta.imagenUrl.length > 0
-              ? `http://localhost:8080/api/imagenes/file/${articuloVenta.imagenUrl}`
-              : '/src/assets/images/pizza_example.jpg'
-          } alt={articuloVenta.denominacion} />
+        <img src={getImageUrl()} alt={articuloVenta.denominacion} />
       </div>
 
       <div className={styles.box_info}>
