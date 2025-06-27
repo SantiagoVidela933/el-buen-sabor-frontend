@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import styles from "./PromocionDetailCard.module.css";
 import { ArticuloVenta } from "../../../../../models/ArticuloVenta";
 import { addToCart } from "../../../../../redux/slices/cartSlice";
+import { AppDispatch } from "../../../../../redux/store";
 
 interface PromocionDetailCardProps {
     promocion: ArticuloVenta;
@@ -12,7 +13,7 @@ interface PromocionDetailCardProps {
 const PromocionDetailCard = ({ promocion, onClose }: PromocionDetailCardProps) => {
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     
     const handleIncrease = () => {
         if (quantity < promocion.stockDisponible) {
