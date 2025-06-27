@@ -68,9 +68,22 @@ export function Table() {
     );
 
   const tieneManufacturados = (pedido: PedidoVenta): boolean => {
-    return pedido.pedidosVentaDetalle.some(
-      (detalle) => detalle.articulo?.tipoArticulo === "manufacturado"
-    );
+    return pedido.pedidosVentaDetalle.some(detalle => {
+      // Caso 1: El detalle tiene un artículo manufacturado directamente
+      if (detalle.articulo?.tipoArticulo === "manufacturado") {
+        return true;
+      }
+      
+      // Caso 2: El detalle tiene una promoción con artículos manufacturados
+      if (detalle.promocion && detalle.promocion.promocionesDetalle) {
+        // Verificar si algún artículo de la promoción es manufacturado
+        return detalle.promocion.promocionesDetalle.some(
+          promoArticulo => promoArticulo.articulo?.tipoArticulo === "manufacturado"
+        );
+      }
+      
+      return false;
+    });
   };
 
   // --- Lógica de paginación para el filtrado ---
