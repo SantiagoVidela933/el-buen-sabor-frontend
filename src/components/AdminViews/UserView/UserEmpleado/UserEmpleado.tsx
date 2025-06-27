@@ -9,6 +9,8 @@ import {
   darDeBajaEmpleadoAPI,
   reactivarEmpleadoAPI,
 } from "../../../../api/empleado";
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const UserEmpleado = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
@@ -80,19 +82,31 @@ const UserEmpleado = () => {
         return;
       }
 
-      await eliminarEmpleadoAPI(id);
-      cargarEmpleados(); // Recargar para actualizar la lista y la paginación
+      Swal.fire({
+        title: "¿Estas seguro que deseas dar de baja el registro?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, dar de baja",
+        cancelButtonText: "Cancelar"
+      }).then(async (result: any) => {
+        if (result.isConfirmed) {
+          await eliminarEmpleadoAPI(id);
+          cargarEmpleados(); // Recargar para actualizar la lista y la paginación
+          Swal.fire({
+            title: "Dado de baja!",
+            text: "El registro ha sido exitosamente dado de baja.",
+            icon: "success"
+          });
+        }
+      });
     } catch (error) {
-      console.error("Error al eliminar empleado:", error);
-    }
-  };
-
-  const darDeBajaEmpleado = async (id: number) => {
-    try {
-      await darDeBajaEmpleadoAPI(id);
-      cargarEmpleados(); // Recargar para actualizar la lista y la paginación
-    } catch (error) {
-      console.error("Error al dar de baja empleado:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `"Error al dar de baja empleado:", ${error}`
+      });
     }
   };
 
@@ -100,8 +114,17 @@ const UserEmpleado = () => {
     try {
       await reactivarEmpleadoAPI(id);
       cargarEmpleados(); // Recargar para actualizar la lista y la paginación
+      Swal.fire({
+        title: "Dado de alta!",
+        text: "El registro ha sido exitosamente dado de alta.",
+        icon: "success"
+      });
     } catch (error) {
-      console.error("Error al reactivar empleado:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `"Error al dar de baja empleado:", ${error}`
+      });
     }
   };
 

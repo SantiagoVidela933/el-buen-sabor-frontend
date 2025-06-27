@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './RubroIngrediente.module.css';
 import Modal from '../../../ui/Modal/Modal';
 import RubroIngredienteForm from './RubroIngredienteForm/RubroIngredienteForm';
 import { deleteCategoria, getCategoriasInsumosBySucursalId, updateCategoria } from '../../../../api/articuloCategoria';
 import { CategoriaArticulo } from '../../../../models/CategoriaArticulo';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const RubroIngrediente = () => {
   const [rubros, setRubros] = useState<CategoriaArticulo[]>([]);
@@ -93,9 +95,19 @@ const RubroIngrediente = () => {
       if (rubrosPaginados.length === 1 && paginaActual > 1 && totalPaginas === paginaActual) {
         setPaginaActual(paginaActual - 1);
       }
+
+      Swal.fire({
+        icon: "success",
+        title: "Categoría dada de baja exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      console.error("Error al eliminar categoría:", error);
-      alert("No se pudo eliminar la categoría.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de baja la categoría`
+      });
     }
   };
 
@@ -103,7 +115,7 @@ const RubroIngrediente = () => {
     rubro.denominacion.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const manejarSubmit = (rubroActualizado: CategoriaArticulo) => {
+  const manejarSubmit = () => {
     // Después de crear/editar, refetch para asegurar el orden y la frescura de los datos.
     fetchRubros();
     cerrarModal(); // Esto ya cierra el modal y llama a fetchRubros()
@@ -112,20 +124,24 @@ const RubroIngrediente = () => {
   const handleDarDeAlta = async (rubro: CategoriaArticulo) => {
     try {
       // Asegurarse de que el ID y sucursal.id existan
-      if (!rubro.id || !rubro.sucursal?.id) {
+      if (!rubro.id) {
         console.error("ID de rubro o sucursal missing para dar de alta.");
-        alert("Faltan datos para reactivar el rubro.");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Faltan datos para dar de alta la categoría.`
+        });
         return;
       }
 
       const payload = {
         denominacion: rubro.denominacion,
         categoriaPadreId: rubro.categoriaPadre?.id ?? null, // Usar el ID de la categoría padre existente, si hay
-        sucursalId: rubro.sucursal.id,
+        sucursalId: rubro.sucursal?.id ?? 1,
         fechaBaja: null,
       };
 
-      const actualizado = await updateCategoria(rubro.id, payload);
+      await updateCategoria(rubro.id, payload);
 
       // Actualizar el estado local para reflejar el alta lógica
       setRubros(prev =>
@@ -139,9 +155,19 @@ const RubroIngrediente = () => {
             return 0;
         })
       );
+
+      Swal.fire({
+        icon: "success",
+        title: "Categoría dada de alta exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      console.error("Error al dar de alta el rubro:", error);
-      alert("Error al dar de alta el rubro");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de alta la categoría.`
+      });
     }
   };
 

@@ -8,6 +8,8 @@ import {
   Localidad,
   EmpleadoRequest
 } from '../../../../../api/empleado';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface UserEmpleadoFormProps {
   modo: 'crear' | 'editar';
@@ -108,10 +110,19 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
         : await actualizarEmpleado(empleado!.id!, empleadoData);
 
       onSubmit(data);
-      alert(`Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente.`);
+      Swal.fire({
+        icon: "success",
+        title: `Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente!`,
+        showConfirmButton: false,
+        timer: 1500
+      });
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Ocurrió un error inesperado.');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `${err.message || 'Ocurrió un error inesperado.'}`,
+      });
     }
   };
 

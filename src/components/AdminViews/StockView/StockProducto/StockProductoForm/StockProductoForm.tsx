@@ -7,6 +7,8 @@ import { createArticuloManufacturado, updateArticuloManufacturado } from '../../
 import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
 import { ArticuloInsumo } from '../../../../../models/ArticuloInsumo';
 import { IngredienteReceta } from '../../../../../models/IngredienteReceta';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface StockProductoFormProps {
   producto?: ArticuloManufacturado;
@@ -107,7 +109,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
   };
 
-  // Submit del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -123,7 +124,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         return;
       }
 
-      // payload segun modelo back
       const articuloPayload = {
         tipoArticulo: 'manufacturado',
         denominacion: nombre,
@@ -137,7 +137,12 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
       if (modo === 'crear') {
         const response = await createArticuloManufacturado(articuloPayload, imagen!);
-        alert('Artículo creado correctamente');
+        Swal.fire({
+          icon: "success",
+          title: "Producto creado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         const productoCompleto = ArticuloManufacturado.fromJson({
           ...response,
           categoria: categoriaSeleccionada,
@@ -150,7 +155,12 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           return;
         }
         const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
-        alert('Artículo actualizado correctamente');
+        Swal.fire({
+          icon: "success",
+          title: "Producto actualizado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         const productoActualizado = ArticuloManufacturado.fromJson({
           ...response,
           categoria: categoriaSeleccionada,
@@ -159,8 +169,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         onClose();
       }
     } catch (error) {
-      console.error('[ERROR] Error al guardar artículo:', error);
-      alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al intentar guardar el producto`
+      });
     }
   };
 

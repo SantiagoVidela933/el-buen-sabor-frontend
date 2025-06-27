@@ -3,6 +3,8 @@ import { Cliente } from '../../../../../models/Cliente';
 import styles from './UserClienteForm.module.css';
 import { getLocalidadesJSONFetch } from '../../../../../api/localidades';
 import { guardarCliente } from '../../../../../api/cliente';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface Localidad {
   id: number;
@@ -77,21 +79,28 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
     };
 
     try {
-      const clienteActualizado = await guardarCliente(dto );
-      console.log('Cliente actualizado desde API:', clienteActualizado);
+      const clienteActualizado = await guardarCliente(dto);
+
+      Swal.fire({
+        icon: "success",
+        title: "Cliente creado exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
+
       onSubmit(clienteActualizado);
     } catch (error) {
-      console.error('Error al guardar el cliente:', error);
-      alert('Error al guardar el cliente.');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error al guardar el cliente."
+      });
     }
   };
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
       <h2>{modo === 'crear' ? 'Crear Cliente' : 'Modificar Cliente'}</h2>
-
-      {/* Campos del formulario */}
-      {/* ...igual que antes, sin cambios */}
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>

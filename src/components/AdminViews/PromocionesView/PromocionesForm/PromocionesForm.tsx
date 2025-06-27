@@ -6,7 +6,8 @@ import { PromocionDetalle } from '../../../../models/PromocionDetalle';
 import { Articulo } from '../../../../models/Articulo';
 import { getAllArticulosManufacturadosActivos } from '../../../../api/articuloManufacturado';
 import { getAllArticuloInsumoActivos } from '../../../../api/articuloInsumo';
-// import { getAllArticulosManufacturadosPromociones } from '../../../../api/articuloManufacturado';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface PromocionesFormProps {
   promocion?: Promocion;
@@ -160,9 +161,21 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         console.log("Promocion actualizada:", result);
 
         result.sucursal = promocion?.sucursal;
+
+        Swal.fire({
+          icon: "success",
+          title: "Promoción actualizada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
         onSubmit(result);
       } catch (error) {
-        console.error("Error al actualizar la promocion:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`
+        });
       }
     } else {
       try {
@@ -171,9 +184,19 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         }
 
         const result = await createPromocion(payload, imagen!);
+        Swal.fire({
+          icon: "success",
+          title: "Promoción creada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         onSubmit(result);
       } catch (error) {
-        console.error("Error al crear la promocion:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`
+        });
       }
     }
   };

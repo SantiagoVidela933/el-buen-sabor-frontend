@@ -5,6 +5,8 @@ import StockProductoForm from './StockProductoForm/StockProductoForm';
 import { darDeAltaArticuloManufacturado, getAllArticulosManufacturados } from '../../../../api/articuloManufacturado';
 import { ArticuloManufacturado } from '../../../../models/ArticuloManufacturado';
 import { deleteArticuloManufacturado } from '../../../../api/articuloManufacturado';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const StockProducto = () => {
   // Estados de control de modales y formularios
@@ -60,7 +62,7 @@ const StockProducto = () => {
   const eliminarProducto = async () => {
     if (productoAEliminar) {
       try {
-        await deleteArticuloManufacturado(productoAEliminar.id);
+        await deleteArticuloManufacturado(productoAEliminar.id!);
 
         setArticulos(prev =>
           prev.map(prod =>
@@ -72,13 +74,27 @@ const StockProducto = () => {
 
         setProductoAEliminar(null);
         setModalConfirmacionAbierto(false);
+
+        Swal.fire({
+          icon: "success",
+          title: "Pruducto dado de baja exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
         if (error instanceof Error) {
-          console.error(error);
-          alert(`Error al eliminar el producto: ${error.message}`);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Error al eliminar el producto: ${error.message}`
+          });
         } else {
           console.error('Error desconocido', error);
-          alert('Ocurrió un error al eliminar el producto.');
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Ocurrió un error al eliminar el producto.`
+          });
         }
       }
     }
@@ -121,9 +137,19 @@ const StockProducto = () => {
             : prod
         )
       );
+
+      Swal.fire({
+        icon: "success",
+        title: "Producto dado de alta exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      console.error(error);
-      alert('Error al dar de alta el artículo');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de alta el artículo.`
+      });
     }
   };
 
@@ -190,7 +216,7 @@ const StockProducto = () => {
                 {producto.fechaBaja ? (
                   <button
                     className={styles.reactivarBtn}
-                    onClick={() => handleDarDeAlta(producto.id)}
+                    onClick={() => handleDarDeAlta(producto.id!)}
                   >
                     <span className="material-symbols-outlined">restart_alt</span>
                   </button>

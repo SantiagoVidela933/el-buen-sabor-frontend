@@ -7,6 +7,8 @@ import { Imagen } from "../../../../../models/Imagen";
 import { getCategoriasInsumosABM } from "../../../../../api/articuloCategoria";
 import { getUnidadMedida } from "../../../../../api/unidadMedida";
 import { createArticuloInsumo, updateArticuloInsumo } from "../../../../../api/articuloInsumo";
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface Props {
   ingrediente?: ArticuloInsumo;
@@ -52,8 +54,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       setPrecioCompra(ingrediente.precioCompra || 0);
       setMargenGanancia(ingrediente.margenGanancia || 0);
       setImagenNombre(ingrediente.imagenes?.[0]?.nombre || "");
-      // setStockActual(ingrediente.stockPorSucursal?.[0]?.stockActual || 0);
-      // setStockMinimo(ingrediente.stockPorSucursal?.[0]?.stockMinimo || 0);
       setUnidadMedida(ingrediente.unidadMedida || undefined);
       setCategoria(ingrediente.categoria || null);
       const stockSucursal = ingrediente.stockPorSucursal?.[0];
@@ -92,7 +92,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
         fechaAlta: img.fechaAlta ?? null,
         fechaModificacion: img.fechaModificacion ?? null,
         fechaBaja: img.fechaBaja ?? null,
-        nombre: img.denominacion,
+        nombre: img.nombre,
       })),
       categoria: { id: categoria.id },
       stockPorSucursal: [
@@ -120,12 +120,28 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       let responseJson;
       if (modo === "crear") {
         responseJson = await createArticuloInsumo(articuloInsumoPayload);
+        Swal.fire({
+          icon: "success",
+          title: "Insumo creado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } else {
         if (!ingrediente || !ingrediente.id) {
-          alert("Error: insumo a editar no definido");
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Error: insumo a editar no definido`
+          });
           return;
         }
         responseJson = await updateArticuloInsumo(ingrediente.id, articuloInsumoPayload);
+        Swal.fire({
+          icon: "success",
+          title: "Insumo actualizado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }
 
       const nuevoIngrediente = ArticuloInsumo.fromJson(responseJson);

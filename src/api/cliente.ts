@@ -12,11 +12,12 @@ export async function crearCliente(cliente: Cliente) {
     });
 
     if (!response.ok) {
-      throw new Error(`Error al crear cliente: ${response.status}`);
+      return response.text().then(errorText => {
+        throw new Error(errorText || 'Error desconocido en el servidor');
+      });
     }
 
     const data = await response.json();
-    console.log("Cliente creado:", data);
     return data;
   } catch (error) {
     console.error("Error en la solicitud:", error);
@@ -54,7 +55,9 @@ export async function guardarCliente(cliente: PutClienteDTO): Promise<Cliente> {
   });
 
   if (!response.ok) {
-    throw new Error("Error al guardar cliente");
+    return response.text().then(errorText => {
+      throw new Error(errorText || 'Error desconocido en el servidor');
+    });
   }
 
   const data = await response.json();
@@ -73,7 +76,11 @@ export async function getClientesMailJSONFetch(email:string) {
     mode: 'cors'
   });
 
-  console.log(response);
+  if (!response.ok) {
+    return response.text().then(errorText => {
+      throw new Error(errorText || 'Error desconocido en el servidor');
+    });
+  }
   return await response.json();
 }
 
@@ -86,7 +93,9 @@ export async function getClientesJSONFetch() {
   });
 
   if (!response.ok) {
-    throw new Error(`Error al obtener clientes: ${response.status}`);
+    return response.text().then(errorText => {
+      throw new Error(errorText || 'Error desconocido en el servidor');
+    });
   }
 
   return await response.json();
@@ -100,7 +109,9 @@ export async function eliminarCliente(id: number) {
   });
 
   if (!response.ok) {
-    throw new Error(`Error al eliminar cliente: ${response.status}`);
+    return response.text().then(errorText => {
+      throw new Error(errorText || 'Error desconocido en el servidor');
+    });
   }
 
   return await response.text();
@@ -116,7 +127,9 @@ export async function reactivarCliente(id: number) {
   });
 
   if (!response.ok) {
-    throw new Error(`Error al reactivar cliente: ${response.status}`);
+    return response.text().then(errorText => {
+      throw new Error(errorText || 'Error desconocido en el servidor');
+    });
   }
 
   return await response.text();
@@ -134,7 +147,9 @@ export async function getClientePorPedido(pedidoId: number) {
     });
     
     if (!response.ok) {
-      throw new Error(`Error al obtener cliente por pedido: ${response.status}`);
+      return response.text().then(errorText => {
+        throw new Error(errorText || 'Error desconocido en el servidor');
+      });
     }
     
     return await response.json();
