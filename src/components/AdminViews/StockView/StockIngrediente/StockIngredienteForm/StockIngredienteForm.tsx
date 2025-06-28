@@ -4,9 +4,9 @@ import { UnidadMedida } from "../../../../../models/UnidadMedida";
 import { CategoriaArticulo } from "../../../../../models/CategoriaArticulo";
 import { ArticuloInsumo } from "../../../../../models/ArticuloInsumo";
 import { Imagen } from "../../../../../models/Imagen";
-import { getCategoriasInsumosABM } from "../../../../../api/articuloCategoria";
+import { getCategoriasInsumosABM, getCategoriasMenuABM } from "../../../../../api/articuloCategoria";
 import { getUnidadMedida } from "../../../../../api/unidadMedida";
-import { createArticuloInsumo, updateArticuloInsumo } from "../../../../../api/articuloInsumo";
+import { createArticuloInsumo, subirImagen, updateArticuloInsumo } from "../../../../../api/articuloInsumo";
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/src/sweetalert2.scss';
 
@@ -36,13 +36,38 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   );
   const [esParaElaborar, setEsParaElaborar] = useState(ingrediente?.esParaElaborar ?? false);
 
+  const [imagenArchivo, setImagenArchivo] = useState<File | null>(null);
+  const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] ?? null;
+  setImagenArchivo(file);
+  if (file) {
+    setNombreImagenActual(file.name);
+    setImagenPreview(URL.createObjectURL(file));
+  } else {
+    setNombreImagenActual(null);
+    setImagenPreview(null);
+  }
+};
+
+
   useEffect(() => {
-    async function fetchCategorias() {
-      const data = await getCategoriasInsumosABM(1); 
+  async function fetchCategorias() {
+    if (esParaElaborar) {
+      // Cargo categorías para insumos (las que ya tenés)
+      const data = await getCategoriasInsumosABM(1);
+      setCategorias(data);
+    } else {
+      // Cargo categorías de menú (manufacturados)
+      const data = await getCategoriasMenuABM(1);
       setCategorias(data);
     }
-    fetchCategorias();
-  }, []);
+  }
+  fetchCategorias();
+}, [esParaElaborar]);
+
 
   useEffect(() => {
     getUnidadMedida().then(setUnidadesMedida);
@@ -64,7 +89,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
     }
   }, [ingrediente, modo]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -78,10 +102,28 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       return;
     }
 
-    const imagenes: Imagen[] = imagenNombre ? [new Imagen(imagenNombre)] : [];
+    let nombreImagenBackend = "";
+
+    try {
+      if (imagenArchivo) {
+        // Subo la imagen y obtengo el nombre encriptado que genera backend
+        nombreImagenBackend = await subirImagen(imagenArchivo);
+      } else {
+        // Si no seleccionó archivo nuevo, uso el que ya tenía (editar)
+        nombreImagenBackend = imagenNombre;
+      }
+    } catch (error) {
+      alert("Error al subir la imagen: " + (error as Error).message);
+      return;
+    }
+
+    const imagenes: Imagen[] =
+      !esParaElaborar && nombreImagenBackend
+        ? [new Imagen(nombreImagenBackend)]
+        : [];
 
     const articuloInsumoPayload = {
-      tipoArticulo: 'insumo',
+      tipoArticulo: "insumo",
       denominacion,
       precioCompra,
       esParaElaborar,
@@ -124,14 +166,14 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           icon: "success",
           title: "Insumo creado exitosamente!",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       } else {
         if (!ingrediente || !ingrediente.id) {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: `Error: insumo a editar no definido`
+            text: `Error: insumo a editar no definido`,
           });
           return;
         }
@@ -140,18 +182,18 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           icon: "success",
           title: "Insumo actualizado exitosamente!",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       }
 
       const nuevoIngrediente = ArticuloInsumo.fromJson(responseJson);
-
       onSubmit(nuevoIngrediente);
       onClose();
     } catch (error) {
       alert("Error al guardar el insumo: " + error);
     }
   };
+
   
 
   return (
@@ -259,6 +301,26 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
+        {!esParaElaborar && (
+          <div className={styles.fieldGroupFull}>
+            <label htmlFor="imagen">Imágen</label>
+            <input
+              type="file"
+              id="imagen"
+              className={styles.imageInput}
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+            {imagenPreview && (
+              <img
+                src={imagenPreview}
+                alt="Preview"
+                style={{ maxWidth: 200, marginTop: 10 }}
+              />
+            )}
+          </div>
+        )}
       </div>
       <div className={styles.buttonActions}>
         <button type="submit" className={styles.saveBtn}> 
