@@ -27,6 +27,12 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [margenGanancia, setMargenGanancia] = useState(producto?.margenGanancia || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [imagen, setImagen] = useState<File | null>(null);
+  
+  // Estado para el cálculo de costos
+  const [costoTotal, setCostoTotal] = useState<number>(0);
+  const [precioFinal, setPrecioFinal] = useState<number>(0);
+
+
 
   // Escuchar cambios en artManu
   useEffect(() => {
@@ -47,6 +53,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
   // Estado de ingredientes agregados ( insumo y cantidad )
   const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
+  
+  
   // GET insumos disponibles
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -63,6 +71,18 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     };
     fetchInsumos();
   }, []);
+
+  // Calculamos el costo total y el precio final cada vez que cambian los ingredientes o el margen
+  useEffect(() => {
+    const nuevoTotal = ingredientes.reduce((total, { insumo, cantidad }) => {
+      return total + (insumo.precioCompra * cantidad);
+    }, 0);
+    
+    setCostoTotal(nuevoTotal);
+    setPrecioFinal(nuevoTotal * (1 + margenGanancia / 100));
+  }, [ingredientes, margenGanancia]);
+
+
 
   //limpiar form
   useEffect(() => {
@@ -132,7 +152,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         descripcion,
         detalles: detallesConvertidos,
         unidadMedida: { id: 3 }, 
-        categoria: { id: categoriaSeleccionada.id }
+        categoria: { id: categoriaSeleccionada.id },
+        precioVenta: precioFinal
       };
 
       if (modo === 'crear') {
@@ -265,38 +286,81 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
             </select>
           </div>
           <h4>Ingredientes Agregados:</h4>
-          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {ingredientes.map(({ insumo, cantidad }, index) => (
-              <li
-                key={insumo.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}
-              >
-                <span style={{ flex: 1 }}>
-                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  value={cantidad}
-                  onChange={(e) => {
-                    const nuevaCantidad = Number(e.target.value);
-                    setIngredientes((prev) =>
-                      prev.map((ing, i) =>
-                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                      )
-                    );
-                  }}
-                />
-                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-              </li>
-            ))}
-          </ul>
+          <table className={styles.ingredientesTable}>
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Cantidad</th>
+                <th>Costo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ingredientes.map(({ insumo, cantidad }, index) => (
+                <tr key={insumo.id}>
+                  <td>
+                    {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min={0}
+                      step={0.1}
+                      value={cantidad}
+                      onChange={(e) => {
+                        const nuevaCantidad = Number(e.target.value);
+                        setIngredientes((prev) =>
+                          prev.map((ing, i) =>
+                            i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                          )
+                        );
+                      }}
+                    />
+                    <span className={styles.unitText}>
+                      {insumo.unidadMedida?.denominacion ?? ''}
+                    </span>
+                  </td>
+                  <td className={styles.moneyCell}>
+                    ${(insumo.precioCompra * cantidad).toFixed(2)}
+                  </td>
+                  <td>
+                    <button 
+                      type="button" 
+                      className={styles.deleteBtn}
+                      onClick={() => handleEliminarIngrediente(insumo.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        
+        {/* Sección de cálculo de costos y precio */}
+        <div className={styles.costSummary}>
+          <div className={styles.costRow}>
+            <span className={styles.costLabel}>Costo Total de Ingredientes:</span>
+            <span className={styles.costValue}>${costoTotal.toFixed(2)}</span>
+          </div>
+          <div className={styles.costRow}>
+            <span className={styles.costLabel}>Margen de Ganancia (%):</span>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={margenGanancia}
+              onChange={(e) => setMargenGanancia(Number(e.target.value))}
+              className={styles.marginInput}
+            />
+          </div>
+          <div className={`${styles.costRow} ${styles.finalPrice}`}>
+            <span className={styles.costLabel}>Precio Final de Venta:</span>
+            <span className={styles.costValue}>${precioFinal.toFixed(2)}</span>
+          </div>
+        </div>
+
         <div className={styles.fieldGroupFull}>
           <label htmlFor="imagen">Imágen</label>
           <input

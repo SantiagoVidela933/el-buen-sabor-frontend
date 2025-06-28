@@ -211,38 +211,8 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
-        <div className={styles.fieldGroup}>
-          <label>
-            Precio compra:
-            <input
-              type="number"
-              value={precioCompra}
-              onChange={(e) => setPrecioCompra(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-              required
-            />
-          </label>
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>
-            Margen ganancia (%):
-            <input
-              type="number"
-              value={margenGanancia}
-              onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            ¿Es para elaborar?
-            <input
-              type="checkbox"
-              checked={esParaElaborar}
-              onChange={(e) => setEsParaElaborar(e.target.checked)}
-            />
-          </label>
-        </div>
+
+
         <div className={styles.fieldGroup}>
           <label>
             Unidad de medida:
@@ -262,25 +232,21 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             </select>
           </label>
         </div>
+
         <div className={styles.fieldGroup}>
           <label>
-            Categoría:
-            <select
-              value={categoria?.id ?? ""}
-              onChange={(e) => {
-                const selected = categorias.find((c) => c.id === Number(e.target.value));
-                setCategoria(selected ?? null);
-              }}
-            >
-              <option value="">Seleccionar...</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.denominacion}
-                </option>
-              ))}
-            </select>
+            Precio compra:
+            <input
+              type="number"
+              value={precioCompra}
+              onChange={(e) => setPrecioCompra(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+              required
+            />
           </label>
         </div>
+
+        
+        
         <div className={styles.fieldGroup}>
           <label>
             Stock actual:
@@ -301,25 +267,68 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
-        {!esParaElaborar && (
-          <div className={styles.fieldGroupFull}>
-            <label htmlFor="imagen">Imágen</label>
+        
+        <div>
+          <label>
+            ¿Es para elaborar?
             <input
-              type="file"
-              id="imagen"
-              className={styles.imageInput}
-              accept="image/*"
-              onChange={handleImageChange}
+              type="checkbox"
+              checked={esParaElaborar}
+              onChange={(e) => setEsParaElaborar(e.target.checked)}
             />
-            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-            {imagenPreview && (
-              <img
-                src={imagenPreview}
-                alt="Preview"
-                style={{ maxWidth: 200, marginTop: 10 }}
+          </label>
+        </div>
+                <div className={styles.fieldGroup}>
+          <label>
+            Categoría:
+            <select
+              value={categoria?.id ?? ""}
+              onChange={(e) => {
+                const selected = categorias.find((c) => c.id === Number(e.target.value));
+            }}
+            >   setCategoria(selected ?? null);
+              
+              <option value="">Seleccionar...</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.denominacion}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        {!esParaElaborar && (
+          <>
+            <div className={styles.fieldGroup}>
+              <label>
+                Margen ganancia (%):
+                <input
+                  type="number"
+                  value={margenGanancia}
+                  onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                  required
+                />
+              </label>
+            </div>
+            <div className={styles.fieldGroupFull}>
+              <label htmlFor="imagen">Imágen</label>
+              <input
+                type="file"
+                id="imagen"
+                className={styles.imageInput}
+                accept="image/*"
+                onChange={handleImageChange}
               />
-            )}
-          </div>
+              {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+              {imagenPreview && (
+                <img
+                  src={imagenPreview}
+                  alt="Preview"
+                  style={{ maxWidth: 200, marginTop: 10 }}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
       <div className={styles.buttonActions}>

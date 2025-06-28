@@ -193,6 +193,7 @@ export default function StockIngrediente() {
         <thead>
           <tr>
             <th>Denominación</th>
+            <th>Stock</th>
             <th>Unidad</th>
             <th>Precio Compra</th>
             <th>Es para Elaborar</th>
@@ -209,6 +210,7 @@ export default function StockIngrediente() {
             insumosPaginados.map((i) => (
               <tr key={i.id} className={i.fechaBaja ? styles.filaBaja : ''}>
                 <td>{i.denominacion}</td>
+                <td>{i.stockPorSucursal[0].stockActual}</td>  
                 <td>{i.unidadMedida.denominacion}</td>
                 <td>${i.precioCompra}</td>
                 <td>{i.esParaElaborar ? "Sí" : "No"}</td>

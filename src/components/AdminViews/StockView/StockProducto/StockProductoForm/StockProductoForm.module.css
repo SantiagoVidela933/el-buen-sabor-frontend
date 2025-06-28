@@ -8,9 +8,14 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
+  position: relative;
+
+
 }
 
 .formContainer h2 {
+  position: sticky;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
@@ -21,6 +26,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  padding-top: 10px;
 }
 
 .fieldGroup,
@@ -120,7 +126,90 @@
   background-color: #f2f2f2;
   border-color: #aaa;
 }
+.ingredientesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
 
+.ingredientesTable th, 
+.ingredientesTable td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.ingredientesTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.moneyCell {
+  text-align: right;
+  font-family: monospace;
+}
+
+.costSummary {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.costRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.costRow:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.costLabel {
+  font-weight: 500;
+}
+
+.costValue {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.marginInput {
+  width: 80px;
+  padding: 5px;
+  text-align: right;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.finalPrice {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 2px dashed #ced4da;
+  font-size: 1.15rem;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background-color: #c82333;
+}
 
 /* Responsive: una sola columna */
 @media (max-width: 700px) {
@@ -137,4 +226,34 @@
   .saveBtn {
     width: 100%;
   }
+}
+.inputWithUnit {
+  display: flex;
+  align-items: center;
+  max-width: 100px;
+}
+
+.inputWithUnit input {
+  flex: 1;
+  width: 70%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.unitText {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-left: none;
+  padding: 5px 10px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: #495057;
+  font-size: 0.9em;
+  white-space: nowrap;
+  min-width: 40px;
+  text-align: center;
+}
+
+.quantityField {
+  min-width: 50px;
 }
