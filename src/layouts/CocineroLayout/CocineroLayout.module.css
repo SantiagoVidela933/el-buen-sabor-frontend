@@ -1,0 +1,16 @@
+.cocineroLayout_wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard_and_content {
+  display: flex;
+  flex: 1;
+  background-color: white;
+}
+
+.cocineroLayout_main {
+  flex: 1;
+  padding: 2rem;
+}

@@ -1,0 +1,127 @@
+.category_wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  background: linear-gradient(to right, #ff3300, #ff6b46, #feb47b);
+  margin: 0px 60px;
+  border-radius: 10px;
+  color: white;
+  flex-wrap: wrap;
+  padding: 1rem 2rem;
+}
+
+.category_box_title,
+.category_box_ul,
+.box_display {
+  flex: 1;
+}
+
+.category_box_title {
+  margin-left: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.category_title_text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
+
+.category_box_ul {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+}
+
+.category_ul {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+
+.category_li {
+  padding: 0.5rem;
+}
+
+.category_button {
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: white;
+  white-space: nowrap;
+}
+
+.category_button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  color: white;
+}
+
+.selected {
+  background-color: white;
+  color: #ff5a1f;
+  border-color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category_wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem;
+  }
+
+  .category_box_title {
+    margin: 0;
+    justify-content: center;
+  }
+
+  .category_title_text {
+    margin-top: 1rem;
+    text-align: center;
+    white-space: normal; /* Permite que el texto se divida en varias líneas en móvil */
+  }
+
+  .category_box_ul {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .category_ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .category_li {
+    width: calc(50% - 1rem);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .category_button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Botón "Todos" ocupa toda la fila */
+  .category_ul li:first-child {
+    width: 100%;
+  }
+}

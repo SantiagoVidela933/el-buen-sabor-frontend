@@ -1,0 +1,199 @@
+.container {
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  background-color: #ff6609;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: white;
+}
+
+.searchFilterContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.estadoFilter {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.estadoButton {
+  background-color: #eee;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.estadoDropdown {
+  position: absolute;
+  top: 120%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 200px;
+}
+
+.estadoOption {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+
+.estadoOption:hover {
+  background-color: #f0f0f0;
+}
+
+.searchInput {
+  min-width: 300px; /* o menos si quieres */
+  width: 100px;     /* ancho fijo */
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  margin-left: auto;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  min-width: 900px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.thead th {
+  background-color: #ddd;
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid #ccc;
+}
+
+.tbody tr {
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  background-color: #f0f0f0;
+}
+
+.tbody td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-right: -50px;
+}
+
+.btn {
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: white;
+}
+
+.masmin {
+  background-color: #ff9800;
+}
+
+.listo {
+  background-color: #4caf50;
+}
+
+.detalleButton {
+  background-color: #ffeb3b;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.detalleButton:hover {
+  background-color: #d1d412;
+}
+
+.paginationInfo {
+  font-weight: bold;
+  color: #333;
+}
+
+.noData {
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.paginationButton {
+  background-color: #eee;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.paginationButton:hover {
+  background-color: #dceeff;
+}
+
+.activePage {
+  background-color: #333;
+  color: white;
+}
+
+/* ==== MEDIA QUERIES ORIGINALES (mantener) ==== */
+@media (min-width: 768px) {
+  .searchFilterContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 2rem 3rem;
+  }
+}

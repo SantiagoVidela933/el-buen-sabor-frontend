@@ -1,0 +1,287 @@
+.container {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  flex-direction: column; /* Por defecto en columna para móviles */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Nuevo div para agrupar el título y el select en la izquierda */
+.titleAndSelectGroup {
+    display: flex; /* Hacemos que sea un contenedor flex */
+    align-items: center; /* Centra los items verticalmente */
+    gap: 1.5rem; /* Espacio entre el título y el select */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.titleBox {
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #ff6609;
+  display: inline-block;
+}
+
+.title {
+  font-size: 1.8rem;
+  margin: 0;
+  text-align: left;
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
+}
+
+
+.searchFilterContainer { /* Contenedor original para filtros y búsqueda - ya no usado para el select */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.selectWrapper {
+  display: flex;
+  justify-content: flex-start;
+  max-width: 180px; /* Ancho máximo para el selectWrapper, hazlo más chico */
+}
+
+.select {
+  padding: 0.9rem 1rem;
+  border-radius: 15px;
+  border: 1px solid #ff6609;
+  background-color: #f1f1f1;
+  color: #333; /* Asegura un color de texto oscuro y visible */
+  font-size: 0.9rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23ff6609%22%20d%3D%22M5.996%208.204L2.012%204.22c-.2-.2-.2-.512%200-.712s.512-.2.712%200L6%207.135l3.276-3.627c.2-.2.512-.2.712%200s.2.512%200%20.712l-4.004%204.004c-.2.2-.512%20.2-.712%200z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%; /* Para que el select ocupe el ancho de su wrapper */
+}
+
+.select:hover {
+  background-color: white;
+  color: #ff6609;
+}
+
+.searchBar { /* Estilo de la barra de búsqueda */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #ff6609;
+  padding: 0.5rem 7rem;
+  border-radius: 15px;
+  max-width: 400px; /* Ancho máximo para la barra de búsqueda */
+  background-color: #fff;
+}
+
+.searchBar span {
+  color: #ff6609;
+}
+
+.searchBar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  min-width: auto;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  min-width: 1000px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.table thead th {
+  background-color: #ddd;
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: bold;
+  color: #333;
+  border-bottom: none;
+}
+
+.table tbody tr {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #eee;
+  transition: transform 0.2s ease;
+}
+
+.table tbody td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: none;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.table tbody td:first-child { 
+  border-top-left-radius: 8px; 
+  border-bottom-left-radius: 8px; 
+}
+.table tbody td:last-child { 
+  border-top-right-radius: 8px; 
+  border-bottom-right-radius: 8px; 
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.detailBtn {
+  background-color: yellow;
+  border: none;
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.detailBtn:hover {
+  background-color: #ced113;
+  color: black;
+}
+
+.actionBtn {
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: white;
+  background-color: #66be13;
+  transition: background-color 0.3s ease;
+}
+
+.actionBtn:hover {
+  background-color: #57a110;
+}
+
+.cancelBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancelBtn:hover {
+  background-color: #d32f2f;
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+  color: #777;
+}
+
+/* --- Estilos de Paginación Numérica --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem; /* Espacio consistente */
+  gap: 0.5rem; /* Espacio entre los botones de paginación */
+}
+
+.paginationButton {
+  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
+  border: none; /* Sin borde */
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Bordes más redondeados */
+  cursor: pointer;
+  font-weight: 600; /* Peso de fuente consistente */
+  color: #333; /* Color de texto oscuro para inactivos */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #dceeff; /* Un azul claro al pasar el ratón */
+  color: #ff6609; /* Color de texto naranja */
+}
+
+.paginationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
+  color: #888; /* Texto gris para deshabilitados */
+}
+
+.activePage {
+  background-color: #ff6609; /* Color principal para la página activa */
+  color: white; /* Texto blanco para la página activa */
+  font-weight: bold;
+}
+
+.activePage:hover {
+  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+}
+
+
+/* ==== MEDIA QUERIES ==== */
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between; /* Esto separa el titleAndSelectGroup de la searchBar */
+    align-items: center;
+  }
+
+  /* El .searchFilterContainer ya no es necesario para la alineación del select y la búsqueda */
+  /* Lo puedes eliminar o dejarlo si planeas agregar más filtros que vayan juntos */
+  .searchFilterContainer {
+    /* Mantengo flex-direction: row para que si añades más filtros, se pongan en fila */
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end; /* Alinea sus contenidos a la derecha */
+    flex-wrap: nowrap;
+    gap: 1.5rem;
+    width: auto;
+  }
+
+  .container {
+    padding: 2rem 3rem;
+  }
+  .searchBar {
+    max-width: 300px;
+  }
+}
