@@ -8,6 +8,8 @@ import { getLocalidadesJSONFetch } from "../../api/localidades";
 import { crearCliente } from "../../api/cliente";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 /*IMAGENES*/
 import logo from "../../assets/logos/logo_buenSabor.png";
@@ -68,14 +70,19 @@ export default function RegistroPage() {
 
     try {
       await crearCliente(cliente);
-      alert("Cliente creado correctamente");
+      Swal.fire({
+        icon: "success",
+        title: "Datos guardados exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
       navigate("/");
     } catch (error) {
-      alert(
-        "⚠️ Error al crear el cliente: " +
-          (error instanceof Error ? error.message : "desconocido")
-      );
-      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al guardar los datos.`
+      });
     }
   };
 
