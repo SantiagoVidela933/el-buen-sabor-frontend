@@ -35,6 +35,7 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
       categoriaPadreId: null,
       sucursalId: 1, 
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
+      categoriaInsumo: true,
     };
 
     if (modo === "editar" && rubro?.id) {
