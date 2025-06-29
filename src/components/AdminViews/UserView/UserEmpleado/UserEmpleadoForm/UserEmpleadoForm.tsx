@@ -38,10 +38,29 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getLocalidades()
-      .then(setLocalidades)
-      .catch(() => setError('Error al cargar localidades'));
-  }, []);
+  getLocalidades()
+    .then((localidadesData) => {
+      setLocalidades(localidadesData);
+
+      // Solo en modo edición y si no se recibió un id válido
+      if (modo === 'editar' && empleado?.domicilio?.localidad?.nombre) {
+        const localidadEncontrada = localidadesData.find(
+          (loc) =>
+            loc.nombre.toLowerCase().trim() ===
+            empleado.domicilio.localidad.nombre.toLowerCase().trim()
+        );
+
+        if (localidadEncontrada) {
+          setForm((prev) => ({
+            ...prev,
+            idLocalidad: localidadEncontrada.id.toString(),
+          }));
+        }
+      }
+    })
+    .catch(() => setError('Error al cargar localidades'));
+}, []);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
