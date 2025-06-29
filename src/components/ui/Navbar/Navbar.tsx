@@ -1,5 +1,3 @@
-// NAVBAR COMPLETO (actualizado para enviar cliente y empleado a UserData)
-
 import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
 import CartButton from "./CartButton/CartButton";
@@ -7,7 +5,7 @@ import Modal from "../Modal/Modal";
 import UserData from "../../User/UserData/UserData";
 import { useAuth0 } from "@auth0/auth0-react";
 import Cliente from "../../../models/prueba/Client";
-import {Empleado} from "../../../models/Empleado";
+import { Empleado } from "../../../models/Empleado";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -37,6 +35,10 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const location = useLocation();
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const hasItemsInCart = cartItems.length > 0;
+
+  const isEmpleado = ["COCINERO", "CAJERO", "DELIVERY"].some((role) =>
+    userRoles.includes(role)
+  );
 
   useEffect(() => {
     const verificarRegistro = async () => {
@@ -138,7 +140,7 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                     Mis datos personales
                   </button>
 
-                  {!userRoles.includes("ADMINISTRADOR") && (
+                  {!["ADMINISTRADOR", "COCINERO", "CAJERO", "DELIVERY"].some(role => userRoles.includes(role)) && (
                     <button
                       onClick={() => {
                         onViewChange("orders");
@@ -152,9 +154,27 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                 </div>
               )}
 
-              <div className={styles.div_line_profile}></div>
+              {/* Línea separadora entre botón de cuenta y botón de navegación (visibility) */}
+              {(userRoles.includes("ADMINISTRADOR") || !isEmpleado) && (
+                <div className={styles.div_line_profile}></div>
+              )}
 
-              {userRoles.includes("ADMINISTRADOR") ? (
+              {/* Mostrar carrito solo si NO es empleado ni admin */}
+              {!isEmpleado && !userRoles.includes("ADMINISTRADOR") && (
+                <>
+                  <div className={styles.cartButtonContainer}>
+                    <CartButton onClick={onCartClick} />
+                    {hasItemsInCart && (
+                      <span className={styles.cartAlertBadge}>
+                        {cartItems.length > 9 ? "9+" : cartItems.length}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Botón para navegación entre roles (visibility) SOLO para admin */}
+              {userRoles.includes("ADMINISTRADOR") && (
                 <div className={styles.admin_nav_menu}>
                   <button onClick={handleShowAdminMenu} className={styles.iconButton} title="Vistas">
                     <span className="material-symbols-outlined">visibility</span>
@@ -167,15 +187,6 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
                       <button onClick={() => { navigate("/delivery"); setShowAdminMenu(false); }}>Delivery</button>
                       <button onClick={() => { window.location.href = "/"; setShowAdminMenu(false); }}>Cliente</button>
                     </div>
-                  )}
-                </div>
-              ) : (
-                <div className={styles.cartButtonContainer}>
-                  <CartButton onClick={onCartClick} />
-                  {hasItemsInCart && (
-                    <span className={styles.cartAlertBadge}>
-                      {cartItems.length > 9 ? "9+" : cartItems.length}
-                    </span>
                   )}
                 </div>
               )}
