@@ -226,162 +226,168 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
 
   return (
-    <form className={styles.formContainer} onSubmit={handleSubmit}>
-      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
-      <div className={styles.fieldsGrid}>
-        <div className={styles.fieldGroup}>
-          <label>Nombre</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Descripción</label>
-          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Tiempo en cocina</label>
-          <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Margen Ganancia</label>
-          <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Rubro</label>
-          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-            <option value="">-- Selecciona un rubro --</option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.fieldGroupFull}>
-          <label>Receta</label>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <select
-              value={selectedInsumoId}
-              onChange={(e) => {
-                const id = Number(e.target.value);
-                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
-                if (id !== 0 && !insumoYaAgregado) {
-                  const insumo = insumos.find(i => i.id === id);
-                  if (insumo) {
-                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
-                  }
-                }
-                setSelectedInsumoId(0); // Reset select
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
+        <div className={styles.fieldsGrid}>
+          <div className={styles.fieldGroup}>
+            <label>Nombre</label>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Descripción</label>
+            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Tiempo en cocina</label>
+            <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Rubro</label>
+            <select value={categoriaId} onChange={(e) => {
+              const selected = categorias.find((c) => c.id === Number(e.target.value));
+              setCategoriaId(selected && selected.id !== undefined ? selected.id.toString() : '');
               }}
             >
-              <option value={0}>-- Seleccionar ingrediente --</option>
-              {insumos.map((insumo) => (
-                <option
-                  key={insumo.id}
-                  value={insumo.id}
-                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
-                >
-                  {insumo.denominacion}
+              <option value="">-- Selecciona un rubro --</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.denominacion}
                 </option>
               ))}
             </select>
           </div>
-          <h4>Ingredientes Agregados:</h4>
-          <table className={styles.ingredientesTable}>
-            <thead>
-              <tr>
-                <th>Ingrediente</th>
-                <th>Cantidad</th>
-                <th>Costo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ingredientes.map(({ insumo, cantidad }, index) => (
-                <tr key={insumo.id}>
-                  <td>
-                    {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-                  </td>
-                  <td>
+          <div className={styles.fieldGroupFull}>
+            <div className={styles.recipeHeader}>
+              <label>Receta</label>
+              <div className={styles.selectContainer}>
+                <select
+                  value={selectedInsumoId}
+                  onChange={(e) => {
+                    const id = Number(e.target.value);
+                    const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                    if (id !== 0 && !insumoYaAgregado) {
+                      const insumo = insumos.find(i => i.id === id);
+                      if (insumo) {
+                        setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                      }
+                    }
+                    setSelectedInsumoId(0); // Reset select
+                  }}
+                >
+                  <option value={0}>-- Seleccionar ingrediente --</option>
+                  {insumos.map((insumo) => (
+                    <option
+                      key={insumo.id}
+                      value={insumo.id}
+                      disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                    >
+                      {insumo.denominacion}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <table className={styles.ingredientesTable}>
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Cantidad</th>
+                  <th>Costo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ingredientes.map(({ insumo, cantidad }, index) => (
+                  <tr key={insumo.id}>
+                    <td>
+                      {insumo.denominacion}</td>
+                    <td>
+                      <div className={styles.inputWithUnit}>
+                        <input
+                          type="number"
+                          min={0}
+                          step={0.1}
+                          value={cantidad}
+                          onChange={(e) => {
+                            const nuevaCantidad = Number(e.target.value);
+                            setIngredientes((prev) =>
+                              prev.map((ing, i) =>
+                                i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                              )
+                            );
+                          }}
+                          className={styles.quantityField}
+                        />
+                        <span className={styles.unitText}>
+                          {insumo.unidadMedida?.denominacion ?? ''}
+                        </span>
+                      </div>
+                    </td>
+                    <td className={styles.moneyCell}>
+                      ${(insumo.precioCompra * cantidad).toFixed(2)}
+                    </td>
+                    <td>
+                      <button 
+                        type="button" 
+                        className={styles.deleteBtn}
+                        onClick={() => handleEliminarIngrediente(insumo.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className={styles.fieldGroupFull}>
+            <h4 style={{margin :'5px 0'}}>Calcular Precio:</h4>
+            <div className={styles.costSummary}>
+              <div className={styles.costEquation}>
+                <span className={styles.costLabel}>Costo:</span>
+                <span className={styles.costValue}>${costoTotal.toFixed(2)}</span>
+                <div className={styles.equationOperator}>+</div>
+                  <span className={styles.costLabel}>Ganancia:</span>
+                  <div className={styles.gainSection}>
                     <input
                       type="number"
-                      min={0}
-                      step={0.1}
-                      value={cantidad}
-                      onChange={(e) => {
-                        const nuevaCantidad = Number(e.target.value);
-                        setIngredientes((prev) =>
-                          prev.map((ing, i) =>
-                            i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                          )
-                        );
-                      }}
+                      min="0"
+                      step="1"
+                      value={margenGanancia}
+                      onChange={(e) => setMargenGanancia(Number(e.target.value))}
+                      className={styles.marginInput}
                     />
-                    <span className={styles.unitText}>
-                      {insumo.unidadMedida?.denominacion ?? ''}
-                    </span>
-                  </td>
-                  <td className={styles.moneyCell}>
-                    ${(insumo.precioCompra * cantidad).toFixed(2)}
-                  </td>
-                  <td>
-                    <button 
-                      type="button" 
-                      className={styles.deleteBtn}
-                      onClick={() => handleEliminarIngrediente(insumo.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Sección de cálculo de costos y precio */}
-        <div className={styles.costSummary}>
-          <div className={styles.costRow}>
-            <span className={styles.costLabel}>Costo Total de Ingredientes:</span>
-            <span className={styles.costValue}>${costoTotal.toFixed(2)}</span>
-          </div>
-          <div className={styles.costRow}>
-            <span className={styles.costLabel}>Margen de Ganancia (%):</span>
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={margenGanancia}
-              onChange={(e) => setMargenGanancia(Number(e.target.value))}
-              className={styles.marginInput}
-            />
-          </div>
-          <div className={`${styles.costRow} ${styles.finalPrice}`}>
-            <span className={styles.costLabel}>Precio Final de Venta:</span>
-            <span className={styles.costValue}>${precioFinal.toFixed(2)}</span>
-          </div>
-        </div>
+                    <span className={styles.percentSymbol}>%</span>
+                  </div>
+                <div className={styles.equationOperator}>=</div>
+                <span className={styles.costLabel}>Precio:</span>
+                <span className={styles.finalCostValue}>${precioFinal.toFixed(2)}</span>
 
-        <div className={styles.fieldGroupFull}>
-          <label htmlFor="imagen">Imágen</label>
-          <input
-            type="file"
-            id="imagen"
-            className={styles.imageInput}
-            onChange={handleImageChange}
-          />
-          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.fieldGroupFull}>
+            <label htmlFor="imagen">Imágen</label>
+            <input
+              type="file"
+              id="imagen"
+              className={styles.imageInput}
+              onChange={handleImageChange}
+            />
+            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+            {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+          </div>
         </div>
-      </div>
-      <div className={styles.buttonActions}>
-        <button type="submit" className={styles.saveBtn}> 
-          {modo === "crear" ? "Crear" : "Actualizar"}
-        </button>
-        <button type="button" onClick={onClose} className={styles.cancelBtn}>
-          Cancelar
-        </button>
-      </div>
-    </form>
+        <div className={styles.buttonActions}>
+          <button type="submit" className={styles.saveBtn}> 
+            {modo === "crear" ? "Crear" : "Actualizar"}
+          </button>
+          <button type="button" onClick={onClose} className={styles.cancelBtn}>
+            Cancelar
+          </button>
+        </div>
+      </form>
   );
 };
 

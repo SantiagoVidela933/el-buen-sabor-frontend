@@ -209,8 +209,8 @@ const StockProducto = () => {
             >
               <td>{producto.denominacion}</td>
               <td>{producto.categoria?.denominacion ?? 'Sin categoría'}</td>
-              <td>{producto.precioVenta}</td>
-              <td>{producto.tiempoEstimadoMinutos}</td>
+              <td>${producto.precioVenta}</td>
+              <td>{producto.tiempoEstimadoMinutos} min</td>
               <td>{producto.fechaBaja ? "Baja" : "Alta"}</td>
               <td>
                 {producto.fechaBaja ? (
