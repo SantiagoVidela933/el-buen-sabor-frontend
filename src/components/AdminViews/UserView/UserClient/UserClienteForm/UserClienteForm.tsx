@@ -83,7 +83,7 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
 
       Swal.fire({
         icon: "success",
-        title: "Cliente creado exitosamente!",
+        title: "Cliente modificado exitosamente!",
         showConfirmButton: false,
         timer: 1500
       });

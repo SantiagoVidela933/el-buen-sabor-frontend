@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import styles from "./CardPromocion.module.css";
 import PromocionDetailCard from "./PromocioDetailCard/PromocionDetailCard";
 import { ArticuloVenta } from "../../../../models/ArticuloVenta";
 import Modal from '../../../ui/Modal/Modal';
+import { RootState } from "../../../../redux/store";
+import { AppDispatch } from "../../../../redux/store";
+import { checkStoreStatus } from "../../../../redux/slices/cartSlice";
+import  Swal from "sweetalert2";
+
 
 interface CardPromocionProps {
   titulo: string;
@@ -25,6 +31,16 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
 }) => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const isDisabled = stockDisponible <= 0;
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { isStoreOpen, storeHours } = useSelector((state: RootState) => state.cart);
+  
+  // Verificar el estado de la tienda al cargar el componente
+  useEffect(() => {
+    dispatch(checkStoreStatus());
+  }, [dispatch]);
+
+
   const promocion: ArticuloVenta = {
     id,
     tipo: "PROMOCION",
@@ -37,7 +53,22 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
   };
 
   const handleCardClick = () => {
-    if (!isDisabled) {
+    if  (isDisabled) {
+      return;
+    }
+    
+    // Verificar si la tienda está abierta
+    if (!isStoreOpen) {
+      // Mostrar SweetAlert si la tienda está cerrada
+      Swal.fire({
+        icon: "warning",
+        title: "Tienda cerrada",
+        text: `Lo sentimos, nuestra tienda está cerrada en este momento. Nuestro horario de atención es de ${storeHours.opening} a ${storeHours.closing}.`,
+        confirmButtonText: "Entendido",
+        confirmButtonColor: '#ff5722',
+      });
+    } else {
+      // Si está abierta, mostramos el detalle de la promoción
       setIsDetailOpen(true);
     }
   };
