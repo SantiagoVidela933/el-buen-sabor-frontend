@@ -177,22 +177,57 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
       <h2>{modo === 'crear' ? 'Crear Empleado' : 'Modificar Empleado'}</h2>
 
       <div className={styles.fieldsGrid}>
-        {[
+        {([
           { label: 'Nombre', name: 'nombre' },
           { label: 'Apellido', name: 'apellido' },
-          { label: 'Teléfono', name: 'telefono', type: 'tel' },
+          {
+            label: 'Teléfono',
+            name: 'telefono',
+            type: 'tel',
+            inputMode: 'numeric' as 'numeric',
+            onInput: (e: React.FormEvent<HTMLInputElement>) => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }
+          },
           { label: 'Email', name: 'email', type: 'email' },
           { label: 'Calle', name: 'calle' },
-          { label: 'Número', name: 'numero', type: 'number' },
-          { label: 'Código Postal', name: 'codigoPostal', type: 'number' }
-        ].map(({ label, name, type }) => (
+          { label: 'Número',
+            name: 'numero',
+            type: 'text',
+            inputMode: 'numeric' as 'numeric',
+            onInput: (e: React.FormEvent<HTMLInputElement>) => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }
+          },
+          {
+            label: 'Código Postal',
+            name: 'codigoPostal',
+            type: 'text',
+            inputMode: 'numeric' as 'numeric',
+            onInput: (e: React.FormEvent<HTMLInputElement>) => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }
+          }
+        ] as {
+          label: string;
+          name: string;
+          type?: string;
+          pattern?: string;
+          inputMode?: 'email' | 'text' | 'tel' | 'search' | 'url' | 'numeric' | 'none' | 'decimal';
+          onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
+        }[]).map(({ label, name, type, inputMode, onInput }) => (
           <div className={styles.fieldGroup} key={name}>
             <label>{label}</label>
             <input
-              type={type || 'text'}
+              type={type}
               name={name}
               value={form[name as keyof typeof form]}
               onChange={handleChange}
+              {...(inputMode && { inputMode })}
+              {...(onInput && { onInput })}
             />
           </div>
         ))}
