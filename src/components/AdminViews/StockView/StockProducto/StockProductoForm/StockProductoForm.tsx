@@ -26,6 +26,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
   const [margenGanancia, setMargenGanancia] = useState(producto?.margenGanancia || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
+  const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [imagen, setImagen] = useState<File | null>(null);
   
   // Estado para el cálculo de costos
@@ -235,7 +236,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </div>
           <div className={styles.fieldGroup}>
             <label>Descripción</label>
-            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+            <textarea 
+                value={descripcion} 
+                onChange={(e) => setDescripcion(e.target.value)}
+                className={styles.textareaInput}
+              />          
           </div>
           <div className={styles.fieldGroup}>
             <label>Tiempo en cocina</label>
@@ -369,14 +374,44 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
           <div className={styles.fieldGroupFull}>
             <label htmlFor="imagen">Imágen</label>
-            <input
-              type="file"
-              id="imagen"
-              className={styles.imageInput}
-              onChange={handleImageChange}
-            />
-            {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-            {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+            {nombreImagenActual && !mostrarInputImagen ? (
+            <>
+              <p>Imagen seleccionada: {nombreImagenActual}</p>
+                <button
+                  type="button"
+                  onClick={() => setMostrarInputImagen(true)}
+                  className={styles.saveBtn}
+                  style={{ marginBottom: '1em' }}
+                >
+                  Cambiar imagen
+                </button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  id="imagen"
+                  className={styles.imageInput}
+                  onChange={handleImageChange}
+                />
+                {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+              </>
+            )}
+            {imagenPreview ? (
+              <div style={{ margin: '1em auto' }}>
+                <img
+                  src={imagenPreview}
+                  alt="Preview"
+                  style={{ maxWidth: 200, border: '1px solid black' }}
+                  onError={(e) => {
+                    console.error('Error cargando imagen:', e.currentTarget.src);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            ) : (
+              <p>No hay imagen para mostrar</p>
+            )}
           </div>
         </div>
         <div className={styles.buttonActions}>

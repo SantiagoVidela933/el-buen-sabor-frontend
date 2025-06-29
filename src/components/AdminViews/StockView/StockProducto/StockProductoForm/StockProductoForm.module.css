@@ -382,3 +382,24 @@
   outline: none;
 }
 
+.fieldGroup textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+}
+.textareaInput {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit; /* Hereda la fuente del formulario */
+  font-size: inherit; /* Hereda el tamaño de fuente */
+  resize: vertical;
+  min-height: 70px; /* Ajusta según necesites */
+  background-color: white;
+  box-sizing: border-box;
+}
