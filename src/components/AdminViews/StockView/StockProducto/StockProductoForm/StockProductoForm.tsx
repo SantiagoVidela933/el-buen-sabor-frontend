@@ -154,7 +154,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           alert('Error: producto a editar no definido');
           return;
         }
-        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
+        const response = await updateArticuloManufacturado(producto.id!, articuloPayload, imagen ?? undefined);
         Swal.fire({
           icon: "success",
           title: "Producto actualizado exitosamente!",
@@ -292,7 +292,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
                     );
                   }}
                 />
-                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
+                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id!)}>Eliminar</button>
               </li>
             ))}
           </ul>

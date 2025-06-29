@@ -157,6 +157,10 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
           payload.fechaBaja = null;
         }
 
+        if (payload.sucursal) {
+          payload.sucursal.id = payload.sucursal.id === 0 ? 1 : payload.sucursal.id;
+        }
+
         const result = await updatePromocion(payload, imagen!, promocion?.id);
         console.log("Promocion actualizada:", result);
 
