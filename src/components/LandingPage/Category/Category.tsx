@@ -4,74 +4,58 @@ import { CategoriaArticulo } from '../../../models/CategoriaArticulo';
 import { getCategoriasMenuBySucursalId } from '../../../api/articuloCategoria';
 
 interface CategoryProps {
-  categorias: CategoriaArticulo[];
   onCategoryChange: (categoryId: number) => void;
   selectedCategory: number;
 }
 
-const Category = ({ onCategoryChange }: CategoryProps) => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+const Category = ({ onCategoryChange, selectedCategory }: CategoryProps) => {
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
+  const [selectedLabel, setSelectedLabel] = useState<string>("Todos");
 
   useEffect(() => {
     const fetchCategorias = async () => {
       const data = await getCategoriasMenuBySucursalId(1);
       setCategorias(data);
+      if (selectedCategory !== 0) {
+        const current = data.find(cat => cat.id === selectedCategory);
+        setSelectedLabel(current?.denominacion || "Todos");
+      }
     };
     fetchCategorias();
-  }, []);
+  }, [selectedCategory]);
 
-  const handleCategoryClick = (categoryId: number) => {
-    setSelectedCategoryId(categoryId);
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = parseInt(e.target.value);
     onCategoryChange(categoryId);
-  };
 
-  const getButtonClass = (categoryId: number) =>
-    `${styles.category_button} ${selectedCategoryId === categoryId ? styles.selected : ''}`;
+    const selected = categoryId === 0
+      ? "Todos"
+      : categorias.find(cat => cat.id === categoryId)?.denominacion ?? "Todos";
 
-  const getIconByDenominacion = (denominacion: string): string => {
-    switch (denominacion.toLowerCase()) {
-      case 'pizzas':
-        return 'local_pizza';
-      case 'hamburguesa':
-        return 'lunch_dining';
-      case 'bebida':
-        return 'local_bar';
-      case 'papas fritas':
-        return 'fastfood';
-      case 'pancho':
-        return 'bakery_dining';
-      default:
-        return 'category';
-    }
+    setSelectedLabel(selected);
   };
 
   return (
     <div className={styles.category_wrapper}>
       <div className={styles.category_box_title}>
-        <p className={styles.category_title_text}>Hola. ¿Que vas a pedir hoy?</p>
+        <p className={styles.category_title_text}>Hola. ¿Qué vas a pedir hoy?</p>
       </div>
-      <div className={styles.category_box_ul}>
-        <ul className={styles.category_ul}>
-          <li className={styles.category_li}>
-            <button
-              onClick={() => handleCategoryClick(0)} 
-              className={getButtonClass(0)}
-            >
-              <span >Todos</span>
-            </button>
-          </li>
-          {categorias.map((cat) => (
-            <li key={cat.id} className={styles.category_li} aria-label={cat.denominacion.toLowerCase()}>
-              <button
-                onClick={() => handleCategoryClick(cat.id)}
-                className={getButtonClass(cat.id)}
-              >
-                <span className="material-symbols-outlined">{getIconByDenominacion(cat.denominacion)}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className={styles.category_select_wrapper}>
+        <div className={styles.category_select_container}>
+          <span className={styles.category_icon}>🍽️</span>
+          <select
+            className={styles.category_select}
+            value={selectedCategory}
+            onChange={handleChange}
+          >
+            <option value={0}>Todos</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.denominacion}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );
