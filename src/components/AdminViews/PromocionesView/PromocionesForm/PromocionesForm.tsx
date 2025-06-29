@@ -18,6 +18,7 @@ interface PromocionesFormProps {
 
 const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesFormProps) => {
   const [descripcion, setDescripcion] = useState('');
+  const [titulo, setTitulo] = useState('');
   const [estado, setEstado] = useState<'Alta' | 'Baja'>(promocion?.fechaBaja ? 'Baja' : 'Alta');
   const [descuento, setDescuento] = useState(0);
   const [detallePromocion, setDetallePromocion] = useState<PromocionDetalle[]>([]);
@@ -48,7 +49,8 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   useEffect(() => {
     const fetchData = async () => {
       if (promocion) {
-        setDescripcion(promocion.denominacion);
+        setTitulo(promocion.denominacion);
+        setDescripcion(promocion.descripcion);
         setEstado(promocion.fechaBaja ? 'Baja' : 'Alta');
         setDescuento(promocion.descuento ?? 0); 
         setDetallePromocion(promocion.promocionesDetalle ?? null); 
@@ -127,7 +129,8 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
     }
 
     const payload: Promocion = {
-        denominacion: descripcion,
+        denominacion: titulo,
+        descripcion: descripcion,
         fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
         imagenes: [],
         sucursal: promocion?.sucursal, // Mantener la sucursal de la promoción existente
@@ -210,21 +213,21 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
       <h2>{modo === 'crear' ? 'Crear Promoción' : 'Modificar Promoción'}</h2>
 
       <div className={styles.fieldsGrid}>
+
+        <div className={styles.fieldGroup}>
+          <label>Titulo</label>
+          <input 
+            type="text"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)} />
+        </div>
+
         <div className={styles.fieldGroup}>
           <label>Descripción</label>
           <textarea
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             style={{ height: '50px' }}
-          />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Descuento</label>
-          <input
-            type="number"
-            value={descuento}
-            onChange={(e) => setDescuento(Number(e.target.value))}
           />
         </div>
 
@@ -244,6 +247,19 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
             onChange={(e) => setFechaHasta(e.target.value)}
           />
         </div>
+
+        <div 
+          className={styles.fieldGroup}
+        >
+          <label>Descuento</label>
+          <input
+            type="number"
+            value={descuento}
+            onChange={(e) => setDescuento(Number(e.target.value))}
+          />
+        </div>
+
+        <br />
 
       <div className={styles.fieldGroupFull}>
 

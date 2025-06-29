@@ -6,6 +6,7 @@ import { SucursalEmpresaPromocion } from "./SucursalEmpresaPromocion";
 
 export class Promocion extends BaseEntity {
   denominacion: string;
+  descripcion: string;
   fechaDesde?: Date;
   fechaHasta?: Date;
   descuento: number;
@@ -20,6 +21,7 @@ export class Promocion extends BaseEntity {
     fechaModificacion: string | null = null,
     fechaBaja: string | null = null,
     denominacion: string,
+    descripcion: string,
     descuento: number,
     fechaDesde?: Date,
     fechaHasta?: Date,
@@ -30,6 +32,7 @@ export class Promocion extends BaseEntity {
   ) {
     super(id, fechaAlta, fechaModificacion, fechaBaja);
     this.denominacion = denominacion;
+    this.descripcion = descripcion;
     this.descuento = descuento;
     this.fechaDesde = fechaDesde;
     this.fechaHasta = fechaHasta;
@@ -53,6 +56,7 @@ export class Promocion extends BaseEntity {
       json.fechaModificacion ?? null, 
       json.fechaBaja ?? null,
       json.denominacion,
+      json.descripcion,
       json.descuento,
       fechaDesde,
       fechaHasta,
