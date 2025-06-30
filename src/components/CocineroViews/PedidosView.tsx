@@ -17,7 +17,6 @@ const PedidosView = () => {
     try {
       const data = await getPedidosVentasCocinero();
       setPedidos(data);
-      console.log(data)
     } catch (error) {
       console.error("Error al cargar pedidos:", error);
     }

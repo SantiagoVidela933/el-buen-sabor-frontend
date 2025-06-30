@@ -61,7 +61,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   useEffect(() => {
     const fetchData = async () => {
       if (promocion) {
-        console.log("Promoción cargada:", promocion);  // Log the full promocion object
         setNombre(promocion.denominacion);
         setDescripcion(promocion.descripcion);
         setEstado(promocion.fechaBaja ? 'Baja' : 'Alta');
@@ -77,14 +76,10 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
     };
 
     fetchData();
-      console.log("Estado de descripción:", descripcion); // Check the state after setting
-
   }, [promocion]);
 
   useEffect(() => {
     const nombreArchivo = promocion?.imagenes?.[0]?.nombre;
-
-    console.log("Nombre de archivo:", nombreArchivo);
     if (nombreArchivo) {
       setNombreImagenActual(nombreArchivo);
       setImagenPreview(`http://localhost:8080/imagenes/${nombreArchivo}`);
@@ -122,7 +117,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   
   const handleEliminarArticulo = (idArticulo?: number) => {
     setDetallePromocion(prev => prev.filter(detalle => detalle.articulo?.id !== idArticulo));
-    console.log("Detalle de promoción:", detallePromocion);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

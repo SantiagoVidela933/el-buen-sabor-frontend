@@ -49,8 +49,6 @@ export async function updatePromocion(
   imagen: File,
   id?: number
 ): Promise<Promocion> {
-    console.log("ID:", id);
-
     const formData = new FormData();
     const promocionBlob = new Blob([JSON.stringify(promocion)], {
       type: 'application/json',

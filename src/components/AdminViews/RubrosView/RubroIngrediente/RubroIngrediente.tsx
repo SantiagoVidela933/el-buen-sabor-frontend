@@ -38,7 +38,6 @@ const RubroIngrediente = () => {
       if (a.fechaBaja && !b.fechaBaja) return 1;  // a es de baja, b es activo -> b va primero
       return 0; // Si ambos son activos o ambos son de baja, mantener el orden relativo
     });
-    console.log('Rubros:', ordenados); // Para depuración
     setRubros(ordenados);
     setPaginaActual(1); // Siempre ir a la primera página al recargar los datos
   };

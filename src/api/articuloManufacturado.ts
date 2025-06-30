@@ -50,7 +50,6 @@ export const updateArticuloManufacturado = async (
   imagen?: File
 ) => {
   const formData = new FormData();
-  console.log('[DEBUG] Payload a enviar:', articuloPayload);
   const articuloBlob = new Blob([JSON.stringify(articuloPayload)], {
     type: 'application/json',
   });

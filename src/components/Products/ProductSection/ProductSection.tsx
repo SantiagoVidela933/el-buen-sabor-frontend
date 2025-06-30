@@ -30,10 +30,7 @@ const ProductSection = () => {
           getArticulosByTipo(idSucursal, 'manufacturado'),
         ]);
         // Agrega un log para inspeccionar los productos obtenidos
-        console.log('Insumos obtenidos:', insumos);
-        console.log('Manufacturados obtenidos:', manufacturados);
         const articulosCombinados =[...insumos, ...manufacturados];
-        console.log('Artículos combinados:', articulosCombinados);
         setArticulos(articulosCombinados);
       } catch (error) {
         console.error('Error cargando artículos:', error);
@@ -57,8 +54,6 @@ const ProductSection = () => {
   const handleCategoryChange = (categoryId: number) => {
     setSelectedCategory(categoryId);
     setSearchQuery('');
-      console.log('Categoría seleccionada:', categoryId);
-
   };
 
   const handleProductClick = (product: ArticuloVenta) => {

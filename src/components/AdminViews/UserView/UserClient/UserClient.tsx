@@ -63,11 +63,9 @@ const UserClient = () => {
     cargarClientes(); // Aseguramos recarga al cerrar modal
   };
 
-  const manejarSubmit = async (clienteActualizado: Cliente) => {
+  const manejarSubmit = async () => {
     try {
-      console.log('Cliente actualizado:', clienteActualizado);
       cerrarModal();
-      // La recarga se hará en `useEffect` cuando `modalAbierto` cambie a `false` o en `cerrarModal`
     } catch (error) {
       console.error("Error al actualizar clientes:", error);
       alert("Hubo un error al actualizar la lista de clientes.");

@@ -92,11 +92,7 @@ const DeliveryPage = () => {
                       className={styles.btn} 
                       onClick={async () => {
                         try {
-                          console.log('Intentando marcar como entregado el pedido ID:', pedido.id);
-                          console.log('Estado actual del pedido:', pedido.estado);
-                          console.log('Datos del pedido:', pedido);
                           if (pedido.id !== undefined) {
-                            console.log('Llamando a la API para cambiar estado...');
                             await cambiarEstadoPedidoVenta(pedido.id, Estado.ENTREGADO);
                           }
                           await fetchPedidos(); 

@@ -187,9 +187,6 @@ const IngredientesView = () => {
   };
 
   const handleSaveCompra = (data: { ingrediente: string; cantidad: number; precioCosto: number }) => {
-    console.log("Datos de la compra guardados:", data);
-    // Aquí puedes añadir la lógica para actualizar el stock real del ingrediente
-    // Por ejemplo, buscar el ingrediente por nombre y actualizar su stockActual
     setIngredientesData(prevData =>
       prevData.map(ing =>
         ing.nombre === data.ingrediente
@@ -237,7 +234,6 @@ const IngredientesView = () => {
       setIngredientesData(prevData => [...prevData, nuevoIngredienteConId]);
       alert(`Ingrediente "${nuevoIngredienteConId.nombre}" creado correctamente.`);
     }
-    console.log("Datos del ingrediente guardados:", ingredienteGuardado);
   };
 
   return (

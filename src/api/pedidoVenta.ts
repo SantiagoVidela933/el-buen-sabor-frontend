@@ -31,8 +31,6 @@ export const getPedidosVentas = async (): Promise<PedidoVenta[]> => {
         return await getPedidoVentaPorId(pedido.id);
       })
     );
-    console.log('Pedidos a mostrar:', pedidosDetallados);
-
     return pedidosDetallados;
   } catch (error) {
     console.error('Error al obtener detalles de los pedidos:', error);
@@ -98,8 +96,6 @@ export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio:
   url.searchParams.append('desde', fechaInicio);
   url.searchParams.append('hasta', fechaFin);
 
-  console.log("URL de la solicitud:", url.toString());
-
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
@@ -158,7 +154,6 @@ export const crearPedidoVenta = async (
     audience: 'https://apiSabor',
     scope: 'openid profile email',
   } as any);
-  console.log("Token JWT:", token);
 
   const response = await fetch("http://localhost:8080/api/v1/pedidoVenta/Create", {
     method: "POST",

@@ -26,7 +26,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
       if(clienteId === null) return;
       try {
         const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
-        console.log(data);
         setPedidos(data);
       } catch (error) {
         console.error("Error al cargar pedidos:", error);

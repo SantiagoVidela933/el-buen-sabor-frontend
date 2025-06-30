@@ -10,17 +10,12 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth0();
   const namespace = "https://buensaboroto.com/roles"; // tu namespace
-
-  console.log("USER desde Auth0:", user); // 👈 Log para inspeccionar qué datos trae Auth0
-
   if (isLoading) {
     return <div>Cargando...</div>; // o un spinner
   }
-
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
-
   const userRoles: string[] = user?.[namespace] || [];
 
   const hasAccess = allowedRoles.some((role) => userRoles.includes(role));

@@ -31,7 +31,6 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     const fetchPedidos = async () => {
       try {
         const data = await getMisPedidosVenta(getAccessTokenSilently);
-        console.log(data);
         setPedidos(data);
       } catch (error) {
         console.error("Error al cargar pedidos:", error);
