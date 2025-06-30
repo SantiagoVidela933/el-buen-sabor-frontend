@@ -8,6 +8,8 @@ import {
   getAllArticuloInsumo,
 } from "../../../../api/articuloInsumo";
 import Modal from "../../../ui/Modal/Modal";
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 export default function StockIngrediente() {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -72,7 +74,7 @@ export default function StockIngrediente() {
   const confirmarDarDeBaja = async () => {
     if (!insumoAEliminar) return;
     try {
-      await darDeBajaArticuloInsumo(insumoAEliminar.id);
+      await darDeBajaArticuloInsumo(insumoAEliminar.id!);
       // Actualizar el estado local para reflejar el cambio sin recargar todo el fetch.
       setInsumos(prev =>
         prev.map(i =>
@@ -92,9 +94,18 @@ export default function StockIngrediente() {
       if (insumosPaginados.length === 1 && paginaActual > 1 && totalPaginas === paginaActual) {
         setPaginaActual(paginaActual - 1);
       }
+
+      Swal.fire({
+        title: "Dado de baja!",
+        text: "El registro ha sido exitosamente dado de baja.",
+        icon: "success"
+      });
     } catch (error) {
-      alert("Error al dar de baja el insumo");
-      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de baja el insumo.`
+      });
     }
   };
 
@@ -124,9 +135,19 @@ export default function StockIngrediente() {
             return 0;
         })
       );
+
+      Swal.fire({
+        icon: "success",
+        title: "Insumo dado de alta exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      alert("Error al reactivar el insumo");
-      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de alta el insumo.`
+      });
     }
   };
 
@@ -172,6 +193,7 @@ export default function StockIngrediente() {
         <thead>
           <tr>
             <th>Denominación</th>
+            <th>Stock</th>
             <th>Unidad</th>
             <th>Precio Compra</th>
             <th>Es para Elaborar</th>
@@ -188,13 +210,14 @@ export default function StockIngrediente() {
             insumosPaginados.map((i) => (
               <tr key={i.id} className={i.fechaBaja ? styles.filaBaja : ''}>
                 <td>{i.denominacion}</td>
+                <td>{i.stockPorSucursal[0].stockActual}</td>  
                 <td>{i.unidadMedida.denominacion}</td>
                 <td>${i.precioCompra}</td>
                 <td>{i.esParaElaborar ? "Sí" : "No"}</td>
                 <td>{i.fechaBaja ? "Baja" : "Alta"}</td>
                 <td>
                   {i.fechaBaja ? (
-                    <button onClick={() => handleDarDeAlta(i.id)} title="Reactivar" className={styles.reactivarBtn}>
+                    <button onClick={() => handleDarDeAlta(i.id!)} title="Reactivar" className={styles.reactivarBtn}>
                       <span className="material-symbols-outlined">restart_alt</span>
                     </button>
                   ) : (

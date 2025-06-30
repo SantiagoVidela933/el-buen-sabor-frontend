@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import styles from './Promociones.module.css';
 import { Promocion } from '../../../models/Promocion';
-import { darDeAltaPromocion, deletePromocion, getPromociones, updatePromocion } from '../../../api/promociones';
+import { darDeAltaPromocion, deletePromocion, getPromociones } from '../../../api/promociones';
 import PromocionesForm from './PromocionesForm/PromocionesForm';
 import Modal from '../../ui/Modal/Modal';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const Promociones = () => {
+  const promocionesPorPagina = 8;
+  const [paginaActual, setPaginaActual] = useState(1);
   const [promocion, setPromocion] = useState<Promocion[]>([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<'crear' | 'editar'>('crear');
@@ -51,26 +55,6 @@ const Promociones = () => {
     setModalConfirmacionAbierto(false);
   };
 
-  // const eliminarPromocion = async () => {
-  //   if (!promocion) return;
-
-  //   try {
-  //     setPromocion(prev =>
-  //       prev.map(rubro =>
-  //         rubro.id === promocionAEliminar?.id
-  //           ? { ...rubro, fechaBaja: new Date().toISOString() } // simulamos baja lógica si tenés esa propiedad
-  //           : rubro
-  //       )
-  //     );
-
-  //     setPromocionAEliminar(null);
-  //     setModalConfirmacionAbierto(false);
-  //   } catch (error) {
-  //     console.error("Error al eliminar categoría:", error);
-  //     alert("No se pudo eliminar la categoría.");
-  //   }
-  // };
-
   const eliminarPromocion = async () => {
     if (promocionAEliminar) {
       try {
@@ -86,17 +70,45 @@ const Promociones = () => {
 
         setPromocionAEliminar(null);
         setModalConfirmacionAbierto(false);
+
+        Swal.fire({
+          icon: "success",
+          title: "Promoción dada de baja exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
         if (error instanceof Error) {
-          console.error(error);
-          alert(`Error al eliminar la promocion: ${error.message}`);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Error al dar de baja la promocion: ${error.message}`
+          });
         } else {
-          console.error('Error desconocido', error);
-          alert('Ocurrió un error al eliminar la promocion.');
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Ocurrió un error al dar de baja la promocion.`
+          });
         }
       }
     }
   };
+
+  const promocionesFiltradas = promocion.filter((promo) =>
+    promo.denominacion.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const cambiarPagina = (numero: number) => {
+    setPaginaActual(numero);
+  };
+
+  // --- Cálculos para la paginación ---
+  const totalPaginas = Math.ceil(promocionesFiltradas.length / promocionesPorPagina);
+  const promocionesPaginadas = promocionesFiltradas.slice(
+    (paginaActual - 1) * promocionesPorPagina,
+    paginaActual * promocionesPorPagina
+  );
 
   const handleDarDeAlta = async (id: number) => {
     try {
@@ -109,9 +121,19 @@ const Promociones = () => {
             : promo
         )
       );
+
+      Swal.fire({
+        icon: "success",
+        title: "Promoción dada de alta exitosamente!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
-      console.error(error);
-      alert('Error al dar de alta la promocion');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al dar de alta la promocion.`
+      });
     }
   };
 
@@ -132,41 +154,24 @@ const Promociones = () => {
     cerrarModal();
   };
 
-  // const handleDarDeAlta = async (rubro: Promocion) => {
-  //   try {
-  //     const payload = {
-  //       denominacion: rubro.denominacion,
-  //       categoriaPadreId: 3,
-  //       sucursalId: rubro.sucursal?.id ?? 1,
-  //       fechaBaja: null,
-  //     };
-
-  //     const actualizado = await updatePromocion(rubro.id!, payload);
-
-  //   //   setpromocion(prev =>
-  //   //     prev.map(r =>
-  //   //       r.id === rubro.id ? actualizado : r
-  //   //     )
-  //   //   );
-  //   } catch (error) {
-  //     console.error("Error al dar de alta el rubro:", error);
-  //     alert("Error al dar de alta el rubro");
-  //   }
-  // };
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Promociones</h2>
-        <button className={styles.addBtn} onClick={abrirCrearPromocion}>
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </div>
+        <div className={styles.titleGroup}>
+          <div className={styles.titleBox}>
+            <h2 className={styles.title}>PROMOCIONES</h2> {/* Texto en mayúsculas para consistencia */}
+          </div>
+          <button className={styles.addBtn} onClick={abrirCrearPromocion}>
+            <span className="material-symbols-outlined">add</span>
+          </button>
+        </div>
 
-      <div className={styles.searchBar}>
-        <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder='Buscar por nombre...' value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
-      </div>
+
+        <div className={styles.searchBar}>
+          <span className="material-symbols-outlined">search</span>
+          <input type="text" placeholder='Buscar por nombre...' value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
+        </div>
+      </div>    
 
       <table className={styles.table}>
         <thead>
@@ -177,7 +182,7 @@ const Promociones = () => {
           </tr>
         </thead>
         <tbody>
-        {promocionFiltrados.map((promocion, index) => (
+        {promocionesPaginadas.map((promocion, index) => (
           <tr key={index} className={promocion.fechaBaja ? styles.filaBaja : ''}>
             <td>{promocion.denominacion}</td>
             <td>{promocion.fechaBaja ? "Baja" : "Alta"}</td>
@@ -202,8 +207,30 @@ const Promociones = () => {
             </td>
           </tr>
         ))}
+        {promocionesPaginadas.length === 0 && (
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center' }}>No hay promociones que coincidan con la búsqueda.</td>
+            </tr>
+          )}
         </tbody>
       </table>
+
+      {/* --- Sección de Paginación --- */}
+      {totalPaginas > 1 && (
+        <div className={styles.pagination}>
+          {Array.from({ length: totalPaginas }, (_, i) => (
+            <button
+              key={i}
+              className={`${styles.paginationButton} ${
+                paginaActual === i + 1 ? styles.activePage : ""
+              }`}
+              onClick={() => cambiarPagina(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
 
       {modalAbierto && (
         <Modal onClose={cerrarModal}>
@@ -220,7 +247,7 @@ const Promociones = () => {
         <Modal onClose={cancelarEliminacion}>
           <div className={styles.confirmation}>
             <h3>¿Estás seguro?</h3>
-            <p>¿Deseás eliminar la categoría <strong>{promocionAEliminar?.denominacion}</strong>?</p>
+            <p>¿Deseás eliminar la promoción <strong>{promocionAEliminar?.denominacion}</strong>?</p>
             <div className={styles.confirmationButtons}>
               <button className={styles.confirmBtn} onClick={eliminarPromocion}>Aceptar</button>
               <button className={styles.cancelBtn} onClick={cancelarEliminacion}>Cancelar</button>

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { createCategoria, updateCategoria } from '../../../../../api/articuloCategoria';
 import styles from './RubroIngredienteForm.module.css';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface RubroIngredienteFormProps {
   rubro?: CategoriaArticulo;
@@ -33,6 +35,7 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
       categoriaPadreId: null,
       sucursalId: 1, 
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
+      categoriaInsumo: true,
     };
 
     if (modo === "editar" && rubro?.id) {
@@ -42,11 +45,20 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
         } else {
           payload.fechaBaja = null;
         }
-        console.log("Payload enviado:", payload);
         const result = await updateCategoria(rubro.id, payload);
+        Swal.fire({
+          icon: "success",
+          title: "Categoria actualizada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         onSubmit(result);
       } catch (error) {
-        console.error("Error al actualizar la categoría:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Error al actualizar la categoría`
+        });
       }
     } else {
       try {
@@ -54,9 +66,19 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
           payload.fechaBaja = new Date().toISOString();
         }
         const result = await createCategoria(payload);
+        Swal.fire({
+          icon: "success",
+          title: "Categoria creada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         onSubmit(result);
       } catch (error) {
-        console.error("Error al crear la categoría:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Error al crear la categoría`
+        });
       }
     }
   };

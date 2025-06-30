@@ -8,6 +8,8 @@ import {
   eliminarCliente,
   reactivarCliente
 } from '../../../../api/cliente';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const UserClient = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -73,8 +75,18 @@ const UserClient = () => {
   };
 
   const manejarEliminar = async (clienteId: number) => {
-    if (window.confirm("¿Estás seguro de eliminar este cliente?")) {
-      try {
+
+    Swal.fire({
+      title: "¿Estas seguro que deseas dar de baja el registro?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, dar de baja",
+      cancelButtonText: "Cancelar"
+    }).then(async (result: any) => {
+      if (result.isConfirmed) {
+        try {
         await eliminarCliente(clienteId);
         // Actualizamos el estado local sin recargar completamente si solo se cambia `fechaBaja`
         setClientes(prev =>
@@ -86,11 +98,22 @@ const UserClient = () => {
             return 0;
           })
         );
-      } catch (error) {
-        console.error("Error al eliminar cliente:", error);
-        alert("Hubo un error al eliminar el cliente.");
+
+        Swal.fire({
+          title: "Dado de baja!",
+          text: "El registro ha sido exitosamente dado de baja.",
+          icon: "success"
+        });
+
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Hubo un error al eliminar el cliente.`
+          });
+        }
       }
-    }
+    });
   };
 
   const manejarReactivar = async (clienteId: number) => {
@@ -106,9 +129,18 @@ const UserClient = () => {
           return 0;
         })
       );
+
+      Swal.fire({
+          title: "Dado de alta!",
+          text: "El registro ha sido exitosamente dado de alta.",
+          icon: "success"
+        });
     } catch (error) {
-      console.error("Error al reactivar cliente:", error);
-      alert("Hubo un error al reactivar el cliente.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Hubo un error al reactivar el cliente.`
+      });
     }
   };
 
@@ -182,12 +214,12 @@ const UserClient = () => {
                       <button className={styles.editBtn} onClick={() => abrirEditarCliente(cliente)}>
                         <span className="material-symbols-outlined">edit</span>
                       </button>
-                      <button className={styles.deleteBtn} onClick={() => manejarEliminar(cliente.id)}>
+                      <button className={styles.deleteBtn} onClick={() => manejarEliminar(cliente.id!)}>
                         <span className="material-symbols-outlined">delete</span>
                       </button>
                     </>
                   ) : (
-                    <button className={styles.reactivateBtn} onClick={() => manejarReactivar(cliente.id)}>
+                    <button className={styles.reactivateBtn} onClick={() => manejarReactivar(cliente.id!)}>
                       <span className="material-symbols-outlined">restart_alt</span>
                     </button>
                   )}

@@ -138,3 +138,205 @@
     width: 100%;
   }
 }
+.textareaInput {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit; /* Hereda la fuente del formulario */
+  font-size: inherit; /* Hereda el tamaño de fuente */
+  resize: vertical;
+  min-height: 70px; /* Ajusta según necesites */
+  background-color: white;
+  box-sizing: border-box;
+}
+
+/* También puedes ajustar todos los inputs y textareas juntos para mantener coherencia */
+.fieldGroup textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+}
+/* Estilos para la tabla de ingredientes */
+.ingredientesTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ingredientesTable th, 
+.ingredientesTable td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.ingredientesTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.moneyCell {
+  text-align: right;
+  font-family: monospace;
+}
+
+/* Estilos para el resumen de costos */
+.costSummary {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.costEquation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.equationOperator {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6c757d;
+  padding: 0 0.75rem;
+}
+
+.costLabel {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.costValue, .finalCostValue {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.finalCostValue {
+  color: #198754;
+  font-size: 1.2rem;
+}
+
+.gainSection {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.marginInput {
+  width: 55px;
+  padding: 4px;
+  text-align: right;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.percentSymbol {
+  font-weight: bold;
+  color: #6c757d;
+}
+
+/* Estilos para botones y campos de entrada */
+.inputWithUnit {
+  display: flex;
+  align-items: center;
+  height: 100%; 
+  width: auto;
+}
+
+.inputWithUnit input {
+  flex: 0 0 auto;
+  min-width: 80px;
+  max-width: 120px;
+  width: auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  height: 32px; 
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+
+.quantityField {
+  min-width: 80px;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background-color: #c82333;
+}
+
+/* Responsive para la ecuación de costo */
+@media (max-width: 768px) {
+  .costEquation {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .equationOperator {
+    text-align: center;
+    padding: 0.25rem;
+  }
+}
+.recipeHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.recipeHeader label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 60px;
+}
+
+.selectContainer {
+  flex: 1;
+}
+
+.selectContainer select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.selectContainer select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.addButton {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: #574fd6;
+}

@@ -5,12 +5,13 @@
   max-width: 800px;
   margin: 0 auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: flex;
+  display:flex;
   flex-direction: column;
   gap: 1rem;
 }
 
 .formContainer h2 {
+  position: sticky;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
@@ -21,6 +22,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  padding-top: 10px;
 }
 
 .fieldGroup,
@@ -120,7 +122,88 @@
   background-color: #f2f2f2;
   border-color: #aaa;
 }
+.ingredientesTable {
+  width: 100%;
+  border-collapse: collapse;
+}
 
+.ingredientesTable th, 
+.ingredientesTable td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.ingredientesTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.moneyCell {
+  text-align: right;
+  font-family: monospace;
+}
+
+.costSummary {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.costRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.costRow:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.costLabel {
+  font-weight: 500;
+}
+
+.costValue {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.marginInput {
+  width: 80px;
+  padding: 5px;
+  text-align: right;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.finalPrice {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 2px dashed #ced4da;
+  font-size: 1.15rem;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background-color: #c82333;
+}
 
 /* Responsive: una sola columna */
 @media (max-width: 700px) {
@@ -137,4 +220,186 @@
   .saveBtn {
     width: 100%;
   }
+}
+.inputWithUnit {
+  display: flex;
+  align-items: center;
+  height: 100%; 
+  width: auto;
+}
+
+.inputWithUnit input {
+  flex: 0 0 auto;
+  min-width: 80px;
+  max-width: 120px;;
+  width: auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  height: 32px; 
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+
+.unitText {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-left: none;
+  padding: 0 8px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: #495057;
+  font-size: 0.9em;
+  white-space: nowrap;
+  text-align: center;
+  width: 80px;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 32px;
+  line-height: 1;
+}
+
+.quantityField {
+  min-width: 80px;
+}
+
+
+.costEquation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.equationComponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  min-width: 100px;
+  flex: 1;
+}
+
+.equationOperator {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6c757d;
+  padding: 0 0.75rem;
+}
+
+.costLabel {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.costValue, .finalCostValue {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.finalCostValue {
+  color: #198754;
+  font-size: 1.2rem;
+}
+
+.gainSection {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.marginInput {
+  width: 55px;
+  padding: 4px;
+  text-align: right;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.percentSymbol {
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.equalsAmount {
+  margin-left: 0.5rem;
+  font-family: monospace;
+  font-weight: bold;
+  color: #0d6efd;
+  font-size: 0.85rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .costEquation {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .equationOperator {
+    text-align: center;
+    padding: 0.25rem;
+  }
+}
+.recipeHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.recipeHeader label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 60px; /* Set a minimum width for the label */
+}
+
+.selectContainer {
+  flex: 1;
+}
+
+.selectContainer select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+/* Ensure proper focus state */
+.selectContainer select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.fieldGroup textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+}
+.textareaInput {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit; /* Hereda la fuente del formulario */
+  font-size: inherit; /* Hereda el tamaño de fuente */
+  resize: vertical;
+  min-height: 70px; /* Ajusta según necesites */
+  background-color: white;
+  box-sizing: border-box;
 }

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import styles from './RubroProductoForm.module.css';
 import { CategoriaArticulo } from '../../../../../models/CategoriaArticulo';
 import { createCategoria, updateCategoria } from '../../../../../api/articuloCategoria';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface RubroProductFormProps {
   rubro?: CategoriaArticulo;
@@ -34,6 +36,7 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
       categoriaPadreId: rubro?.categoriaPadre?.id ?? 3,
       sucursalId: 1, 
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
+      categoriaInsumo: false,
     };
 
     if (modo === "editar" && rubro?.id) {
@@ -44,9 +47,20 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
           payload.fechaBaja = null;
         }
         const result = await updateCategoria(rubro.id, payload);
+        Swal.fire({
+          icon: "success",
+          title: "Categoria actualizada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
         onSubmit(result);
       } catch (error) {
-        console.error("Error al actualizar la categoría:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Error al actualizar la categoría`
+        });
       }
     } else {
       try {
@@ -54,13 +68,22 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
           payload.fechaBaja = new Date().toISOString();
         }
         const result = await createCategoria(payload);
+        Swal.fire({
+          icon: "success",
+          title: "Categoria creada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         onSubmit(result);
       } catch (error) {
-        console.error("Error al crear la categoría:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Error al crear la categoría`
+        });
       }
     }
   };
-
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>

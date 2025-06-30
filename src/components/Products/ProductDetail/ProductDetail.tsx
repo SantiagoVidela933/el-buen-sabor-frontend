@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import styles from './ProductDetail.module.css';
 import { ArticuloVenta } from '../../../models/ArticuloVenta';
 import { addToCart } from '../../../redux/slices/cartSlice';
+import { AppDispatch } from '../../../redux/store';
 
 interface ProductDetailProps {
   articuloVenta: ArticuloVenta;
@@ -13,7 +14,7 @@ const ProductDetail = ({ articuloVenta, onClose }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState('');
   
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
 
   const handleIncrease = () => {

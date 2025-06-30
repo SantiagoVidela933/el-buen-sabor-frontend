@@ -7,6 +7,8 @@ import { createArticuloManufacturado, updateArticuloManufacturado } from '../../
 import { getInsumosBySucursalId } from '../../../../../api/articuloInsumo';
 import { ArticuloInsumo } from '../../../../../models/ArticuloInsumo';
 import { IngredienteReceta } from '../../../../../models/IngredienteReceta';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface StockProductoFormProps {
   producto?: ArticuloManufacturado;
@@ -24,7 +26,14 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [tiempoCocina, setTiempoCocina] = useState(producto?.tiempoEstimadoMinutos || 0);
   const [margenGanancia, setMargenGanancia] = useState(producto?.margenGanancia || 0);
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
+  const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [imagen, setImagen] = useState<File | null>(null);
+  
+  // Estado para el cálculo de costos
+  const [costoTotal, setCostoTotal] = useState<number>(0);
+  const [precioFinal, setPrecioFinal] = useState<number>(0);
+
+
 
   // Escuchar cambios en artManu
   useEffect(() => {
@@ -45,6 +54,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
   // Estado de ingredientes agregados ( insumo y cantidad )
   const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
+  
+  
   // GET insumos disponibles
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -61,6 +72,18 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     };
     fetchInsumos();
   }, []);
+
+  // Calculamos el costo total y el precio final cada vez que cambian los ingredientes o el margen
+  useEffect(() => {
+    const nuevoTotal = ingredientes.reduce((total, { insumo, cantidad }) => {
+      return total + (insumo.precioCompra * cantidad);
+    }, 0);
+    
+    setCostoTotal(nuevoTotal);
+    setPrecioFinal(nuevoTotal * (1 + margenGanancia / 100));
+  }, [ingredientes, margenGanancia]);
+
+
 
   //limpiar form
   useEffect(() => {
@@ -107,7 +130,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     setIngredientes(prev => prev.filter(ingrediente => ingrediente.insumo.id !== idInsumo));
   };
 
-  // Submit del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -123,7 +145,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         return;
       }
 
-      // payload segun modelo back
       const articuloPayload = {
         tipoArticulo: 'manufacturado',
         denominacion: nombre,
@@ -132,12 +153,18 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         descripcion,
         detalles: detallesConvertidos,
         unidadMedida: { id: 3 }, 
-        categoria: { id: categoriaSeleccionada.id }
+        categoria: { id: categoriaSeleccionada.id },
+        precioVenta: precioFinal
       };
 
       if (modo === 'crear') {
         const response = await createArticuloManufacturado(articuloPayload, imagen!);
-        alert('Artículo creado correctamente');
+        Swal.fire({
+          icon: "success",
+          title: "Producto creado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         const productoCompleto = ArticuloManufacturado.fromJson({
           ...response,
           categoria: categoriaSeleccionada,
@@ -149,8 +176,13 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           alert('Error: producto a editar no definido');
           return;
         }
-        const response = await updateArticuloManufacturado(producto.id, articuloPayload, imagen ?? undefined);
-        alert('Artículo actualizado correctamente');
+        const response = await updateArticuloManufacturado(producto.id!, articuloPayload, imagen ?? undefined);
+        Swal.fire({
+          icon: "success",
+          title: "Producto actualizado exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         const productoActualizado = ArticuloManufacturado.fromJson({
           ...response,
           categoria: categoriaSeleccionada,
@@ -159,8 +191,11 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         onClose();
       }
     } catch (error) {
-      console.error('[ERROR] Error al guardar artículo:', error);
-      alert('Hubo un error al guardar el artículo. Revisá la consola para más detalles.');
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error al intentar guardar el producto`
+      });
     }
   };
 
@@ -192,119 +227,202 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
 
 
   return (
-    <form className={styles.formContainer} onSubmit={handleSubmit}>
-      <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
-      <div className={styles.fieldsGrid}>
-        <div className={styles.fieldGroup}>
-          <label>Nombre</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Descripción</label>
-          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Tiempo en cocina</label>
-          <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Margen Ganancia</label>
-          <input type="number" value={margenGanancia} onChange={(e) => setMargenGanancia(Number(e.target.value))} />
-        </div>
-        <div className={styles.fieldGroup}>
-          <label>Rubro</label>
-          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-            <option value="">-- Selecciona un rubro --</option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.denominacion}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.fieldGroupFull}>
-          <label>Receta</label>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <select
-              value={selectedInsumoId}
-              onChange={(e) => {
-                const id = Number(e.target.value);
-                const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
-                if (id !== 0 && !insumoYaAgregado) {
-                  const insumo = insumos.find(i => i.id === id);
-                  if (insumo) {
-                    setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
-                  }
-                }
-                setSelectedInsumoId(0); // Reset select
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <h2>{modo === 'crear' ? 'Crear Producto' : 'Modificar Producto'}</h2>
+        <div className={styles.fieldsGrid}>
+          <div className={styles.fieldGroup}>
+            <label>Nombre</label>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Descripción</label>
+            <textarea 
+                value={descripcion} 
+                onChange={(e) => setDescripcion(e.target.value)}
+                className={styles.textareaInput}
+              />          
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Tiempo en cocina</label>
+            <input type="number" value={tiempoCocina} onChange={(e) => setTiempoCocina(Number(e.target.value))} />
+          </div>
+          <div className={styles.fieldGroup}>
+            <label>Rubro</label>
+            <select value={categoriaId} onChange={(e) => {
+              const selected = categorias.find((c) => c.id === Number(e.target.value));
+              setCategoriaId(selected && selected.id !== undefined ? selected.id.toString() : '');
               }}
             >
-              <option value={0}>-- Seleccionar ingrediente --</option>
-              {insumos.map((insumo) => (
-                <option
-                  key={insumo.id}
-                  value={insumo.id}
-                  disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
-                >
-                  {insumo.denominacion}
+              <option value="">-- Selecciona un rubro --</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.denominacion}
                 </option>
               ))}
             </select>
           </div>
-          <h4>Ingredientes Agregados:</h4>
-          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {ingredientes.map(({ insumo, cantidad }, index) => (
-              <li
-                key={insumo.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}
-              >
-                <span style={{ flex: 1 }}>
-                  {insumo.denominacion} ({insumo.unidadMedida?.denominacion ?? ''})
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  value={cantidad}
+          <div className={styles.fieldGroupFull}>
+            <div className={styles.recipeHeader}>
+              <label>Receta</label>
+              <div className={styles.selectContainer}>
+                <select
+                  value={selectedInsumoId}
                   onChange={(e) => {
-                    const nuevaCantidad = Number(e.target.value);
-                    setIngredientes((prev) =>
-                      prev.map((ing, i) =>
-                        i === index ? { ...ing, cantidad: nuevaCantidad } : ing
-                      )
-                    );
+                    const id = Number(e.target.value);
+                    const insumoYaAgregado = ingredientes.some(ing => ing.insumo.id === id);
+                    if (id !== 0 && !insumoYaAgregado) {
+                      const insumo = insumos.find(i => i.id === id);
+                      if (insumo) {
+                        setIngredientes((prev) => [...prev, { insumo, cantidad: 0 }]);
+                      }
+                    }
+                    setSelectedInsumoId(0); // Reset select
+                  }}
+                >
+                  <option value={0}>-- Seleccionar ingrediente --</option>
+                  {insumos.map((insumo) => (
+                    <option
+                      key={insumo.id}
+                      value={insumo.id}
+                      disabled={ingredientes.some((ing) => ing.insumo.id === insumo.id)}
+                    >
+                      {insumo.denominacion}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <table className={styles.ingredientesTable}>
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Cantidad</th>
+                  <th>Costo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ingredientes.map(({ insumo, cantidad }, index) => (
+                  <tr key={insumo.id}>
+                    <td>
+                      {insumo.denominacion}</td>
+                    <td>
+                      <div className={styles.inputWithUnit}>
+                        <input
+                          type="number"
+                          min={0}
+                          step={0.1}
+                          value={cantidad}
+                          onChange={(e) => {
+                            const nuevaCantidad = Number(e.target.value);
+                            setIngredientes((prev) =>
+                              prev.map((ing, i) =>
+                                i === index ? { ...ing, cantidad: nuevaCantidad } : ing
+                              )
+                            );
+                          }}
+                          className={styles.quantityField}
+                        />
+                        <span className={styles.unitText}>
+                          {insumo.unidadMedida?.denominacion ?? ''}
+                        </span>
+                      </div>
+                    </td>
+                    <td className={styles.moneyCell}>
+                      ${(insumo.precioCompra * cantidad).toFixed(2)}
+                    </td>
+                    <td>
+                      <button 
+                        type="button" 
+                        className={styles.deleteBtn}
+                        onClick={() => handleEliminarIngrediente(insumo.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className={styles.fieldGroupFull}>
+            <h4 style={{margin :'5px 0'}}>Calcular Precio:</h4>
+            <div className={styles.costSummary}>
+              <div className={styles.costEquation}>
+                <span className={styles.costLabel}>Costo:</span>
+                <span className={styles.costValue}>${costoTotal.toFixed(2)}</span>
+                <div className={styles.equationOperator}>+</div>
+                  <span className={styles.costLabel}>Ganancia:</span>
+                  <div className={styles.gainSection}>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={margenGanancia}
+                      onChange={(e) => setMargenGanancia(Number(e.target.value))}
+                      className={styles.marginInput}
+                    />
+                    <span className={styles.percentSymbol}>%</span>
+                  </div>
+                <div className={styles.equationOperator}>=</div>
+                <span className={styles.costLabel}>Precio:</span>
+                <span className={styles.finalCostValue}>${precioFinal.toFixed(2)}</span>
+
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.fieldGroupFull}>
+            <label htmlFor="imagen">Imágen</label>
+            {nombreImagenActual && !mostrarInputImagen ? (
+            <>
+              <p>Imagen seleccionada: {nombreImagenActual}</p>
+                <button
+                  type="button"
+                  onClick={() => setMostrarInputImagen(true)}
+                  className={styles.saveBtn}
+                  style={{ marginBottom: '1em' }}
+                >
+                  Cambiar imagen
+                </button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  id="imagen"
+                  className={styles.imageInput}
+                  onChange={handleImageChange}
+                />
+                {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+              </>
+            )}
+            {imagenPreview ? (
+              <div style={{ margin: '1em auto' }}>
+                <img
+                  src={imagenPreview}
+                  alt="Preview"
+                  style={{ maxWidth: 200, border: '1px solid black' }}
+                  onError={(e) => {
+                    console.error('Error cargando imagen:', e.currentTarget.src);
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
-                <button type="button" onClick={() => handleEliminarIngrediente(insumo.id)}>Eliminar</button>
-              </li>
-            ))}
-          </ul>
+              </div>
+            ) : (
+              <p>No hay imagen para mostrar</p>
+            )}
+          </div>
         </div>
-        <div className={styles.fieldGroupFull}>
-          <label htmlFor="imagen">Imágen</label>
-          <input
-            type="file"
-            id="imagen"
-            className={styles.imageInput}
-            onChange={handleImageChange}
-          />
-          {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-          {imagenPreview && <img src={imagenPreview} alt="Preview" style={{ maxWidth: 200 }} />}
+        <div className={styles.buttonActions}>
+          <button type="submit" className={styles.saveBtn}> 
+            {modo === "crear" ? "Crear" : "Actualizar"}
+          </button>
+          <button type="button" onClick={onClose} className={styles.cancelBtn}>
+            Cancelar
+          </button>
         </div>
-      </div>
-      <div className={styles.buttonActions}>
-        <button type="submit" className={styles.saveBtn}> 
-          {modo === "crear" ? "Crear" : "Actualizar"}
-        </button>
-        <button type="button" onClick={onClose} className={styles.cancelBtn}>
-          Cancelar
-        </button>
-      </div>
-    </form>
+      </form>
   );
 };
 

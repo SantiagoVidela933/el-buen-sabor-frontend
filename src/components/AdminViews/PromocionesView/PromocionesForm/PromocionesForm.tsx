@@ -6,7 +6,8 @@ import { PromocionDetalle } from '../../../../models/PromocionDetalle';
 import { Articulo } from '../../../../models/Articulo';
 import { getAllArticulosManufacturadosActivos } from '../../../../api/articuloManufacturado';
 import { getAllArticuloInsumoActivos } from '../../../../api/articuloInsumo';
-// import { getAllArticulosManufacturadosPromociones } from '../../../../api/articuloManufacturado';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/src/sweetalert2.scss';
 
 interface PromocionesFormProps {
   promocion?: Promocion;
@@ -16,7 +17,6 @@ interface PromocionesFormProps {
 }
 
 const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesFormProps) => {
-  const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<'Alta' | 'Baja'>(promocion?.fechaBaja ? 'Baja' : 'Alta');
   const [descuento, setDescuento] = useState(0);
   const [detallePromocion, setDetallePromocion] = useState<PromocionDetalle[]>([]);
@@ -26,9 +26,13 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   const [fechaDesde, setFechaDesde] = useState<string>('');
   const [fechaHasta, setFechaHasta] = useState<string>('');
   const [fechaAlta, setFechaAlta] = useState<string>();
+  const [nombre, setNombre] = useState<string>('');
+  const [descripcion, setDescripcion] = useState<string>('');
 
   const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
+  const [precioTotal, setPrecioTotal] = useState<number>(0);
+  const [precioFinal, setPrecioFinal] = useState<number>(0);
 
  // Muestro imagen (img, nombre) a editar en form
   const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
@@ -43,15 +47,26 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
       didSetPreview.current = true;
     }
   };
-
+  
+  //Calcular precio
+  useEffect(() => {
+  const nuevoTotal = detallePromocion.reduce((total, detalle) => {
+    const precio = detalle.articulo?.precioVenta || 0;
+    return total + (precio * detalle.cantidad);
+  }, 0);
+  
+  setPrecioTotal(nuevoTotal);
+  setPrecioFinal(nuevoTotal * (1 - descuento / 100));
+}, [detallePromocion, descuento]);
   useEffect(() => {
     const fetchData = async () => {
       if (promocion) {
-        setDescripcion(promocion.denominacion);
+        console.log("Promoción cargada:", promocion);  // Log the full promocion object
+        setNombre(promocion.denominacion);
+        setDescripcion(promocion.descripcion);
         setEstado(promocion.fechaBaja ? 'Baja' : 'Alta');
         setDescuento(promocion.descuento ?? 0); 
         setDetallePromocion(promocion.promocionesDetalle ?? null); 
-
         setFechaDesde(promocion.fechaDesde ? new Date(promocion.fechaDesde).toISOString().slice(0, 10) : ''); 
         setFechaHasta(promocion.fechaHasta ? new Date(promocion.fechaHasta).toISOString().slice(0, 10) : ''); 
         setFechaAlta(promocion.fechaAlta ?? undefined);
@@ -62,6 +77,8 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
     };
 
     fetchData();
+      console.log("Estado de descripción:", descripcion); // Check the state after setting
+
   }, [promocion]);
 
   useEffect(() => {
@@ -110,6 +127,11 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!nombre.trim()) {
+      alert("El nombre de la promoción no puede estar vacío.");
+      return;
+    }
+    
     if (!descripcion.trim()) {
       alert("El nombre de la promoción no puede estar vacía.");
       return;
@@ -124,9 +146,24 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
       alert("Debe seleccionar las fechas.");
       return;
     }
+    
+    if (detallePromocion.length === 0) {
+      alert("Debe seleccionar al menos un artículo para la promoción.");
+      return;
+    }
+    if (descuento <= 0 || descuento > 100) {
+      alert("El porcentaje de descuento debe estar entre 1% y 100%.");
+      return;
+    }
+
+    if (!imagen && modo === 'crear') {
+      alert("Debe seleccionar una imagen para la promoción.");
+      return;
+    }
 
     const payload: Promocion = {
-        denominacion: descripcion,
+        denominacion: nombre,
+        descripcion: descripcion,
         fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
         imagenes: [],
         sucursal: promocion?.sucursal, // Mantener la sucursal de la promoción existente
@@ -146,8 +183,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
       delete (payload as any).pedidosVentaDetalle;
     }
 
-    console.log("Payload de promoción:", payload);
-
     if (modo === "editar") {
       try {
         if (estado === 'Baja') {
@@ -156,24 +191,108 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
           payload.fechaBaja = null;
         }
 
+        if (payload.promocionesDetalle) {
+          payload.promocionesDetalle = payload.promocionesDetalle.map(detalle => {
+            if (detalle.articulo && 'stockPorSucursal' in detalle.articulo) {
+              const articuloInsumo = detalle.articulo as any;
+              if (articuloInsumo.stockPorSucursal) {
+                articuloInsumo.stockPorSucursal = articuloInsumo.stockPorSucursal.map((stock: any) => {
+                  const { sucursalId, ...stockSinSucursalId } = stock;
+                  return stockSinSucursalId;
+                });
+              }
+            }
+            return detalle;
+          });
+        }
+        
+        // Aseguramos que la sucursal esté establecida (usar el valor predeterminado 1 si no hay sucursal)
+        payload.sucursal = {
+          id: 1,
+          nombre: "Central", 
+          fechaAlta: new Date().toISOString(),
+          fechaBaja: null,
+          fechaModificacion: null
+        };
+        
+        // Limpieza de datos para eliminar sucursalId en stockPorSucursal
+        if (payload.promocionesDetalle) {
+          payload.promocionesDetalle = payload.promocionesDetalle.map(detalle => {
+            // Si es un artículo insumo con stockPorSucursal
+            if (detalle.articulo && 'stockPorSucursal' in detalle.articulo) {
+              const articuloInsumo = detalle.articulo as any;
+              if (articuloInsumo.stockPorSucursal) {
+                // Eliminar sucursalId de cada elemento en stockPorSucursal
+                articuloInsumo.stockPorSucursal = articuloInsumo.stockPorSucursal.map((stock: any) => {
+                  const { sucursalId, ...stockSinSucursalId } = stock;
+                  return stockSinSucursalId;
+                });
+              }
+            }
+            return detalle;
+          });
+        }
         const result = await updatePromocion(payload, imagen!, promocion?.id);
-        console.log("Promocion actualizada:", result);
 
         result.sucursal = promocion?.sucursal;
+
+        Swal.fire({
+          icon: "success",
+          title: "Promoción actualizada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
         onSubmit(result);
       } catch (error) {
-        console.error("Error al actualizar la promocion:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`
+        });
       }
     } else {
       try {
         if (estado === 'Baja') {
           payload.fechaBaja = new Date().toISOString();
         }
-
+        if (payload.promocionesDetalle) {
+          payload.promocionesDetalle = payload.promocionesDetalle.map(detalle => {
+            if (detalle.articulo && 'stockPorSucursal' in detalle.articulo) {
+              const articuloInsumo = detalle.articulo as any;
+              if (articuloInsumo.stockPorSucursal) {
+                articuloInsumo.stockPorSucursal = articuloInsumo.stockPorSucursal.map((stock: any) => {
+                  const { sucursalId, ...stockSinSucursalId } = stock;
+                  return stockSinSucursalId;
+                });
+              }
+            }
+            return detalle;
+          });
+        }
+        
+        // Aseguramos que la sucursal esté establecida (usar el valor predeterminado 1 si no hay sucursal)
+        payload.sucursal = {
+          id: 1,
+          nombre: "Central", 
+          fechaAlta: new Date().toISOString(),
+          fechaBaja: null,
+          fechaModificacion: null
+        };
         const result = await createPromocion(payload, imagen!);
+        Swal.fire({
+          icon: "success",
+          title: "Promoción creada exitosamente!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         onSubmit(result);
       } catch (error) {
-        console.error("Error al crear la promocion:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`
+        });
       }
     }
   };
@@ -184,20 +303,15 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>
+            <label>Nombre</label>
+            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+        </div>
+        <div className={styles.fieldGroup}>
           <label>Descripción</label>
           <textarea
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            style={{ height: '50px' }}
-          />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label>Descuento</label>
-          <input
-            type="number"
-            value={descuento}
-            onChange={(e) => setDescuento(Number(e.target.value))}
+            className={styles.textareaInput}
           />
         </div>
 
@@ -218,82 +332,129 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
           />
         </div>
 
-      <div className={styles.fieldGroupFull}>
+        <div className={styles.fieldGroupFull}>
 
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex' }}>
-            <select
-              style={{ width: '20rem' }}
-              value={selectedArticuloId}
-              onChange={e => setSelectedArticuloId(Number(e.target.value))}
-              >
-              <option value={0}>Seleccionar artículo</option>
-              {articulos.map(art => (
-                <option
+          <div className={styles.recipeHeader}>
+            <label>Artículos</label>
+            <div className={styles.selectContainer}>
+          <select
+            value={selectedArticuloId}
+            onChange={e => {
+              const id = Number(e.target.value);
+              setSelectedArticuloId(id);
+              
+              // Si se selecciona un artículo válido, agregarlo automáticamente
+              if (id !== 0) {
+                const articulo = articulos.find(a => a.id === id);
+                if (articulo) {
+                  setDetallePromocion(prev => [
+                    ...prev,
+                    {
+                      articulo,
+                      cantidad: 1,
+                      fechaAlta: new Date().toISOString(),
+                      fechaModificacion: null,
+                      fechaBaja: null
+                    }
+                  ]);
+                  // Resetear la selección
+                  setSelectedArticuloId(0);
+                }
+              }
+            }}
+          >
+            <option value={0}>-- Seleccionar artículo --</option>
+            {articulos.map(art => (
+              <option
                 key={art.id}
                 value={art.id}
-                disabled={detallePromocion.some(det => det.articulo?.id === art.id)}>
-                  {art.denominacion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-          style={{ width: '20rem' }}
-            type="button"
-            onClick={() => {
-              if (selectedArticuloId === 0) return alert('Selecciona un artículo');
-              const articulo = articulos.find(a => a.id === selectedArticuloId);
-              if (!articulo) return;
-              setDetallePromocion(prev => [
-                ...prev,
-                {
-                  articulo,
-                  cantidad: 1,
-                  fechaAlta: new Date().toISOString(),
-                  fechaModificacion: null,
-                  fechaBaja: null
-                }
-              ]);
-              setSelectedArticuloId(0);
-            }}
-            >
-            Agregar al detalle
-          </button>
-        </div>
-
-        <div>
-          <h4>Articulos Agregados:</h4>
-            <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {detallePromocion.map((detalle, idx) => (
-                <li key={detalle.articulo?.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}>
-                  {detalle.articulo?.denominacion}
-                  <input
-                    type="number"
-                    min={1}
-                    value={detalle.cantidad}
-                    onChange={e => {
-                      const nuevaCantidad = Number(e.target.value);
-                      setDetallePromocion(prev =>
-                        prev.map((d, i) =>
-                          i === idx ? { ...d, cantidad: nuevaCantidad } : d
-                    )
-                  );
-                }}
-                style={{ marginLeft: 8 }}
-                />
-                <button type="button" onClick={() => handleEliminarArticulo(detalle.articulo?.id)}>Eliminar</button>
-                </li>
-              ))}
-            </ul>
+                disabled={detallePromocion.some(det => det.articulo?.id === art.id)}
+              >
+                {art.denominacion}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+        <div>
+          <table className={styles.ingredientesTable}>
+            <thead>
+              <tr>
+                <th>Artículo</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detallePromocion.map((detalle, idx) => (
+                <tr key={detalle.articulo?.id}>
+                  <td>{detalle.articulo?.denominacion}</td>
+                  <td>
+                    <div className={styles.inputWithUnit}>
+                      <input
+                        type="number"
+                        min={1}
+                        value={detalle.cantidad}
+                        onChange={e => {
+                          const nuevaCantidad = Number(e.target.value);
+                          setDetallePromocion(prev =>
+                            prev.map((d, i) =>
+                              i === idx ? { ...d, cantidad: nuevaCantidad } : d
+                            )
+                          );
+                        }}
+                        className={styles.quantityField}
+                      />
+                    </div>
+                  </td>
+                  <td className={styles.moneyCell}>
+                    ${((detalle.articulo?.precioVenta || 0) * detalle.cantidad).toFixed(2)}
+                  </td>
+                  <td>
+                    <button 
+                      type="button" 
+                      className={styles.deleteBtn}
+                      onClick={() => handleEliminarArticulo(detalle.articulo?.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className={styles.fieldGroupFull}>
+        <h4 style={{margin :'5px 0'}}>Calcular Precio con Descuento:</h4>
+        <div className={styles.costSummary}>
+          <div className={styles.costEquation}>
+            <span className={styles.costLabel}>Precio actual:</span>
+            <span className={styles.costValue}>${precioTotal.toFixed(2)}</span>
+            <div className={styles.equationOperator}>-</div>
+            <span className={styles.costLabel}>Descuento:</span>
+            <div className={styles.gainSection}>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={descuento}
+                onChange={(e) => setDescuento(Number(e.target.value))}
+                className={styles.marginInput}
+              />
+              <span className={styles.percentSymbol}>%</span>
+            </div>
+            <div className={styles.equationOperator}>=</div>
+            <span className={styles.costLabel}>Precio final:</span>
+            <span className={styles.finalCostValue}>${precioFinal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
 
         <div className={styles.fieldGroupFull}>
           <label htmlFor="imagen">Imágen</label>

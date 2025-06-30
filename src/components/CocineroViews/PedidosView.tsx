@@ -5,7 +5,7 @@ import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
 import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 import { formatearFechaHora } from "../../api/formatearFechaHora";
-
+import UserOrderDetail from "../User/UserOrdetDetail/UserOrderDetail";
 const PedidosView = () => {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
@@ -85,59 +85,44 @@ const PedidosView = () => {
 
   return (
     <div className={styles.container}>
-      {/* Nuevo encabezado con estilos consistentes */}
       <div className={styles.header}>
-        <div className={styles.titleGroup}>
-          <div className={styles.titleBox}>
-            <h2 className={styles.title}>LISTA DE PEDIDOS A PREPARAR</h2>
+        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
+            <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
+              <h2 className={styles.title}>PEDIDOS A PREPARAR</h2>
+            </div>
           </div>
-        </div>
-        {/* Barra de búsqueda con estilos consistentes */}
         <div className={styles.searchBar}>
-            <span className="material-symbols-outlined">search</span>
-            <input
-                type="text"
-                placeholder="Buscar por Nro. de Pedido"
-                value={search}
-                onChange={handleSearchChange}
-            />
+          <input
+            type="text"
+            placeholder="Buscar por Nro. de Pedido"
+            value={search}
+            onChange={handleSearchChange}
+            className={styles.input}
+          />
         </div>
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Pedido</th>
-            <th>Fecha/Hora</th>
-            <th>Forma de Entrega</th>
-            <th>Forma de Pago</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPedidos.length === 0 ? (
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead className={styles.thead}>
             <tr>
-              <td colSpan={numeroColumnasTabla} className={styles.noData}>
-                No hay pedidos para mostrar.
-              </td>
+              <th>Pedido</th>
+              <th>Fecha/Hora</th>
+              <th>Forma de Entrega</th>
+              <th>Forma de Pago</th>
+              <th>Acciones</th>
             </tr>
-          ) : (
-            currentPedidos.map((pedido) => (
+          </thead>
+          <tbody>
+            {pedidosFiltrados.map((pedido) => (
               <tr key={pedido.id}>
-                <td>#{pedido.id}</td>
-                <td>
-                  {new Date(pedido.fechaPedido).toLocaleDateString("es-AR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  - {pedido.horaPedido}
-                </td>
+                <td>{pedido.id}</td>
+                <td>{formatearFechaHora(pedido)}</td>
                 <td>{pedido.tipoEnvio}</td>
                 <td>{pedido.formaPago}</td>
                 <td className={styles.actions}>
-                  <button className={styles.viewBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
+                  <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver</button>
                   <button
-                    className={styles.actionBtn} // Usamos actionBtn para "Marcar como listo"
+                    className={styles.btn}
                     onClick={async () => {
                       try {
                         if (pedido.id !== undefined) {
@@ -153,23 +138,15 @@ const PedidosView = () => {
                   </button>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* Controles de paginación */}
-      {totalPages > 1 && (
-        <div className={styles.paginationControls}>
-          {renderPaginationButtons()}
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
-          <PedidoDetalle
-            pedido={selectedOrder}
-            actualizarMinutosExtra={actualizarMinutosExtra}
+          <UserOrderDetail
+            pedidoVenta={selectedOrder}
             onClose={() => setShowModal(false)}
           />
         </Modal>

@@ -98,3 +98,20 @@ export const darDeAltaArticuloInsumo = async (id: number): Promise<void> => {
   }
 };
 
+// subir imagen para insumo NO para elaborar
+export async function subirImagen(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch('http://localhost:8080/api/imagenes/upload', {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Error al subir la imagen");
+  }
+
+  const data = await res.json(); // suponiendo que responde el objeto Imagen con campo nombre
+  return data.nombre;
+}

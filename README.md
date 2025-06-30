@@ -1,54 +1,83 @@
-# React + TypeScript + Vite
+# 🛒 Ecommerce de Pedidos Online: EL BUEN SABOR — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este es el repositorio del frontend del sistema de ecommerce de pedidos online desarrollado como proyecto final para la Tecnicatura Universitaria en Programación. Está construido con React + TypeScript utilizando Vite, y permite a distintos roles (cliente, cajero, cocinero, delivery, administrador) interactuar con la plataforma según sus funcionalidades específicas.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- ⚛️ React 19 + Vite
+- 🔷 TypeScript
+- 📡 Fetch y Axios para consumo de API (predomina Fetch)
+- 🔐 Auth0 para autenticación de usuarios
+- 🔀 React Router DOM v7 para navegación por rutas
+- 📊 React Google Charts
+- 📦 Redux Toolkit y React Redux
+- 🎨 React Icons
+- 💳 SDK de Mercado Pago (React)
+- 🧪 ESLint con soporte para React y TypeScript
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+> ⚠️ Bootstrap está instalado pero no fue utilizado activamente en el proyecto.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚙️ Instrucciones de instalación y ejecución
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Requisitos previos
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- Node.js (versión recomendada: 18+)
+- Tener el backend corriendo en el puerto `8080`
+- Este frontend se sirve por defecto en `http://localhost:5173`
+- Instalar dependencias: npm install
+- Ejecutar en entorno de desarrollo: npm run dev
+- El proyecto no requiere configuración de variables de entorno (.env), pero se espera que el backend esté corriendo localmente y permita CORS desde el puerto 5173.
+
+---
+
+🧱 Estructura y módulos implementados
+El sistema está compuesto por múltiples vistas según el rol del usuario:
+
+🧑‍💼 Cliente
+- Landing page pública
+- Registro e inicio de sesión obligatorio para realizar pedidos
+- Carrito de compras y visualización de productos
+
+⚙️ Administrador
+- Dashboard principal con acceso completo a:
+- ABM de artículos manufacturados
+- ABM de artículos insumo
+- ABM de categorías (rubros) para ambos tipos
+- ABM de empleados y clientes
+- Facturación
+- Reportes con gráficos
+
+💵 Cajero
+- Vista de gestión de pedidos:
+- Envío de pedidos a cocina
+- Envío a delivery
+- Cancelación o rechazo de pedidos
+
+👨‍🍳 Cocinero
+- Visualización de pedidos pendientes de preparación
+- Control de stock
+- ABM de artículos relacionados con cocina
+
+🛵 Delivery
+- Vista con pedidos en estado “En delivery”
+- Marcado de pedidos como entregados
+
+---
+
+👨‍👩‍👧‍👦 Integrantes del grupo
+- Araujo, Agustina	
+- Barolo, Ignacio	
+- Ibarra, Enzo	
+- Martin, Betsabé	
+- Padilla, Bruno	
+- Videla, Santiago	
+
+---
+
+📌 Notas finales
+- Este repositorio forma parte de un sistema completo que incluye también un backend desarrollado en Spring Boot.
+  Para su correcto funcionamiento, ambos deben estar corriendo simultáneamente.
