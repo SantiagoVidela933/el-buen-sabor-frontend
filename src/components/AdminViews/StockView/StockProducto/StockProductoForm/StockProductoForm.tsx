@@ -311,7 +311,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
                         <input
                           type="number"
                           min={0}
-                          step={0.1}
+                          step={0.001}
                           value={cantidad}
                           onChange={(e) => {
                             const nuevaCantidad = Number(e.target.value);
