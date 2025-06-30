@@ -282,19 +282,20 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           <label>
             Categoría:
             <select
-              value={categoria?.id ?? ""}
-              onChange={(e) => {
-                const selected = categorias.find((c) => c.id === Number(e.target.value));
-            }}
-            >   setCategoria(selected ?? null);
-              
-              <option value="">Seleccionar...</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.denominacion}
-                </option>
-              ))}
-            </select>
+  value={categoria?.id ?? ""}
+  onChange={(e) => {
+    const selected = categorias.find((c) => c.id === Number(e.target.value));
+    setCategoria(selected ?? null);
+  }}
+>
+  <option value="">Seleccionar...</option>
+  {categorias.map((cat) => (
+    <option key={cat.id} value={cat.id}>
+      {cat.denominacion}
+    </option>
+  ))}
+</select>
+
           </label>
         </div>
         {!esParaElaborar && (
