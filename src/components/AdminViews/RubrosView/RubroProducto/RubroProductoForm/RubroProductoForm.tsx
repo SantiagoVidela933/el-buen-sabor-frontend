@@ -36,6 +36,7 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
       categoriaPadreId: rubro?.categoriaPadre?.id ?? 3,
       sucursalId: 1, 
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
+      categoriaInsumo: false,
     };
 
     if (modo === "editar" && rubro?.id) {

@@ -302,6 +302,15 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
       <h2>{modo === 'crear' ? 'Crear Promoción' : 'Modificar Promoción'}</h2>
 
       <div className={styles.fieldsGrid}>
+
+        <div className={styles.fieldGroup}>
+          <label>Titulo</label>
+          <input 
+            type="text"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)} />
+        </div>
+
         <div className={styles.fieldGroup}>
             <label>Nombre</label>
             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />

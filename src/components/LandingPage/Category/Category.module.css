@@ -76,6 +76,68 @@
   border-color: white;
 }
 
+.category_select_wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.category_select_container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.category_icon {
+  position: absolute;
+  left: 12px;
+  font-size: 1.3rem;
+  pointer-events: none;
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.category_select {
+  padding: 0.5rem 1rem 0.5rem 2.8rem;
+  border-radius: 1rem; /* Esto redondea todo el select */
+  font-size: 1.1rem;
+  border: 2px solid white;
+  outline: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  font-weight: bold;
+  appearance: none;
+  transition: all 0.3s ease;
+}
+
+.category_select:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ff6609;
+  color: #ff6609;
+}
+
+.category_select option {
+  color: #ff6609;
+  background-color: white; /* Fondo claro para que el texto se vea bien */
+}
+
+.category_select option:first-child {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.category_select option:last-child {
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+/* Personalizar la flecha en navegadores compatibles */
+.category_select::-ms-expand {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .category_wrapper {
@@ -123,5 +185,15 @@
   /* Botón "Todos" ocupa toda la fila */
   .category_ul li:first-child {
     width: 100%;
+  }
+
+  .category_select_wrapper {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .category_select {
+    width: 100%;
+    text-align: center;
   }
 }

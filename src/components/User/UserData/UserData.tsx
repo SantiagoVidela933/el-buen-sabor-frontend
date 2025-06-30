@@ -134,7 +134,7 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
         alert("Empleado actualizado correctamente.");
       } else if (!esEmpleado && editableCliente) {
         await guardarCliente(editableCliente);
-        alert("Cliente actualizado correctamente.");
+        alert("Datos actualizados correctamente.");
       }
 
       // 👇 Refrescar perfil Auth0 para actualizar email y que Navbar no redirija
