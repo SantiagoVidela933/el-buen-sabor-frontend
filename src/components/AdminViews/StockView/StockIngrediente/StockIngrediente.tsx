@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./StockIngrediente.module.css";
 import StockIngredienteForm from "./StockIngredienteForm/StockIngredienteForm";
 import { ArticuloInsumo } from "../../../../models/ArticuloInsumo";

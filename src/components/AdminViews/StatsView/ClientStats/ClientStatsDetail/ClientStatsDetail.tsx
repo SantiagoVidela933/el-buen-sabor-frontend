@@ -31,7 +31,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
       if (clienteId === null) return;
       try {
         const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
-        console.log(data);
         setPedidos(data);
         setCurrentPage(1); // Resetear a la primera página cuando cambian los pedidos
       } catch (error) {

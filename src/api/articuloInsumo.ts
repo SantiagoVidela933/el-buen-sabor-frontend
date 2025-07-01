@@ -38,11 +38,21 @@ export async function getAllArticuloInsumoActivos(): Promise<ArticuloInsumo[]>{
 }
 
 // POST Articulos Insumo
-export async function createArticuloInsumo(insumoPayload: object): Promise<ArticuloInsumo> {
+export async function createArticuloInsumo(
+  insumoPayload: object,
+  imagen: File
+  ) : Promise<ArticuloInsumo> {
+  const formData = new FormData();
+  const articuloBlob = new Blob([JSON.stringify(insumoPayload)], {
+    type: 'application/json',
+  });
+  formData.append('insumo', articuloBlob);
+  if (imagen) {
+    formData.append('imagenes', imagen);
+  }
   const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(insumoPayload),
+    method: 'POST',
+    body: formData,
   });
   if (!res.ok) {
     const errorText = await res.text();
@@ -54,11 +64,23 @@ export async function createArticuloInsumo(insumoPayload: object): Promise<Artic
 }
 
 // PUT Articulos Insumo
-export async function updateArticuloInsumo(id: number | string, insumoPayload: object): Promise<ArticuloInsumo> {
+export async function updateArticuloInsumo(
+  id: number | string,
+  insumoPayload: object,
+  imagen?: File
+  ) : Promise<ArticuloInsumo> {
+
+  const formData = new FormData();
+  const articuloBlob = new Blob([JSON.stringify(insumoPayload)], {
+    type: 'application/json',
+  });
+  formData.append('insumo', articuloBlob);
+  if (imagen) {
+    formData.append('imagenes', imagen);
+  }
   const res = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(insumoPayload),
+    method: 'PUT',
+    body: formData,
   });
   if (!res.ok) {
     const errorText = await res.text();
@@ -68,6 +90,31 @@ export async function updateArticuloInsumo(id: number | string, insumoPayload: o
   const data = await res.json();
   return ArticuloInsumo.fromJson(data);
 }
+
+// export const updateArticuloInsumo = async (
+//   id: number | string,
+//   insumoPayload: object,
+//   imagen?: File
+// ) => {
+//   const formData = new FormData();
+//   const articuloBlob = new Blob([JSON.stringify(insumoPayload)], {
+//     type: 'application/json',
+//   });
+//   formData.append('articuloManufacturado', articuloBlob);
+//   if (imagen) {
+//     formData.append('imagenes', imagen);
+//   }
+//   const res = await fetch(`${API_URL}/${id}`, {
+//     method: 'PUT',
+//     body: formData,
+//   });
+//   if (!res.ok) {
+//     const errorText = await res.text();
+//     console.error('[ERROR] Backend response:', errorText);
+//     throw new Error('Error al actualizar artículo manufacturado');
+//   }
+//   return res.json();
+// };
 
 // DELETE Articulo Insumo ( logico )
 export async function deleteArticuloInsumo(id: number): Promise<void> {

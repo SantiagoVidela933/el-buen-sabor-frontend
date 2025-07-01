@@ -84,7 +84,6 @@ const CartView = ({ onClose }: CartViewProps) => {
       try {
         const response = await getLocalidadesJSONFetch();
         setLocalidades(response);
-        console.log("Localidades cargadas:", response);
       } catch (error) {
         console.error("Error al cargar localidades:", error);
       } finally {
@@ -124,10 +123,7 @@ const CartView = ({ onClose }: CartViewProps) => {
       if (isAuthenticated && user?.email) {
         setLoadingAddress(true);
         try {
-          console.log("Obteniendo datos para email:", user.email);
           const cliente = await getClientesMailJSONFetch(user.email);
-          console.log("Datos obtenidos del cliente:", cliente);
-        
           setClientData(cliente);
           // Comprobar si el cliente tiene domicilio
           if (cliente && cliente.domicilio) {
@@ -138,8 +134,6 @@ const CartView = ({ onClose }: CartViewProps) => {
               setLocalidad(cliente.domicilio.localidad?.nombre || '');
               setLocalidadId(cliente.domicilio.localidad?.id || null);
             }
-          } else {
-            console.log("El cliente no tiene domicilio registrado");
           }
         } catch (error) {
           console.error("Error al obtener datos del cliente:", error);
@@ -164,12 +158,8 @@ const CartView = ({ onClose }: CartViewProps) => {
         id: 1
       },
       pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => {
-        // IMPORTANTE: Añadimos un log para diagnosticar el problema
-        console.log("Detalle a mapear:", detalle.articulo);
-        
         // Verificamos si es una promoción por la propiedad tipo="PROMOCION"
         if (detalle.articulo && detalle.articulo.tipoArticulo === 'PROMOCION') {
-          console.log("Detectada como promoción:", detalle.articulo.id);
           return {
             cantidad: detalle.cantidad,
             promocion: {
@@ -179,7 +169,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         } 
         // Si es un artículo normal
         else if (detalle.articulo) {
-          console.log("Detectado como artículo:", detalle.articulo.id);
           return {
             cantidad: detalle.cantidad,
             articulo: {
@@ -190,7 +179,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         } 
         // Si ya tiene un objeto promoción explícito
         else if (detalle.promocion) {
-          console.log("Tiene objeto promoción explícito:", detalle.promocion.id);
           return {
             cantidad: detalle.cantidad,
             promocion: {
@@ -275,12 +263,10 @@ const CartView = ({ onClose }: CartViewProps) => {
         const subtotal = (item.articuloVenta.precioVenta ?? 0) * cantidadManu;
         const subtotalCosto = subtotal;
         
-        console.log("Creando detalle para:", item.articuloVenta);
         
         // Verificación exacta según cómo está marcada la promoción en CardPromocion.tsx
         // Nota que en CardPromocion.tsx usas tipo: "PROMOCION" (en mayúsculas)
         if (item.articuloVenta.tipo === 'PROMOCION') {
-          console.log("Creando detalle de PROMOCION");
           return new PedidoVentaDetalle(
             cantidadManu,
             subtotal,
@@ -290,7 +276,6 @@ const CartView = ({ onClose }: CartViewProps) => {
             undefined
           );
         } else {
-          console.log("Creando detalle de ARTÍCULO");
           return new PedidoVentaDetalle(
             cantidadManu,
             subtotal,
@@ -344,17 +329,12 @@ const CartView = ({ onClose }: CartViewProps) => {
       
       // Preparar DTO para enviar al backend
       const pedidoDto = mapPedidoToDto(newPedido);
-      console.log("Pedido que se va a enviar:", JSON.stringify(pedidoDto, null, 2));
 
       // Enviar pedido al backend
       const pedidoCreado = await crearPedidoVenta(pedidoDto, getAccessTokenSilently);
-      console.log("Pedido creado en backend:", pedidoCreado);
-
       // Si el pago es con MercadoPago, crear preferencia
       if (paymentMethod === 'mercadoPago') {
         try {
-          console.log("Creando preferencia de MercadoPago para pedido ID:", pedidoCreado.id);
-
           // Esperar un momento para asegurar que la factura se haya creado en el backend
           await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -368,7 +348,6 @@ const CartView = ({ onClose }: CartViewProps) => {
           // Crear pago en MercadoPago
           const mercadoPagoData = await crearPagoMercadoPago(pedidoId, getAccessTokenSilently);
           setPreferenceId(mercadoPagoData.preferenceId);
-          console.log("Preference ID obtenido:", mercadoPagoData.preferenceId);
         } catch (mpError) {
           console.error("Error al preparar pago con MercadoPago:", mpError);
           alert("Error al preparar el pago con MercadoPago. Por favor, inténtalo de nuevo.");
@@ -384,7 +363,6 @@ const CartView = ({ onClose }: CartViewProps) => {
       alert("Ocurrió un error al crear el pedido. Por favor, inténtalo de nuevo.");
     } finally {
       setLoading(false);
-      console.log("Estado de carga finalizado. Loading:", false);
     }
   };
 

@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 interface Auth0User {
   email: string;
@@ -87,6 +88,45 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
 
     verificarRegistro();
   }, [isAuthenticated, user, isLoading]);
+  // Logout automático por inactividad
+// Logout automático por inactividad (1 minuto)
+useEffect(() => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  const resetTimer = () => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      localStorage.setItem("logoutReason", "inactividad");
+      logout({ logoutParams: { returnTo: "http://localhost:5173" } });
+    }, 30 * 60 * 1000); // 1 minuto de inactividad
+  };
+
+  const events = ["mousemove", "keydown", "click", "scroll"];
+  events.forEach((event) => window.addEventListener(event, resetTimer));
+  resetTimer(); // iniciar temporizador
+
+  return () => {
+    clearTimeout(timeoutId);
+    events.forEach((event) => window.removeEventListener(event, resetTimer));
+  };
+}, [logout]);
+;
+
+// Mostrar alerta si fue por inactividad
+useEffect(() => {
+  const logoutReason = localStorage.getItem("logoutReason");
+
+  if (logoutReason === "inactividad") {
+    Swal.fire({
+      title: "Sesión cerrada",
+      text: "Tu sesión se cerró por inactividad.",
+      icon: "info",
+      confirmButtonText: "Entendido",
+    });
+
+    localStorage.removeItem("logoutReason");
+  }
+}, []);
 
   const handleOptionUser = () => {
     setOptionUser((prev) => {

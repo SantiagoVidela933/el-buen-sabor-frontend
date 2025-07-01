@@ -8,7 +8,5 @@ export async function getLocalidadesJSONFetch() {
     },
     mode: 'cors'
   });
-
-  console.log(response);
   return await response.json();
 }

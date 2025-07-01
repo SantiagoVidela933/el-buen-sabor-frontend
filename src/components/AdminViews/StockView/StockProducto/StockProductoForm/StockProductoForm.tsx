@@ -376,7 +376,6 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
             <label htmlFor="imagen">Imágen</label>
             {nombreImagenActual && !mostrarInputImagen ? (
             <>
-              <p>Imagen seleccionada: {nombreImagenActual}</p>
                 <button
                   type="button"
                   onClick={() => setMostrarInputImagen(true)}

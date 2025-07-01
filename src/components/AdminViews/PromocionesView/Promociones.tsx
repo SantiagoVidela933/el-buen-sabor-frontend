@@ -22,7 +22,7 @@ const Promociones = () => {
   useEffect(() => {
     const fetchpromocion = async () => {
       const data = await getPromociones(); 
-      console.log('Promociones:', data);
+      console.log("Promociones obtenidas:", data);
       setPromocion(data);
     };
     fetchpromocion();

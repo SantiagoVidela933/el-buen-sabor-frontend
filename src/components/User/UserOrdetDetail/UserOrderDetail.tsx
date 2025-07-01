@@ -29,32 +29,14 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
           setErrorPedido("ID de pedido no disponible");
           return;
         }
-        
         setLoadingPedido(true);
-        console.log('Cargando detalles completos del pedido ID:', pedidoVenta.id);
         const pedidoCompleto = await getPedidoVentaPorId(pedidoVenta.id);
-        console.log('Datos completos del pedido:', pedidoCompleto);
-        
         // Validar que el pedido tenga los detalles necesarios
         if (!pedidoCompleto.pedidosVentaDetalle) {
           console.error("El pedido no contiene detalles");
           setErrorPedido("No se encontraron detalles del pedido");
           return;
         }
-        
-        // Logging para depuración de detalles
-        pedidoCompleto.pedidosVentaDetalle.forEach((detalle, idx) => {
-          console.log(`Detalle #${idx}:`, {
-            id: detalle.id,
-            subtotal: detalle.subtotal,
-            cantidad: detalle.cantidad,
-            tieneArticulo: !!detalle.articulo,
-            articuloNombre: detalle.articulo?.denominacion,
-            tienePromocion: !!detalle.promocion,
-            promocionNombre: detalle.promocion?.denominacion
-          });
-        });
-        
         setPedidoCargado(pedidoCompleto);
       } catch (error) {
         console.error("Error al cargar el pedido completo:", error);
