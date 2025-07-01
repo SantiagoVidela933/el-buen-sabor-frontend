@@ -71,7 +71,7 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         setFechaAlta(promocion.fechaAlta ?? undefined);
         setPromocion(promocion);
         setNombreImagenActual(promocion.imagenes?.length ? promocion.imagenes[0].nombre : null);
-        setImagenPreview(null); // Limpia el preview si cambia el producto
+        setImagenPreview(null);
       }
     };
 

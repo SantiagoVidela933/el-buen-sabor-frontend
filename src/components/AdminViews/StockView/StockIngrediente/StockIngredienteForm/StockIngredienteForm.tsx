@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./StockIngredienteForm.module.css";
 import { UnidadMedida } from "../../../../../models/UnidadMedida";
 import { CategoriaArticulo } from "../../../../../models/CategoriaArticulo";
@@ -28,6 +28,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   const [imagenNombre, setImagenNombre] = useState(
     ingrediente?.imagenes?.[0]?.nombre || ""
   );
+  const [imagen, setImagen] = useState<File | null>(null);
   const [stockActual, setStockActual] = useState(
     ingrediente?.stockPorSucursal?.[0]?.stockActual || 0
   );
@@ -36,21 +37,33 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   );
   const [esParaElaborar, setEsParaElaborar] = useState(ingrediente?.esParaElaborar ?? false);
 
+  const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [imagenArchivo, setImagenArchivo] = useState<File | null>(null);
   const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
 
+//   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//   const file = e.target.files?.[0] ?? null;
+//   setImagenArchivo(file);
+//   if (file) {
+//     setNombreImagenActual(file.name);
+//     setImagenPreview(URL.createObjectURL(file));
+//   } else {
+//     setNombreImagenActual(null);
+//     setImagenPreview(null);
+//   }
+// };
+
+  const didSetPreview = useRef(false);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0] ?? null;
-  setImagenArchivo(file);
-  if (file) {
-    setNombreImagenActual(file.name);
-    setImagenPreview(URL.createObjectURL(file));
-  } else {
-    setNombreImagenActual(null);
-    setImagenPreview(null);
-  }
-};
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagen(file);
+      setNombreImagenActual(file.name);
+      setImagenPreview(URL.createObjectURL(file));
+      didSetPreview.current = true;
+    }
+  };
 
 
   useEffect(() => {
@@ -86,8 +99,24 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
         setStockActual(stockSucursal.stockActual ?? 0);
         setStockMinimo(stockSucursal.stockMinimo ?? 0);
       }
+
+      setNombreImagenActual(ingrediente.imagenes?.length ? ingrediente.imagenes[0].nombre : null);
+      setImagenPreview(null);
     }
   }, [ingrediente, modo]);
+
+  useEffect(() => {
+    const nombreArchivo = ingrediente?.imagenes?.[0]?.nombre;
+    if (nombreArchivo) {
+      setNombreImagenActual(nombreArchivo);
+      setImagenPreview(`http://localhost:8080/imagenes/${nombreArchivo}`);
+      didSetPreview.current = true;
+    } else {
+      setNombreImagenActual(null);
+      setImagenPreview(null);
+      didSetPreview.current = false;
+    }
+  }, [ingrediente?.imagenes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,13 +158,13 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       esParaElaborar,
       unidadMedida: { id: unidadMedida.id },
       sucursal: { id: 1 },
-      imagenes: imagenes.map((img) => ({
-        ...(img.id ? { id: img.id } : {}),
-        fechaAlta: img.fechaAlta ?? null,
-        fechaModificacion: img.fechaModificacion ?? null,
-        fechaBaja: img.fechaBaja ?? null,
-        nombre: img.nombre,
-      })),
+      // imagenes: imagenes.map((img) => ({
+      //   ...(img.id ? { id: img.id } : {}),
+      //   fechaAlta: img.fechaAlta ?? null,
+      //   fechaModificacion: img.fechaModificacion ?? null,
+      //   fechaBaja: img.fechaBaja ?? null,
+      //   nombre: img.nombre,
+      // })),
       categoria: { id: categoria.id },
       stockPorSucursal: [
         {
@@ -161,7 +190,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
     try {
       let responseJson;
       if (modo === "crear") {
-        responseJson = await createArticuloInsumo(articuloInsumoPayload);
+        responseJson = await createArticuloInsumo(articuloInsumoPayload, imagen!);
         Swal.fire({
           icon: "success",
           title: "Insumo creado exitosamente!",
@@ -177,7 +206,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           });
           return;
         }
-        responseJson = await updateArticuloInsumo(ingrediente.id, articuloInsumoPayload);
+        responseJson = await updateArticuloInsumo(ingrediente.id, articuloInsumoPayload, imagen!);
         Swal.fire({
           icon: "success",
           title: "Insumo actualizado exitosamente!",
@@ -282,54 +311,72 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           <label>
             Categoría:
             <select
-  value={categoria?.id ?? ""}
-  onChange={(e) => {
-    const selected = categorias.find((c) => c.id === Number(e.target.value));
-    setCategoria(selected ?? null);
-  }}
->
-  <option value="">Seleccionar...</option>
-  {categorias.map((cat) => (
-    <option key={cat.id} value={cat.id}>
-      {cat.denominacion}
-    </option>
-  ))}
-</select>
+          value={categoria?.id ?? ""}
+          onChange={(e) => {
+            const selected = categorias.find((c) => c.id === Number(e.target.value));
+            setCategoria(selected ?? null);
+          }}
+        >
+          <option value="">Seleccionar...</option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.denominacion}
+            </option>
+          ))}
+        </select>
 
           </label>
         </div>
+          <div></div>
         {!esParaElaborar && (
-          <>
-            <div className={styles.fieldGroup}>
-              <label>
-                Margen ganancia (%):
-                <input
-                  type="number"
-                  value={margenGanancia}
-                  onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
-                  required
-                />
-              </label>
-            </div>
-            <div className={styles.fieldGroupFull}>
-              <label htmlFor="imagen">Imágen</label>
+          <><div className={styles.fieldGroup}>
+            <label>
+              Margen ganancia (%):
               <input
-                type="file"
-                id="imagen"
-                className={styles.imageInput}
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-              {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
-              {imagenPreview && (
-                <img
-                  src={imagenPreview}
-                  alt="Preview"
-                  style={{ maxWidth: 200, marginTop: 10 }}
-                />
+                type="number"
+                value={margenGanancia}
+                onChange={(e) => setMargenGanancia(e.target.value === "" ? 0 : parseFloat(e.target.value))}
+                required />
+            </label>
+          </div><div className={styles.fieldGroupFull}>
+              <label htmlFor="imagen">Imagen:</label>
+              {nombreImagenActual && !mostrarInputImagen ? (
+                <>
+                  <p>Imagen seleccionada: {nombreImagenActual}</p>
+                  <button
+                    type="button"
+                    onClick={() => setMostrarInputImagen(true)}
+                    className={styles.saveBtn}
+                    style={{ marginBottom: '1em' }}
+                  >
+                    Cambiar imagen
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    id="imagen"
+                    className={styles.imageInput}
+                    onChange={handleImageChange} />
+                  {nombreImagenActual && <p>Imagen seleccionada: {nombreImagenActual}</p>}
+                </>
               )}
-            </div>
-          </>
+              {imagenPreview ? (
+                <div style={{ margin: '1em auto' }}>
+                  <img
+                    src={imagenPreview}
+                    alt="Preview"
+                    style={{ maxWidth: 200, border: '1px solid black' }}
+                    onError={(e) => {
+                      console.error('Error cargando imagen:', e.currentTarget.src);
+                      e.currentTarget.style.display = 'none';
+                    } } />
+                </div>
+              ) : (
+                <p>No hay imagen para mostrar</p>
+              )}
+            </div></>
         )}
       </div>
       <div className={styles.buttonActions}>
