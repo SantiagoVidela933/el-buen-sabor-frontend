@@ -22,7 +22,19 @@ export async function getInsumosBySucursalId(sucursalId: number): Promise<Articu
     return [];
   }
 }
-
+export const getArticuloInsumoById = async (id: number): Promise<ArticuloInsumo> => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/articuloInsumo/${id}`);
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data as ArticuloInsumo;
+  } catch (error) {
+    console.error("Error fetching articulo insumo by ID:", error);
+    throw error;
+  }
+};
 // GET Articulos Insumos
 export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
   const res = await fetch(`${API_URL}/todos`);
@@ -40,7 +52,7 @@ export async function getAllArticuloInsumoActivos(): Promise<ArticuloInsumo[]>{
 // POST Articulos Insumo
 export async function createArticuloInsumo(
   insumoPayload: object,
-  imagen: File
+  imagen?: File
   ) : Promise<ArticuloInsumo> {
   const formData = new FormData();
   const articuloBlob = new Blob([JSON.stringify(insumoPayload)], {
@@ -162,3 +174,16 @@ export async function subirImagen(file: File): Promise<string> {
   const data = await res.json(); // suponiendo que responde el objeto Imagen con campo nombre
   return data.nombre;
 }
+
+export const updateStockSucursalInsumo = async (idInsumo: number, idSucursal: number, data: { stockActual: number} ): Promise<void> => {
+  const res = await fetch(`http://localhost:8080/api/sucursalInsumos/stock/${idInsumo}/${idSucursal}`, {
+    method: 'PATCH',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('[ERROR dar de alta]:', errorText);
+    throw new Error('Error al dar de alta el artículo insumo');
+  }
+};

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import styles from "./StockIngrediente.module.css";
 import StockIngredienteForm from "./StockIngredienteForm/StockIngredienteForm";
+import StockIngredienteAdmin from "./StockIngredientesAdministracion/StockIngredienteAdmin";
 import { ArticuloInsumo } from "../../../../models/ArticuloInsumo";
 import {
   darDeAltaArticuloInsumo,
   darDeBajaArticuloInsumo,
   getAllArticuloInsumo,
+  getArticuloInsumoById
 } from "../../../../api/articuloInsumo";
 import Modal from "../../../ui/Modal/Modal";
 import Swal from 'sweetalert2/dist/sweetalert2.js';
@@ -15,6 +17,7 @@ export default function StockIngrediente() {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
+  const [modalStockOpen, setModalStockOpen] = useState(false);
   const [modoFormulario, setModoFormulario] = useState<"crear" | "editar">("crear");
   const [selectedInsumo, setSelectedInsumo] = useState<ArticuloInsumo | undefined>(undefined);
   const [insumoAEliminar, setInsumoAEliminar] = useState<ArticuloInsumo | null>(null);
@@ -51,17 +54,40 @@ export default function StockIngrediente() {
     setModalOpen(false);
     // No es necesario setPaginaActual(1) aquí si fetchInsumos ya lo hace.
   };
+  const abrirAdministrarStock = () => {
+    setModalStockOpen(true);
+  };
 
+  const cerrarModalStock = () => {
+    setModalStockOpen(false);
+    fetchInsumos(); // Recargar datos después de administrar el stock
+  };
   const abrirCrear = () => {
     setModoFormulario("crear");
     setSelectedInsumo(undefined);
     setModalOpen(true);
   };
 
-  const abrirEditar = (insumo: ArticuloInsumo) => {
-    setModoFormulario("editar");
-    setSelectedInsumo(insumo);
-    setModalOpen(true);
+  const abrirEditar = async (insumo: ArticuloInsumo) => {
+    console.log("Insumo seleccionado para editar:", insumo);
+    
+    try {
+
+      const insumoCompleto = await getArticuloInsumoById(insumo.id!);
+      console.log("Datos completos del insumo:", insumoCompleto);
+      
+      // Use the complete data
+      setModoFormulario("editar");
+      setSelectedInsumo(insumoCompleto);
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Error al obtener datos completos del insumo:", error);
+      
+      // Fallback to using the partial data
+      setModoFormulario("editar");
+      setSelectedInsumo(insumo);
+      setModalOpen(true);
+    }
   };
 
   // Abrir confirmación para baja lógica
@@ -94,7 +120,7 @@ export default function StockIngrediente() {
       if (insumosPaginados.length === 1 && paginaActual > 1 && totalPaginas === paginaActual) {
         setPaginaActual(paginaActual - 1);
       }
-
+      
       Swal.fire({
         title: "Dado de baja!",
         text: "El registro ha sido exitosamente dado de baja.",
@@ -188,7 +214,18 @@ export default function StockIngrediente() {
           />
         </div>
       </div>
-
+      
+      {/* Botón Administrar Stock */}
+      <div className={styles.adminStockContainer}>
+        <button 
+          className={styles.adminStockBtn} 
+          onClick={abrirAdministrarStock}
+        >
+          <span className="material-symbols-outlined">inventory</span>
+          Administrar Stock
+        </button>
+      </div>
+      
       <table className={styles.table}>
         <thead>
           <tr>
@@ -280,6 +317,15 @@ export default function StockIngrediente() {
               </button>
             </div>
           </div>
+        </Modal>
+      )}
+      {modalStockOpen && (
+        <Modal onClose={cerrarModalStock}>
+          <StockIngredienteAdmin
+            modo="editar"
+            onClose={cerrarModalStock}
+            onSubmit={fetchInsumos}
+          />
         </Modal>
       )}
     </div>
