@@ -166,10 +166,7 @@ export default function RegistroPage() {
               id="street"
               value={calle}
               onChange={(e) => setCalle(e.target.value)}
-              onInput={(e) => {
-                const target = e.target as HTMLInputElement;
-                target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-              }}
+              
             />
           </div>
           <div className={styles.inputGroup}>

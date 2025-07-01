@@ -67,7 +67,6 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
     switch (name) {
       case "nombre":
       case "apellido":
-      case "calle":
         return value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); 
       case "telefono":
       case "numero":
