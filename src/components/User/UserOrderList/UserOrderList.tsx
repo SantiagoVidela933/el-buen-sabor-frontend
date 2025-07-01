@@ -171,7 +171,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{renderEstado(order.estado)}</td>
                   <td className={styles.actions}>
-                    <button className={styles.viewBtn} onClick={() => handleViewOrder(order)}>Ver</button>
+                    <button className={styles.viewBtn} onClick={() => handleViewOrder(order)}>Ver detalle</button>
 
                     {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
                       {order.estado === Estado.CANCELADO ? (

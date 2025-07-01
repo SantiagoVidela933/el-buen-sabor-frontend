@@ -85,13 +85,13 @@
 }
 
 /* Redondeo de celdas en las esquinas para consistencia */
-.table tbody td:first-child { 
-  border-top-left-radius: 8px; 
-  border-bottom-left-radius: 8px; 
+.table tbody td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
-.table tbody td:last-child { 
-  border-top-right-radius: 8px; 
-  border-bottom-right-radius: 8px; 
+.table tbody td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .noData { /* Antiguo .emptyMessage */
@@ -130,21 +130,22 @@
   color: black;
 }
 
-.actionBtn { /* Botón "Factura" (verde) */
-  border: none; /* Sin borde */
+/* Antiguo .actionBtn. Ahora la clase .docButton se encargará de esto */
+/* .actionBtn {
+  border: none;
   padding: 0.6rem 1rem;
   border-radius: 8px;
   font-weight: bold;
   font-size: 0.85rem;
   cursor: pointer;
   color: white;
-  background-color: #66be13; /* Color de fondo verde (base para estos botones) */
+  background-color: #66be13;
   transition: background-color 0.3s ease;
 }
 
 .actionBtn:hover {
   background-color: #57a110;
-}
+} */
 
 .cancelBtn { /* Botón "Nota de Crédito" (rojo) */
   background-color: #f44336; /* Rojo para cancelar/Nota de crédito */
@@ -163,12 +164,30 @@
   background-color: #d32f2f;
 }
 
-.docButton { /* Estilo antiguo que puedes eliminar si ya no lo usas */
-  margin: 0 0.25rem;
-  padding: 0.3rem 0.6rem;
+/* --- ESTILO PARA docButton (Factura y Nota de Crédito) basado en .cancelBtn --- */
+.docButton {
+  background-color: #f44336; /* Rojo para Factura y Nota de Crédito */
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem; /* Mismo padding */
+  border-radius: 8px; /* Mismo border-radius */
+  font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap; /* Evita que el texto del botón se rompa */
 }
+
+.docButton:hover {
+  background-color: #d32f2f; /* Mismo hover */
+}
+
+.docButton:disabled {
+  opacity: 0.6; /* Un poco de opacidad para indicar que está deshabilitado */
+  cursor: not-allowed;
+  background-color: #999; /* Un gris para el estado deshabilitado */
+}
+
 
 .backButton {
   background-color: #f1f1f1;
@@ -240,8 +259,8 @@
     align-items: center;
   }
   /* Si después de esto necesitas que la búsqueda esté a la derecha,
-     necesitaríamos un envoltorio más complejo o reevaluar la estructura del header
-     para pantallas grandes. Por ahora, esto centrará todo el header. */
+      necesitaríamos un envoltorio más complejo o reevaluar la estructura del header
+      para pantallas grandes. Por ahora, esto centrará todo el header. */
   .titleGroup {
     justify-content: center; /* Sigue centrado en desktop */
   }
