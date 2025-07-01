@@ -220,3 +220,35 @@
 .activePage:hover {
   background-color: #e05500;
 }
+
+
+.adminStockContainer {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* Cambiar de flex-start a center */
+  width: 100%; /* Asegurar que el contenedor ocupe todo el ancho disponible */
+}
+
+.adminStockBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ff6609;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.adminStockBtn:hover {
+  background-color: #c75712;
+}
+
+.adminStockBtn .material-symbols-outlined {
+  font-size: 20px;
+}

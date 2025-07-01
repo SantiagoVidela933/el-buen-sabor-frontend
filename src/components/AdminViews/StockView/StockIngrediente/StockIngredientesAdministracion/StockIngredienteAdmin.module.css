@@ -1,0 +1,358 @@
+.formContainer {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 550px;
+}
+
+.formContainer h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.fieldsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.fieldGroup {
+  width: 100%;
+}
+
+.fieldGroup label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.fieldGroup input,
+.fieldGroup select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.infoContainer {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #555;
+}
+
+.infoValue {
+  font-weight: 500;
+}
+
+.operationContainer {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radioText {
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.priceChangeContainer {
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f0f4ff;
+  border-radius: 4px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.checkboxLabel span {
+  margin-left: 8px;
+}
+
+.resultContainer {
+  background-color: #e8f4ea;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.resultItem {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resultLabel {
+  font-weight: 600;
+  color: #ff6609;
+}
+
+.resultValue {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Botones de acción unificados */
+.buttonActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.saveBtn {
+  background-color: #2e7d32; /* verde fuerte */
+  color: white;
+  padding: 0rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.saveBtn:hover {
+  background-color: #1b5e20; /* verde más oscuro */
+}
+
+.cancelBtn {
+  background-color: transparent;
+  color: #555;
+  padding: 0rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.cancelBtn:hover {
+  background-color: #f2f2f2;
+  border-color: #aaa;
+}
+
+
+/* Responsive: una sola columna */
+@media (max-width: 700px) {
+  .fieldsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .buttonActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    width: 100%;
+  }
+}
+
+.inputWithUnit {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputWithUnit input {
+  flex: 1;
+  min-width: 80px;
+  max-width: 120px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+
+.unitText {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-left: none;
+  padding: 0 8px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: #495057;
+  font-size: 0.9em;
+  white-space: nowrap;
+  text-align: center;
+  width: 80px;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 32px;
+  line-height: 1;
+}
+
+.operationButtonContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.operationButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.operationButton span:first-child {
+  font-size: 24px;
+}
+
+.operationButton.selected {
+  border-color: #007bff;
+  background-color: #e7f1ff;
+  color: #007bff;
+  font-weight: 500;
+}
+
+/* Estilos específicos para cada operación */
+.operationButton:first-child.selected {
+  border-color: #28a745;
+  background-color: #e8f4ea;
+  color: #28a745;
+}
+
+.operationButton:last-child.selected {
+  border-color: #dc3545;
+  background-color: #fcebec;
+  color: #dc3545;
+}
+
+.operationButton:hover:not(.selected) {
+  background-color: #e9ecef;
+}
+/* Agregar estos estilos nuevos */
+
+.rowContainer {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.selectInsumoContainer {
+  flex: 8;
+  display: flex;
+  flex-direction: column;
+}
+
+.cantidadContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+.operationButtonContainer {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+}
+.selectInsumoContainer label,
+.cantidadContainer label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 640px) {
+  .rowContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .selectInsumoContainer,
+  .cantidadContainer {
+    width: 100%;
+  }
+}
+.rowContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.infoContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.priceChangeContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.inlineField {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inlineLabel {
+  margin-right: 5px;
+  white-space: nowrap;
+}
+
+.inlineInput {
+  flex: 1;
+  min-width: 80px;
+}
