@@ -5,7 +5,6 @@ import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
 import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 import { formatearFechaHora } from "../../api/formatearFechaHora";
-import UserOrderDetail from "../User/UserOrdetDetail/UserOrderDetail";
 
 const PedidosView = () => {
   const [search, setSearch] = useState("");
@@ -154,8 +153,9 @@ const PedidosView = () => {
 
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
-          <UserOrderDetail
-            pedidoVenta={selectedOrder}
+          <PedidoDetalle 
+            pedido={selectedOrder} 
+            actualizarMinutosExtra={actualizarMinutosExtra} 
             onClose={() => setShowModal(false)}
           />
         </Modal>
