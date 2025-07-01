@@ -193,7 +193,7 @@ export function Table() {
           <tbody>
             {currentPedidos.length > 0 ? ( 
               currentPedidos
-                .filter((order) => order.estado !== Estado.CANCELADO)
+                .filter((order) => order.estado !== Estado.CANCELADO && order.estado !== Estado.ENTREGADO)
                 .map((order) => (
                 <tr key={order.id}>
                   <td>{formatearFechaHora(order)}</td>
