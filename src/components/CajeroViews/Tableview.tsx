@@ -191,8 +191,10 @@ export function Table() {
             </tr>
           </thead>
           <tbody>
-            {currentPedidos.length > 0 ? ( // Usamos currentPedidos para la paginación
-              currentPedidos.map((order) => (
+            {currentPedidos.length > 0 ? ( 
+              currentPedidos
+                .filter((order) => order.estado !== Estado.CANCELADO)
+                .map((order) => (
                 <tr key={order.id}>
                   <td>{formatearFechaHora(order)}</td>
                   <td>#{order.id}</td>
@@ -246,7 +248,7 @@ export function Table() {
 
                         {order.tipoEnvio === TipoEnvio.DELIVERY && (
                           <button
-                            className={styles.btn}
+                            className={styles.btnCancelado}
                             disabled={order.facturas.length === 0}
                             onClick={async () => {
                               try {
@@ -264,6 +266,21 @@ export function Table() {
                         )}
                       </>
                     )}
+                    <button
+                      className={styles.btn}
+                      onClick={async () => {
+                        try {
+                          if (order.id !== undefined) {
+                            await cambiarEstadoPedidoVenta(order.id, Estado.CANCELADO);
+                            await fetchPedidos();
+                          }
+                        } catch (error) {
+                          console.error("Error al CANCELAR estado:", error);
+                        }
+                      }}
+                    >
+                      CANCELAR PEDIDO
+                    </button>
                   </td>
                 </tr>
               ))

@@ -63,9 +63,25 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
       });
   }, []);
 
+  const sanearInput = (name: string, value: string): string => {
+    switch (name) {
+      case "nombre":
+      case "apellido":
+      case "calle":
+        return value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""); 
+      case "telefono":
+      case "numero":
+      case "codigoPostal":
+        return value.replace(/[^0-9]/g, "");
+      default:
+        return value;
+    }
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const valorSanitizado = sanearInput(name, value);
+    setForm((prev) => ({ ...prev, [name]: valorSanitizado }));
   };
 
   const validarContraseñaSegura = (clave: string): boolean => {
@@ -180,45 +196,17 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
         {([
           { label: 'Nombre', name: 'nombre' },
           { label: 'Apellido', name: 'apellido' },
-          {
-            label: 'Teléfono',
-            name: 'telefono',
-            type: 'tel',
-            inputMode: 'numeric' as 'numeric',
-            onInput: (e: React.FormEvent<HTMLInputElement>) => {
-              const target = e.target as HTMLInputElement;
-              target.value = target.value.replace(/[^0-9]/g, '');
-            }
-          },
+          { label: 'Teléfono', name: 'telefono', type: 'tel', inputMode: 'numeric' as const },
           { label: 'Email', name: 'email', type: 'email' },
           { label: 'Calle', name: 'calle' },
-          {
-            label: 'Número',
-            name: 'numero',
-            type: 'text',
-            inputMode: 'numeric' as 'numeric',
-            onInput: (e: React.FormEvent<HTMLInputElement>) => {
-              const target = e.target as HTMLInputElement;
-              target.value = target.value.replace(/[^0-9]/g, '');
-            }
-          },
-          {
-            label: 'Código Postal',
-            name: 'codigoPostal',
-            type: 'text',
-            inputMode: 'numeric' as 'numeric',
-            onInput: (e: React.FormEvent<HTMLInputElement>) => {
-              const target = e.target as HTMLInputElement;
-              target.value = target.value.replace(/[^0-9]/g, '');
-            }
-          }
+          { label: 'Número', name: 'numero', type: 'text', inputMode: 'numeric' as const },
+          { label: 'Código Postal', name: 'codigoPostal', type: 'text', inputMode: 'numeric' as const }
         ] as {
           label: string;
           name: string;
           type?: string;
           inputMode?: 'email' | 'text' | 'tel' | 'search' | 'url' | 'numeric' | 'none' | 'decimal';
-          onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
-        }[]).map(({ label, name, type, inputMode, onInput }) => (
+        }[]).map(({ label, name, type, inputMode }) => (
           <div className={styles.fieldGroup} key={name}>
             <label>{label}</label>
             <input
@@ -227,7 +215,6 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
               value={form[name as keyof typeof form]}
               onChange={handleChange}
               {...(inputMode && { inputMode })}
-              {...(onInput && { onInput })}
             />
           </div>
         ))}
@@ -306,3 +293,4 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
 };
 
 export default UserEmpleadoForm;
+
