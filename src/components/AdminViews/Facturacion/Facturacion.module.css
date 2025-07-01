@@ -166,12 +166,14 @@
   text-align: left;
 }
 
+/* --- Nuevo estilo para agrupar botones de acción --- */
 .actionButtonsGroup {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  gap: 0.5rem; /* Espacio entre los botones */
+  flex-wrap: wrap; /* Permite que los botones salten de línea si no hay espacio */
+  justify-content: flex-start; /* Alinea los botones al inicio */
 }
+
 
 .detailBtn {
   background-color: yellow;
@@ -231,7 +233,7 @@
   display: inline-block;
 }
 
-.noPedidos { 
+.noPedidos {
   text-align: center;
   padding: 2rem;
   font-style: italic;
@@ -296,25 +298,25 @@
 /* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
   .header {
-    flex-direction: row; 
-    align-items: center; 
+    flex-direction: row;
+    align-items: center;
   }
 
   .titleAndFiltersGroup {
-    flex-direction: row; 
+    flex-direction: row;
     align-items: center;
-    width: auto; 
+    width: auto;
   }
 
   /* Ajustes para el nuevo filtro de estado en desktop */
   .estadoFilter {
-    width: auto; 
-    max-width: 220px; 
+    width: auto;
+    max-width: 220px;
   }
 
   .searchBar {
-    width: auto; 
-    margin-left: auto; 
+    width: auto;
+    margin-left: auto;
   }
 
   .container {

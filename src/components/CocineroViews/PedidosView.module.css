@@ -1,83 +1,129 @@
-/* --- Estilos Generales del Contenedor --- */
 .container {
-  padding: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 2rem; /* Aumentado padding para consistencia */
+  background-color: #f9f9f9; /* Fondo consistente */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
   width: 100%;
   box-sizing: border-box;
 }
 
-/* --- Estilos de Encabezado (CONSISTENTES) --- */
-.header {
+.header { /* Nuevo contenedor para el título y búsqueda/filtro */
   display: flex;
-  flex-direction: column; /* Por defecto en columna para móviles */
-  gap: 1.5rem; /* Espacio entre título y barra de búsqueda */
-  margin-bottom: 1.5rem;
-  align-items: center; /* Centra horizontalmente en columna */
+  flex-direction: column; /* Columna por defecto para móvil */
+  gap: 1rem;
+  margin-bottom: 1.5rem; /* Más espacio */
 }
 
-.titleGroup {
+.titleGroup { /* Contenedor para el título, si tienes otros elementos cerca */
   display: flex;
   align-items: center;
   gap: 1rem;
-  justify-content: center; /* Centra el titleBox */
-  width: 100%; /* Asegura que ocupe todo el ancho para centrar */
+  justify-content: space-between; /* Para separar título y posibles acciones */
 }
 
-.titleBox {
+.titleBox { /* Estilo del recuadro del título */
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  color: #ff6609;
+  color: #ff6609; /* Color de la marca */
   display: inline-block;
-  text-align: center;
 }
 
-.title {
-  font-size: 1.8rem;
+.title { /* Estilo para el título h2 */
+  font-size: 1.8rem; /* Tamaño de fuente consistente */
   margin: 0;
-  text-align: center; /* Centra el texto del título */
-  background-color: transparent;
-  padding: 0;
-  color: #ff6609;
+  text-align: left; /* Alineación por defecto a la izquierda */
+  background-color: transparent; /* El color de fondo lo maneja .titleBox */
+  padding: 0; /* No padding adicional en el título en sí */
+  color: #ff6609; /* Color de la marca, ya que lo quitamos del títuloBox */
 }
-/* --- FIN Estilos de Encabezado --- */
 
-/* --- Estilos de Barra de Búsqueda (CONSISTENTES) --- */
-.searchBar {
+.searchFilterContainer {
+  display: flex;
+  flex-direction: column; /* Columna por defecto */
+  gap: 1rem;
+  width: 100%;
+}
+
+.estadoFilter {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.estadoButton {
+  background-color: #f1f1f1; /* Fondo consistente */
+  border: 1px solid #ff6609; /* Borde consistente */
+  color: #ff6609; /* Color de texto consistente */
+  padding: 0.9rem 1.2rem; /* Padding consistente */
+  border-radius: 15px; /* Bordes más redondeados y consistentes */
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid #ff6609;
+}
+
+.estadoButton:hover {
+  background-color: #ff6609; /* Hover consistente */
+  color: white;
+}
+
+.estadoDropdown {
+  position: absolute;
+  top: 100%; /* Cambiado de 120% para que esté más cerca */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd; /* Borde más suave */
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 180px; /* Ancho mínimo para legibilidad */
+  margin-top: 0.5rem; /* Espacio entre el botón y el dropdown */
+}
+
+.estadoOption {
+  padding: 0.75rem 1rem; /* Padding consistente */
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+}
+
+.estadoOption:hover {
+  background-color: #f0f0f0;
+  color: #ff6609; /* Color de hover consistente */
+}
+
+.searchBar { /* Nuevo estilo para la barra de búsqueda (contenedor del input) */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #ff6609; /* Borde naranja consistente */
   padding: 0.5rem 1rem;
-  border-radius: 15px;
-  width: 100%; /* Ocupa el 100% del espacio disponible */
-  max-width: 400px; /* Ancho máximo para la barra de búsqueda */
-  background-color: #fff;
+  border-radius: 15px; /* Bordes redondeados */
+  width: 100%;
+  max-width: 400px; /* Ajuste para un ancho máximo */
+  background-color: #fff; /* Fondo blanco */
 }
 
-.searchBar span {
-  color: #ff6609;
+.searchBar span { /* Estilo para el icono de búsqueda */
+  color: #ff6609; /* Color naranja consistente */
 }
 
-.searchBar input {
-  flex: 1; /* Permite que el input ocupe el espacio restante */
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  min-width: auto;
-  color: #333; /* Color del texto del input */
+.searchBar input { /* Estilo del input dentro de .searchBar */
+  flex: 1; /* Para que ocupe el espacio restante */
+  border: none; /* Sin borde */
+  outline: none; /* Sin outline al enfocar */
+  background: transparent; /* Fondo transparente */
+  padding: 0; /* Sin padding adicional en el input */
+  margin: 0; /* Sin margen adicional en el input */
+  min-width: auto; /* Ancho mínimo flexible */
 }
 
-.searchBar input::placeholder {
-  color: #888; /* Color del placeholder */
-}
-/* --- FIN Estilos de Barra de Búsqueda --- */
+/* .searchInput - ELIMINADO - sus estilos se movieron a .searchBar input */
 
-/* --- Estilos de Tabla (CONSISTENTES) --- */
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
@@ -86,109 +132,117 @@
 
 .table {
   width: 100%;
-  border-collapse: separate; /* Necesario para border-spacing y border-radius */
+  border-collapse: separate;
   border-spacing: 0 0.5rem; /* Espacio entre filas */
-  min-width: 900px; /* Asegura que la tabla no sea demasiado pequeña en pantallas medianas */
+  min-width: 900px; /* Asegura un ancho mínimo si las columnas son muchas */
   background-color: #ffffff;
-  border-radius: 12px; /* Redondea las esquinas de la tabla */
-  overflow: hidden; /* Importante para que el border-radius funcione con la sombra */
-  padding: 10px; /* Padding interno para que las filas no toquen el borde del .table */
+  border-radius: 12px; /* Bordes redondeados de la tabla */
+  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
+  padding: 10px; /* Padding interno de la tabla */
 }
 
-.table thead th { /* Corregido de .thead th a .table thead th */
+.thead th {
   background-color: #ddd;
   text-align: left;
   padding: 0.75rem;
-  font-weight: bold; /* Más grueso para encabezados */
+  font-weight: bold; /* De vuelta a bold para consistencia */
   color: #333;
-  border-bottom: none; /* Quitamos el borde inferior del thead */
+  border-bottom: none; /* Quitamos el borde inferior, lo maneja el espacio entre filas */
 }
 
-.table tbody tr { /* Corregido de .tbody tr a .table tbody tr */
-  border-radius: 8px; /* Redondea las filas individuales */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra para efecto flotante */
+.table td {
+  background-color: #eee; /* Consistencia en el color de fondo */
+  padding: 0.75rem;
+  border-bottom: none; /* Eliminar el borde inferior */
+}
+
+.tbody tr {
+  border-radius: 8px; /* Bordes redondeados para las filas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
   background-color: #eee;
   transition: transform 0.2s ease;
 }
 
-.table tbody td { /* Corregido de .tbody td a .table tbody td */
+.tbody tr:hover {
+  transform: translateY(-2px); /* Efecto hover consistente */
+}
+
+.tbody td {
   padding: 0.75rem 0.5rem;
-  border-bottom: none; /* Quitamos los bordes de celda individuales */
+  border-bottom: none; /* Quitamos el borde inferior, lo maneja el espacio entre filas */
   vertical-align: middle;
-  text-align: left; /* Alineación por defecto para el contenido de la celda */
 }
-
 /* Redondeo de celdas en las esquinas para consistencia */
-.table tbody td:first-child {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-.table tbody td:last-child {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-/* --- FIN Estilos de Tabla --- */
+.tbody td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.tbody td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 
-/* --- Estilos de Botones (CONSISTENTES) --- */
+
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem; /* Espacio entre los botones */
-  justify-content: flex-start;
-  /* margin-right: -50px; /* Esta regla era específica, la quito para generalizar */
+  gap: 0.5rem;
+  margin-right: 0; /* Ajustado a 0, si necesitas margen negativo, sé específico */
 }
 
-.viewBtn { /* Botón "Ver" (Amarillo como detalle) */
-  background-color: #ffeb3b; /* Amarillo */
-  border: none;
-  color: #333; /* Texto oscuro para contraste */
+/* Botón "Ver Detalle" - Clase .detailBtn */
+.detailBtn {
+  background-color: #ffeb3b; /* Tu color actual */
+  border: none; /* Sin borde */
+  color: black; /* Color de texto */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.detailBtn:hover {
+  background-color: #d1d412; /* Color de hover */
+  color: black;
+}
+
+/* Botón genérico de acción - Clase .btn (para Enviar a cocina, Marcar como entregado, Pasar a En delivery) */
+.btn {
+  border: none; /* Sin borde */
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: bold;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.viewBtn:hover {
-  background-color: #d1d412; /* Un amarillo más oscuro al pasar el ratón */
-}
-
-.actionBtn { /* Botón "Marcar como listo" (Verde) */
-  background-color: #66be13; /* Verde para acción principal */
   color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
+  background-color: #66be13; /* Color de fondo verde (base para estos botones) */
   transition: background-color 0.3s ease;
-  white-space: nowrap;
 }
 
-.actionBtn:hover {
+.btn:hover {
+  background-color: #57a110; /* Color de hover para el verde */
+}
+
+/* Clases específicas para botones de acción si no quieres usar el genérico .btn directamente */
+.masmin { /* Usado en un componente anterior, mantener por si acaso */
+  background-color: #ff9800; /* Naranja para "más minutos" */
+}
+.masmin:hover {
+  background-color: #e68900;
+}
+
+.listo { /* Usado para "Marcar como listo" */
+  background-color: #66be13; /* Verde para "Listo" */
+}
+.listo:hover {
   background-color: #57a110;
 }
 
-/* Puedes mantener .masmin y .listo si son para otros contextos o si quieres clases más específicas
-   Pero he preferido usar actionBtn y viewBtn para consistencia. */
-/* .masmin { background-color: #ff9800; } */
-/* .listo { background-color: #4caf50; } */
-/* .detalleButton { /* Removido, usar .viewBtn */
-/* .btn { /* Removido, usar .viewBtn, .actionBtn, etc. */
 
-
-/* --- Mensaje de "No Data" (CONSISTENTE) --- */
 .noData {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem; /* Aumentado padding para consistencia */
   font-style: italic;
   color: #777;
 }
 
-/* --- Estilos de Paginación (CONSISTENTES) --- */
-.paginationControls {
+/* --- Estilos de Paginación Numérica --- */
+.pagination {
   display: flex;
   justify-content: center;
   margin-top: 1.5rem; /* Espacio consistente */
@@ -204,6 +258,8 @@
   font-weight: 600; /* Peso de fuente consistente */
   color: #333; /* Color de texto oscuro para inactivos */
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  text-align: center;
 }
 
 .paginationButton:hover:not(:disabled) {
@@ -227,26 +283,23 @@
 .activePage:hover {
   background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
 }
-/* --- FIN Estilos de Paginación --- */
 
 
-/* ==== MEDIA QUERIES (Ajustadas para la nueva estructura) ==== */
+/* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {
   .header {
-    flex-direction: row; /* En desktop, el header es una fila */
-    justify-content: space-between; /* El título a la izquierda, la búsqueda a la derecha */
+    flex-direction: row; /* Vuelve a fila en pantallas grandes */
+    justify-content: space-between;
     align-items: center;
   }
-  .titleGroup {
-    justify-content: flex-start; /* Asegura que el titleGroup se alinee a la izquierda */
+  .searchFilterContainer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end; /* Alinea a la derecha */
+    flex-wrap: nowrap;
   }
-  .titleBox {
-    text-align: left; /* Alinea el texto del título a la izquierda en desktop */
-  }
-  .title {
-    text-align: left; /* Alinea el texto del título a la izquierda en desktop */
-  }
-  .searchBar {
-    max-width: 300px; /* Ajusta el ancho de la barra de búsqueda en desktop */
+  /* .searchInput - ELIMINADO del media query, ya no es necesario */
+  .container {
+    padding: 2rem 3rem; /* Ajuste para pantallas más grandes */
   }
 }

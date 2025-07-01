@@ -6,15 +6,16 @@ import { PedidoVenta } from "../../models/PedidoVenta";
 import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 import { formatearFechaHora } from "../../api/formatearFechaHora";
 import UserOrderDetail from "../User/UserOrdetDetail/UserOrderDetail";
+
 const PedidosView = () => {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<PedidoVenta | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
 
-  // Estados para paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8); // Ajusta la cantidad de elementos por página
+  // Paginación
+  const pedidosPorPagina = 8;
+  const [paginaActual, setPaginaActual] = useState(1);
 
   // GET Pedidos de Venta Delivery
   const fetchPedidos = async () => {
@@ -38,13 +39,23 @@ const PedidosView = () => {
   // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setCurrentPage(1); // Resetear a la primera página en cada búsqueda
+    setPaginaActual(1); // Resetear a la primera página en cada búsqueda
   };
 
-  const pedidosFiltrados = pedidos
-    .filter((pedido) =>
-      search.trim() === "" || (pedido.id !== undefined && pedido.id !== null && pedido.id.toString().includes(search.trim()))
-    );
+  const pedidosFiltrados = pedidos.filter((pedido) =>
+    search.trim() === "" || (pedido.id !== undefined && pedido.id !== null && pedido.id.toString().includes(search.trim()))
+  );
+
+  // Lógica de Paginación
+  const totalPaginas = Math.ceil(pedidosFiltrados.length / pedidosPorPagina);
+  const pedidosPaginados = pedidosFiltrados.slice(
+    (paginaActual - 1) * pedidosPorPagina,
+    paginaActual * pedidosPorPagina
+  );
+
+  const cambiarPagina = (numero: number) => {
+    setPaginaActual(numero);
+  };
 
   const actualizarMinutosExtra = async (pedidoId: number, minutosExtra: number) => {
     try {
@@ -55,42 +66,16 @@ const PedidosView = () => {
     }
   };
 
-  // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentPedidos = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  const renderPaginationButtons = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(
-        <button
-          key={i}
-          onClick={() => paginate(i)}
-          className={`${styles.paginationButton} ${currentPage === i ? styles.activePage : ''}`}
-        >
-          {i}
-        </button>
-      );
-    }
-    return pageNumbers;
-  };
-
-  const numeroColumnasTabla = 5; // Pedido, Fecha/Hora, Forma de Entrega, Forma de Pago, Acciones
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
-            <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
-              <h2 className={styles.title}>PEDIDOS A PREPARAR</h2>
-            </div>
+        <div className={styles.titleGroup}>
+          <div className={styles.titleBox}>
+            <h2 className={styles.title}>PEDIDOS A PREPARAR</h2>
           </div>
+        </div>
         <div className={styles.searchBar}>
+          <span className="material-symbols-outlined">search</span> {/* Lupa de búsqueda añadida aquí */}
           <input
             type="text"
             placeholder="Buscar por Nro. de Pedido"
@@ -112,35 +97,60 @@ const PedidosView = () => {
             </tr>
           </thead>
           <tbody>
-            {pedidosFiltrados.map((pedido) => (
-              <tr key={pedido.id}>
-                <td>{pedido.id}</td>
-                <td>{formatearFechaHora(pedido)}</td>
-                <td>{pedido.tipoEnvio}</td>
-                <td>{pedido.formaPago}</td>
-                <td className={styles.actions}>
-                  <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver</button>
-                  <button
-                    className={styles.btn}
-                    onClick={async () => {
-                      try {
-                        if (pedido.id !== undefined) {
-                          await marcarPedidoListo(pedido.id);
-                          await fetchPedidos();
+            {pedidosPaginados.length > 0 ? (
+              pedidosPaginados.map((pedido) => (
+                <tr key={pedido.id}>
+                  <td>{pedido.id}</td>
+                  <td>{formatearFechaHora(pedido)}</td>
+                  <td>{pedido.tipoEnvio}</td>
+                  <td>{pedido.formaPago}</td>
+                  <td className={styles.actions}>
+                    <button className={styles.detailBtn} onClick={() => handleViewOrder(pedido)}>Ver detalle</button>
+                    <button
+                      className={`${styles.btn} ${styles.listo}`}
+                      onClick={async () => {
+                        try {
+                          if (pedido.id !== undefined) {
+                            await marcarPedidoListo(pedido.id);
+                            await fetchPedidos();
+                          }
+                        } catch (error) {
+                          console.error("Error al marcar como listo:", error);
                         }
-                      } catch (error) {
-                        console.error("Error al marcar como listo:", error);
-                      }
-                    }}
-                  >
-                    Marcar como listo
-                  </button>
+                      }}
+                    >
+                      Marcar como listo
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className={styles.noData}>
+                  No hay pedidos que coincidan con la búsqueda.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* --- Sección de Paginación --- */}
+      {totalPaginas > 1 && (
+        <div className={styles.pagination}>
+          {Array.from({ length: totalPaginas }, (_, i) => (
+            <button
+              key={i}
+              className={`${styles.paginationButton} ${
+                paginaActual === i + 1 ? styles.activePage : ""
+              }`}
+              onClick={() => cambiarPagina(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
 
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
@@ -152,6 +162,6 @@ const PedidosView = () => {
       )}
     </div>
   );
-};
+}
 
 export default PedidosView;
