@@ -50,10 +50,18 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    let filteredValue = value;
+
+    // Aplicar filtros según el nombre del campo
+    if (name === "nombre" || name === "apellido") {
+      filteredValue = value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, ''); // Solo letras y espacios
+    } else if (name === "telefono" || name === "domicilio.codigoPostal") {
+      filteredValue = value.replace(/[^0-9]/g, ''); // Solo números
+    }
 
     if (esEmpleado && editableEmpleado) {
       if (name === "domicilio.idLocalidad") {
-        const id = Number(value);
+        const id = Number(filteredValue);
         const localidadSeleccionada = localidades.find((loc) => loc.id === id);
         setEditableEmpleado({
           ...editableEmpleado,
@@ -69,19 +77,19 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
           ...editableEmpleado,
           domicilio: {
             ...editableEmpleado.domicilio,
-            [key]: key === "numero" || key === "codigoPostal" ? Number(value) : value,
+            [key]: key === "numero" || key === "codigoPostal" ? Number(filteredValue) : filteredValue,
           }
         });
       } else {
         setEditableEmpleado({
           ...editableEmpleado,
-          [name]: value,
+          [name]: filteredValue,
         });
       }
 
     } else if (!esEmpleado && editableCliente) {
       if (name === "domicilio.idLocalidad") {
-        const id = Number(value);
+        const id = Number(filteredValue);
         const localidadSeleccionada = localidades.find((loc) => loc.id === id);
         setEditableCliente({
           ...editableCliente,
@@ -97,13 +105,13 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
           ...editableCliente,
           domicilio: {
             ...editableCliente.domicilio,
-            [key]: key === "numero" || key === "codigoPostal" ? Number(value) : value,
+            [key]: key === "numero" || key === "codigoPostal" ? Number(filteredValue) : filteredValue,
           }
         });
       } else {
         setEditableCliente({
           ...editableCliente,
-          [name]: value,
+          [name]: filteredValue,
         });
       }
     }
@@ -191,7 +199,7 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
           </label>
           <label className={styles.label}>
             Código Postal
-            <input type="number" className={styles.input} name="domicilio.codigoPostal" value={entity?.domicilio.codigoPostal || 0} onChange={handleInputChange} />
+            <input type="text" className={styles.input} name="domicilio.codigoPostal" value={entity?.domicilio.codigoPostal || 0} onChange={handleInputChange} />
           </label>
           <label className={styles.label}>
             Departamento
