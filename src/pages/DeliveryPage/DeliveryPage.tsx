@@ -136,6 +136,21 @@ const DeliveryPage = () => {
                     >
                       Marcar como entregado
                     </button>
+                    <button
+                      className={styles.btn}
+                      onClick={async () => {
+                        try {
+                          if (pedido.id !== undefined) {
+                            await cambiarEstadoPedidoVenta(pedido.id, Estado.CANCELADO);
+                            await fetchPedidos();
+                          }
+                        } catch (error) {
+                          console.error("Error al CANCELAR estado:", error);
+                        }
+                      }}
+                    >
+                      CANCELAR PEDIDO
+                    </button>
                   </td>
                 </tr>
               ))
