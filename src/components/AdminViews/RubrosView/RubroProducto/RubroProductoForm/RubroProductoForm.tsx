@@ -22,7 +22,7 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
       setEstado(rubro.fechaBaja ? 'Baja' : 'Alta');
     }
   }, [rubro]);
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
     const payload = {
       denominacion: descripcion,
       categoriaPadreId: rubro?.categoriaPadre?.id ?? 3,
-      sucursalId: 1, 
+      sucursalId: 1,
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
       categoriaInsumo: false,
     };
@@ -95,7 +95,11 @@ const RubroProductoForm = ({ rubro, modo, onClose, onSubmit }: RubroProductFormP
           <input
             type="text"
             value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            onChange={(e) => {
+              // Filtra la entrada para permitir solo letras (y espacios)
+              const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+              setDescripcion(onlyLetters);
+            }}
           />
         </div>
         {modo === 'crear' && (

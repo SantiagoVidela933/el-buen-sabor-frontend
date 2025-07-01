@@ -15,7 +15,7 @@ interface RubroIngredienteFormProps {
 const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredienteFormProps) => {
   const [descripcion, setDescripcion] = useState('');
   const [estado, setEstado] = useState<'Alta' | 'Baja'>(rubro?.fechaBaja ? 'Baja' : 'Alta');
-  
+
   useEffect(() => {
     if (rubro) {
       setDescripcion(rubro.denominacion);
@@ -33,7 +33,7 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
     const payload = {
       denominacion: descripcion,
       categoriaPadreId: null,
-      sucursalId: 1, 
+      sucursalId: 1,
       fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
       categoriaInsumo: true,
     };
@@ -93,7 +93,11 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
           <input
             type="text"
             value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            onChange={(e) => {
+              // Filtra la entrada para permitir solo letras (y espacios)
+              const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+              setDescripcion(onlyLetters);
+            }}
           />
         </div>
         {modo === 'crear' && (

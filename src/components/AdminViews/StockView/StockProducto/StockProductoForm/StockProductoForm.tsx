@@ -28,7 +28,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [categoriaId, setCategoriaId] = useState(producto?.categoria?.id || '');
   const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const [imagen, setImagen] = useState<File | null>(null);
-  
+
   // Estado para el cálculo de costos
   const [costoTotal, setCostoTotal] = useState<number>(0);
   const [precioFinal, setPrecioFinal] = useState<number>(0);
@@ -54,8 +54,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
   const [selectedInsumoId, setSelectedInsumoId] = useState<number>(0);
   // Estado de ingredientes agregados ( insumo y cantidad )
   const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
-  
-  
+
+
   // GET insumos disponibles
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -78,7 +78,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
     const nuevoTotal = ingredientes.reduce((total, { insumo, cantidad }) => {
       return total + (insumo.precioCompra * cantidad);
     }, 0);
-    
+
     setCostoTotal(nuevoTotal);
     setPrecioFinal(nuevoTotal * (1 + margenGanancia / 100));
   }, [ingredientes, margenGanancia]);
@@ -152,7 +152,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         tiempoEstimadoMinutos: tiempoCocina,
         descripcion,
         detalles: detallesConvertidos,
-        unidadMedida: { id: 3 }, 
+        unidadMedida: { id: 3 },
         categoria: { id: categoriaSeleccionada.id },
         precioVenta: precioFinal
       };
@@ -232,15 +232,23 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
         <div className={styles.fieldsGrid}>
           <div className={styles.fieldGroup}>
             <label>Nombre</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => {
+                // Filtra la entrada para permitir solo letras (y espacios)
+                const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+                setNombre(onlyLetters);
+              }}
+            />
           </div>
           <div className={styles.fieldGroup}>
             <label>Descripción</label>
-            <textarea 
-                value={descripcion} 
+            <textarea
+                value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
                 className={styles.textareaInput}
-              />          
+              />
           </div>
           <div className={styles.fieldGroup}>
             <label>Tiempo en cocina</label>
@@ -332,8 +340,8 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
                       ${(insumo.precioCompra * cantidad).toFixed(2)}
                     </td>
                     <td>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className={styles.deleteBtn}
                         onClick={() => handleEliminarIngrediente(insumo.id)}
                       >
@@ -414,7 +422,7 @@ const StockProductoForm = ({ producto, onClose, modo, onSubmit }: StockProductoF
           </div>
         </div>
         <div className={styles.buttonActions}>
-          <button type="submit" className={styles.saveBtn}> 
+          <button type="submit" className={styles.saveBtn}>
             {modo === "crear" ? "Crear" : "Actualizar"}
           </button>
           <button type="button" onClick={onClose} className={styles.cancelBtn}>

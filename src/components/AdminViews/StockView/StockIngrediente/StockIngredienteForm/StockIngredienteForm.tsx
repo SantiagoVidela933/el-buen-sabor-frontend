@@ -26,8 +26,8 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   const [categorias, setCategorias] = useState<CategoriaArticulo[]>([]);
   const [categoria, setCategoria] = useState<CategoriaArticulo | null>(null);
   const [imagenNombre, setImagenNombre] = useState(
-    ingrediente?.imagenes?.length 
-      ? ingrediente.imagenes[ingrediente.imagenes.length - 1].nombre 
+    ingrediente?.imagenes?.length
+      ? ingrediente.imagenes[ingrediente.imagenes.length - 1].nombre
       : ""
   );
   const [stockMaximo, setStockMaximo] = useState(
@@ -43,13 +43,13 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
   const [mostrarInputImagen, setMostrarInputImagen] = useState(false);
   const didSetPreview = useRef(false);
-  
+
     useEffect(() => {
     const imagenString = (ingrediente as any)?.imagen;
     // Si hay imágenes, tomamos la última del array
     const imagenes = ingrediente?.imagenes || [];
-    const nombreArchivo = imagenes.length > 0 
-      ? imagenes[imagenes.length - 1].nombre 
+    const nombreArchivo = imagenes.length > 0
+      ? imagenes[imagenes.length - 1].nombre
       : null;
 
     if (imagenString && (!ingrediente?.imagenes || ingrediente.imagenes.length === 0)) {
@@ -67,20 +67,20 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       fetchImageForIngrediente(ingrediente.id);
     }
   }, [ingrediente?.imagenes, (ingrediente as any)?.imagen, modo, ingrediente?.id]);
-  
-  
+
+
   const fetchImageForIngrediente = async (ingredienteId: number) => {
     if (!ingredienteId) return;
-    
+
     try {
       const response = await fetch(`http://localhost:8080/api/articuloInsumo/articulo/${ingredienteId}`);
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
+
       const imageName = await response.text();
       console.log("Fetched image name:", imageName);
-      
+
       if (imageName && typeof imageName === 'string' && imageName.trim() !== '') {
         setImagenNombre(imageName);
         setNombreImagenActual(imageName);
@@ -92,7 +92,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       console.error("Error fetching image for ingredient:", error);
     }
   };
-  
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setImagenArchivo(file);
@@ -129,15 +129,15 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   useEffect(() => {
     if (modo === "editar" && ingrediente) {
       console.log("Setting form values from ingrediente:", ingrediente);
-      
+
       // Basic data
       setDenominacion(ingrediente.denominacion || "");
       setPrecioCompra(ingrediente.precioCompra || 0);
-      
+
       // Handle margin of gain - ensure it's a number and not 0 when it shouldn't be
       const margin = ingrediente.margenGanancia;
       console.log("Margin from backend:", margin, "Type:", typeof margin);
-      
+
       // If it's not a para elaborar item, margin should be > 0
       if (!ingrediente.esParaElaborar && (!margin || margin <= 0)) {
         console.warn("Non-elaboration item has invalid margin, using default 20%");
@@ -145,13 +145,13 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       } else {
         setMargenGanancia(Number(margin || 0));
       }
-      
+
       // Handle image
       if (ingrediente.imagenes && ingrediente.imagenes.length > 0) {
         const imagen = ingrediente.imagenes[ingrediente.imagenes.length - 1];
         setImagenNombre(imagen.nombre || "");
         setNombreImagenActual(imagen.nombre || null);
-        
+
         // Use the correct endpoint for images
         const imageUrl = `http://localhost:8080/api/v1/imagenes/${imagen.nombre}`;
         console.log("Setting image preview URL:", imageUrl);
@@ -159,22 +159,22 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
         didSetPreview.current = true;
       } else if (!ingrediente.esParaElaborar) {
         console.warn("No images found for this ingredient");
-        
+
         // Try to fetch the image name from the specific endpoint
         if (ingrediente.id !== undefined) {
           fetchImageForIngrediente(ingrediente.id);
         }
       }
-      
+
       setUnidadMedida(ingrediente.unidadMedida || undefined);
       setCategoria(ingrediente.categoria || null);
-      
+
       const stockSucursal = ingrediente.stockPorSucursal?.[0];
       if (stockSucursal) {
         setStockMaximo(stockSucursal.stockMaximo ?? 0);
         setStockMinimo(stockSucursal.stockMinimo ?? 0);
       }
-      
+
       // Set the elaboration flag
       setEsParaElaborar(ingrediente.esParaElaborar ?? true);
     }
@@ -210,7 +210,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       alert("El precio de compra debe ser mayor a 0.");
       return;
     }
-    
+
     if (!esParaElaborar) {
       if (margenGanancia <= 0) {
         alert("El margen de ganancia debe ser mayor a 0.");
@@ -260,9 +260,9 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       categoria: { id: categoria.id },
       stockPorSucursal: [
         {
-          sucursal: { 
-            id: 1, 
-            nombre: "Sucursal Principal", 
+          sucursal: {
+            id: 1,
+            nombre: "Sucursal Principal",
             fechaAlta: null,
             fechaModificacion: null,
             fechaBaja: null
@@ -331,7 +331,11 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             <input
               type="text"
               value={denominacion}
-              onChange={(e) => setDenominacion(e.target.value)}
+              onChange={(e) => {
+                // Filtra la entrada para permitir solo letras (y espacios, si es necesario)
+                const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+                setDenominacion(onlyLetters);
+              }}
               required
             />
           </label>
@@ -356,7 +360,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             </select>
           </label>
         </div>
-        
+
         <div className={styles.fieldGroup}>
           <label>
             Stock mínimo:
@@ -367,7 +371,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
-        
+
         <div className={styles.fieldGroup}>
           <label>
             Stock Máximo:
@@ -401,7 +405,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             </label>
           </div>
         </div>
-        
+
         <div className={styles.fieldGroup}>
           <label>Categoría:
             <select
@@ -420,7 +424,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             </select>
           </label>
         </div>
-        
+
         <div className={styles.fieldGroup}>
           <label>
             Precio compra:
@@ -432,7 +436,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             />
           </label>
         </div>
-        
+
         {!esParaElaborar && (
           <>
             <div className={styles.fieldGroupFull}>
@@ -460,7 +464,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.fieldGroupFull}>
               <label htmlFor="imagen">Imágen</label>
               {nombreImagenActual && !mostrarInputImagen ? (
@@ -515,9 +519,9 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
           </>
         )}
       </div>
-      
+
       <div className={styles.buttonActions}>
-        <button type="submit" className={styles.saveBtn}> 
+        <button type="submit" className={styles.saveBtn}>
           {modo === "crear" ? "Crear" : "Actualizar"}
         </button>
         <button type="button" onClick={onClose} className={styles.cancelBtn}>
