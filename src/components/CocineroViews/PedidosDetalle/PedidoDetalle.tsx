@@ -11,7 +11,7 @@ type PedidoDetalleProps = {
 };
 
 interface ArticuloConCantidad {
-  articulo: any; // Puedes usar un tipo más específico si lo tienes disponible
+  articulo: any; 
   cantidad: number;
 }
 
@@ -19,19 +19,14 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
 
   const [minutosExtra, setMinutosExtra] = useState<number>(pedido.minutosExtra ?? 0);
 
-  const handleVerReceta = (receta?: ArticuloManufacturadoDetalle[]) => {
+    const [recetaModal, setRecetaModal] = useState<ArticuloManufacturadoDetalle[] | null>(null);
+
+    const handleVerReceta = (receta?: ArticuloManufacturadoDetalle[]) => {
     if (!receta || receta.length === 0) {
       alert("No hay receta disponible.");
       return;
     }
-    const texto = receta
-      .map(
-        (detalle) =>
-          `- ${detalle.cantidad} ${detalle.articuloInsumo.unidadMedida.denominacion} de ${detalle.articuloInsumo.denominacion}`
-      )
-      .join("\n");
-
-    alert(`Receta:\n${texto}`);
+    setRecetaModal(receta);
   };
 
   const handleMinutosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +92,9 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
   }, [pedido]);
 
   if (!pedido) return <p>Pedido no disponible</p>;
+
+
+
 
 
   return (
@@ -174,6 +172,23 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
           )}
         </tbody>
       </table>
+      {recetaModal && (
+        <div className={styles.modalOverlay} onClick={() => setRecetaModal(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3>Receta</h3>
+            <ul>
+              {recetaModal.map((detalle, index) => (
+                <li key={index}>
+                  {detalle.cantidad} {detalle.articuloInsumo.unidadMedida.denominacion} de {detalle.articuloInsumo.denominacion}
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => setRecetaModal(null)} className={styles.button}>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
