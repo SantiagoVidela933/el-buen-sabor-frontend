@@ -12,7 +12,7 @@ interface Localidad {
 }
 
 interface PutClienteDTO {
-  id?: number;  // importante incluir id aquí
+  id?: number;
   nombre: string;
   apellido: string;
   telefono: string;
@@ -100,7 +100,7 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
-      <h2>{modo === 'crear' ? 'Crear Cliente' : 'Modificar Cliente'}</h2>
+      <h2>Modificar Cliente</h2>
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>
@@ -148,9 +148,9 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
         </div>
       </div>
 
-      <div className={styles.buttonGroup}>
-        <button type="submit">Guardar</button>
-        <button type="button" onClick={onClose}>Cancelar</button>
+      <div className={styles.buttonActions}>
+        <button type="submit" className={styles.saveBtn}>Guardar</button>
+        <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
       </div>
     </form>
   );

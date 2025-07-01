@@ -78,99 +78,99 @@ const UserEmpleadoForm = ({ modo, empleado, onSubmit, onClose }: UserEmpleadoFor
     return tieneLongitud && cumpleMinimo;
   };
 
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-  const camposObligatorios = [
-    'nombre', 'apellido', 'telefono', 'email',
-    'calle', 'numero', 'codigoPostal', 'idLocalidad', 'rol'
-  ];
+    const camposObligatorios = [
+      'nombre', 'apellido', 'telefono', 'email',
+      'calle', 'numero', 'codigoPostal', 'idLocalidad', 'rol'
+    ];
 
-  for (const campo of camposObligatorios) {
-    if (!form[campo as keyof typeof form]) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Campos incompletos',
-        text: 'Todos los campos obligatorios deben estar completos.',
-      });
-      return;
-    }
-  }
-
-  if (modo === 'crear') {
-    if (!form.clave || !form.repetirClave) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Falta contraseña',
-        text: 'Debe ingresar y repetir la contraseña.',
-      });
-      return;
+    for (const campo of camposObligatorios) {
+      if (!form[campo as keyof typeof form]) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Campos incompletos',
+          text: 'Todos los campos obligatorios deben estar completos.',
+        });
+        return;
+      }
     }
 
-    if (form.clave !== form.repetirClave) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error de contraseña',
-        text: 'Las contraseñas no coinciden.',
-      });
-      return;
+    if (modo === 'crear') {
+      if (!form.clave || !form.repetirClave) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Falta contraseña',
+          text: 'Debe ingresar y repetir la contraseña.',
+        });
+        return;
+      }
+
+      if (form.clave !== form.repetirClave) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error de contraseña',
+          text: 'Las contraseñas no coinciden.',
+        });
+        return;
+      }
+
+      if (!validarContraseñaSegura(form.clave)) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Contraseña insegura',
+          html: `
+            La contraseña debe tener al menos <strong>8 caracteres</strong> y cumplir con <strong>3 de los siguientes:</strong>
+            <ul style="text-align:left;">
+              <li>Letras minúsculas (a-z)</li>
+              <li>Letras mayúsculas (A-Z)</li>
+              <li>Números (0-9)</li>
+              <li>Caracteres especiales (por ejemplo: !@#$%^&*)</li>
+            </ul>
+          `
+        });
+        return;
+      }
     }
 
-    if (!validarContraseñaSegura(form.clave)) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Contraseña insegura',
-        html: `
-          La contraseña debe tener al menos <strong>8 caracteres</strong> y cumplir con <strong>3 de los siguientes:</strong>
-          <ul style="text-align:left;">
-            <li>Letras minúsculas (a-z)</li>
-            <li>Letras mayúsculas (A-Z)</li>
-            <li>Números (0-9)</li>
-            <li>Caracteres especiales (por ejemplo: !@#$%^&*)</li>
-          </ul>
-        `
-      });
-      return;
-    }
-  }
+    const empleadoData: EmpleadoRequest = {
+      nombre: form.nombre,
+      apellido: form.apellido,
+      telefono: form.telefono,
+      email: form.email,
+      rol: form.rol,
+      sucursalId: 1,
+      domicilio: {
+        calle: form.calle,
+        numero: parseInt(form.numero),
+        codigoPostal: parseInt(form.codigoPostal),
+        idLocalidad: parseInt(form.idLocalidad)
+      },
+      ...(modo === 'crear' && { password: form.clave })
+    };
 
-  const empleadoData: EmpleadoRequest = {
-    nombre: form.nombre,
-    apellido: form.apellido,
-    telefono: form.telefono,
-    email: form.email,
-    rol: form.rol,
-    sucursalId: 1,
-    domicilio: {
-      calle: form.calle,
-      numero: parseInt(form.numero),
-      codigoPostal: parseInt(form.codigoPostal),
-      idLocalidad: parseInt(form.idLocalidad)
-    },
-    ...(modo === 'crear' && { password: form.clave })
+    try {
+      const data = modo === 'crear'
+        ? await crearEmpleado(empleadoData)
+        : await actualizarEmpleado(empleado!.id!, empleadoData);
+
+      onSubmit(data);
+      await Swal.fire({
+        icon: "success",
+        title: `Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente!`,
+        showConfirmButton: false,
+        timer: 1500
+      });
+      onClose();
+    } catch (err: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `${err?.response?.data?.message || err.message || 'Ocurrió un error inesperado.'}`,
+      });
+    }
   };
-
-  try {
-    const data = modo === 'crear'
-      ? await crearEmpleado(empleadoData)
-      : await actualizarEmpleado(empleado!.id!, empleadoData);
-
-    onSubmit(data);
-    await Swal.fire({
-      icon: "success",
-      title: `Empleado ${modo === 'crear' ? 'creado' : 'actualizado'} exitosamente!`,
-      showConfirmButton: false,
-      timer: 1500
-    });
-    onClose();
-  } catch (err: any) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: `${err?.response?.data?.message || err.message || 'Ocurrió un error inesperado.'}`,
-    });
-  }
-};
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -192,7 +192,8 @@ const handleSubmit = async (e: FormEvent) => {
           },
           { label: 'Email', name: 'email', type: 'email' },
           { label: 'Calle', name: 'calle' },
-          { label: 'Número',
+          {
+            label: 'Número',
             name: 'numero',
             type: 'text',
             inputMode: 'numeric' as 'numeric',
@@ -215,7 +216,6 @@ const handleSubmit = async (e: FormEvent) => {
           label: string;
           name: string;
           type?: string;
-          pattern?: string;
           inputMode?: 'email' | 'text' | 'tel' | 'search' | 'url' | 'numeric' | 'none' | 'decimal';
           onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
         }[]).map(({ label, name, type, inputMode, onInput }) => (
@@ -293,10 +293,13 @@ const handleSubmit = async (e: FormEvent) => {
         )}
       </div>
 
-      <div className={styles.buttonGroup}>
-        <div className={styles.rightButtons}>
-          <button type="submit">Guardar</button>
-        </div>
+      <div className={styles.buttonActions}>
+        <button type="submit" className={styles.saveBtn}>
+          {modo === 'crear' ? 'Crear' : 'Guardar'}
+        </button>
+        <button type="button" className={styles.cancelBtn} onClick={onClose}>
+          Cancelar
+        </button>
       </div>
     </form>
   );
