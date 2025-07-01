@@ -67,7 +67,8 @@ const PedidosView = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container}
+    style={{width: "1100px"}}>
       <div className={styles.header}>
         <div className={styles.titleGroup}>
           <div className={styles.titleBox}>
@@ -135,7 +136,7 @@ const PedidosView = () => {
                         }
                       }}
                     >
-                      Cancelar
+                      Cancelar pedido 
                     </button>
                   </td>
                 </tr>

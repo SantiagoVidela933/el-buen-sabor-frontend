@@ -268,6 +268,7 @@ export function Table() {
                     )}
                     <button
                       className={styles.btn}
+                      style={{backgroundColor: "red"}}
                       onClick={async () => {
                         try {
                           if (order.id !== undefined) {
@@ -279,7 +280,7 @@ export function Table() {
                         }
                       }}
                     >
-                      CANCELAR PEDIDO
+                      Cancelar pedido
                     </button>
                   </td>
                 </tr>

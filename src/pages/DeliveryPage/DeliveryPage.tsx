@@ -138,6 +138,7 @@ const DeliveryPage = () => {
                     </button>
                     <button
                       className={styles.btn}
+                      style={{backgroundColor: "red"}}
                       onClick={async () => {
                         try {
                           if (pedido.id !== undefined) {
@@ -149,7 +150,7 @@ const DeliveryPage = () => {
                         }
                       }}
                     >
-                      CANCELAR PEDIDO
+                      Cancelar pedido
                     </button>
                   </td>
                 </tr>
