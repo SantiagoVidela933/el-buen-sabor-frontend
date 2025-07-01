@@ -3,8 +3,9 @@ import styles from "./PedidosView.module.css";
 import Modal from "../ui/Modal/Modal";
 import PedidoDetalle from "./PedidosDetalle/PedidoDetalle";
 import { PedidoVenta } from "../../models/PedidoVenta";
-import { agregarMinutosExtraPedido, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
+import { agregarMinutosExtraPedido, cambiarEstadoPedidoVenta, getPedidosVentasCocinero, marcarPedidoListo } from "../../api/pedidoVenta";
 import { formatearFechaHora } from "../../api/formatearFechaHora";
+import { Estado } from "../../models/enums/Estado";
 
 const PedidosView = () => {
   const [search, setSearch] = useState("");
@@ -119,6 +120,22 @@ const PedidosView = () => {
                       }}
                     >
                       Marcar como listo
+                    </button>
+                    <button
+                      className={`${styles.btn}`}
+                      style={{backgroundColor:"red" }}
+                      onClick={async () => {
+                        try {
+                          if (pedido.id !== undefined) {
+                            await cambiarEstadoPedidoVenta(pedido.id, Estado.CANCELADO);
+                            await fetchPedidos();
+                          }
+                        } catch (error) {
+                          console.error("Error al marcar como listo:", error);
+                        }
+                      }}
+                    >
+                      Cancelar
                     </button>
                   </td>
                 </tr>
