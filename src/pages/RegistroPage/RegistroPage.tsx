@@ -17,6 +17,8 @@ import pensamiento from "../../assets/images/imagen-pensamiento.png";
 import personas from "../../assets/images/imagen-personas.png";
 import celular from "../../assets/images/imagen-celular.png";
 
+// ...importaciones iguales...
+
 export default function RegistroPage() {
   const { isAuthenticated, isLoading, loginWithRedirect, user } = useAuth0();
   const navigate = useNavigate();
@@ -93,15 +95,12 @@ export default function RegistroPage() {
           <img src={logo} alt="Logo Buen Sabor" className={styles.logo} />
         </div>
         <div className={styles.bottomImages}>
-          <img
-            src={pensamiento}
-            alt="Pensamiento"
-            className={styles.pensamiento}
-          />
+          <img src={pensamiento} alt="Pensamiento" className={styles.pensamiento} />
           <img src={personas} alt="Personas" className={styles.personas} />
           <img src={celular} alt="Celular" className={styles.celular} />
         </div>
       </div>
+
       <div className={styles.rightSide}>
         <h1 className={styles.title}>
           Te damos la bienvenida a <br /> <strong>“Buen Sabor”</strong>
@@ -115,6 +114,10 @@ export default function RegistroPage() {
               id="name"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -124,6 +127,10 @@ export default function RegistroPage() {
               id="lastName"
               value={apellido}
               onChange={(e) => setApellido(e.target.value)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -133,6 +140,10 @@ export default function RegistroPage() {
               id="phone"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^0-9]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -155,15 +166,23 @@ export default function RegistroPage() {
               id="street"
               value={calle}
               onChange={(e) => setCalle(e.target.value)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="number">Número</label>
             <input
-              type="number"
+              type="text"
               id="number"
               value={numero}
               onChange={(e) => setNumero(parseInt(e.target.value) || 0)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^0-9]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -173,6 +192,10 @@ export default function RegistroPage() {
               id="postalCode"
               value={codigoPostal}
               onChange={(e) => setCodigoPostal(e.target.value)}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^0-9]/g, '');
+              }}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -198,3 +221,4 @@ export default function RegistroPage() {
     </div>
   );
 }
+
