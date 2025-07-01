@@ -98,18 +98,15 @@
   color: #ff6609; /* Color de hover consistente */
 }
 
-
 .searchBar {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Mantiene la lupa y el input a la izquierda */
   gap: 0.5rem;
   border: 1px solid #ff6609;
-  /* Ajuste de padding: '0.5rem' mantiene la altura, '2rem' aumenta el ancho interno */
   padding: 0.5rem 2rem; /* El primer valor es vertical (altura), el segundo es horizontal (ancho) */
   border-radius: 15px;
   width: 100%;
-  /* CAMBIO: Aumenta el ancho máximo significativamente */
   max-width: 700px; /* Puedes ajustar este valor para controlar qué tan ancha se hace */
   background-color: #fff;
   box-sizing: border-box;
@@ -166,14 +163,13 @@
   text-align: left;
 }
 
-/* --- Nuevo estilo para agrupar botones de acción --- */
+/* Nuevo estilo para agrupar botones de acción */
 .actionButtonsGroup {
   display: flex;
   gap: 0.5rem; /* Espacio entre los botones */
   flex-wrap: wrap; /* Permite que los botones salten de línea si no hay espacio */
   justify-content: flex-start; /* Alinea los botones al inicio */
 }
-
 
 .detailBtn {
   background-color: yellow;
@@ -293,7 +289,6 @@
 .activePage:hover {
   background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
 }
-
 
 /* ==== MEDIA QUERIES ==== */
 @media (min-width: 768px) {

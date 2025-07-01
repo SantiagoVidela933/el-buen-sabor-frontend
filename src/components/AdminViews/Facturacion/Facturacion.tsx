@@ -23,9 +23,8 @@ const Facturacion = () => {
   // Ref para detectar clics fuera del dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Estados para la paginación
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(8); // Puedes ajustar esto si lo deseas
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Mantengo el itemsPerPage original del primer componente
 
   useEffect(() => {
     const cargarPedidos = async () => {
@@ -315,7 +314,7 @@ const Facturacion = () => {
                   </button>
                 </td>
                 <td>
-                  {pedido.facturas && pedido.facturas.length > 0 && (
+                  {pedido.facturas && pedido.facturas.length > 0 ? (
                     <div className={styles.actionButtonsGroup}> {/* Nuevo contenedor para los botones */}
                       {pedido.estado === Estado.CANCELADO ? (
                         <button
@@ -325,14 +324,14 @@ const Facturacion = () => {
                         >
                           Nota de Crédito
                         </button>
-                      ) : pedido.estado === Estado.ENTREGADO && (
+                      ) : pedido.estado === Estado.ENTREGADO ? (
                         <>
                           <button
                             className={styles.actionBtn}
-                            onClick={() => handleDescargarNotaCredito(pedido)}
+                            onClick={() => handleDescargarFactura(pedido)}
                             disabled={actionLoading}
                           >
-                            Nota de Crédito
+                            Ver Factura
                           </button>
                           <button
                             className={styles.cancelBtn}
@@ -342,12 +341,13 @@ const Facturacion = () => {
                             Anular
                           </button>
                         </>
+                      ) : (
+                        <span className={styles.disabledAction}>Factura Pendiente</span>
                       )}
                     </div>
+                  ) : (
+                    <span className={styles.disabledAction}>Sin Factura</span>
                   )}
-                  {pedido.estado !== Estado.CANCELADO && pedido.estado !== Estado.ENTREGADO ? (
-                    <span className={styles.disabledAction}>Factura Pendiente</span>
-                  ) : null}
                 </td>
               </tr>
             ))}
@@ -355,7 +355,6 @@ const Facturacion = () => {
         </table>
       )}
 
-      {/* Controles de paginación - agregar después de la tabla */}
       {pedidosFiltrados.length > 0 && totalPages > 1 && (
         <div className={styles.pagination}>
           {getPaginationButtons()}
