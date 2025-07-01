@@ -33,6 +33,8 @@ interface UserClienteFormProps {
   onSubmit: (clienteActualizado: Cliente) => void;
 }
 
+// ... importaciones iguales ...
+
 const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormProps) => {
   const [nombre, setNombre] = useState(cliente?.nombre || '');
   const [apellido, setApellido] = useState(cliente?.apellido || '');
@@ -100,44 +102,103 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
 
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
-      <h2>Modificar Cliente</h2>
+      <h2>{modo === 'crear' ? 'Crear Cliente' : 'Modificar Cliente'}</h2>
 
       <div className={styles.fieldsGrid}>
         <div className={styles.fieldGroup}>
           <label>Nombre</label>
-          <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} />
+          <input
+            type="text"
+            value={nombre}
+            onChange={e => setNombre(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Apellido</label>
-          <input type="text" value={apellido} onChange={e => setApellido(e.target.value)} />
+          <input
+            type="text"
+            value={apellido}
+            onChange={e => setApellido(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Teléfono</label>
-          <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} />
+          <input
+            type="tel"
+            value={telefono}
+            onChange={e => setTelefono(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Email</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Fecha de Nacimiento</label>
-          <input type="date" value={fechaDeNacimiento} onChange={e => setFechaDeNacimiento(e.target.value)} />
+          <input
+            type="date"
+            value={fechaDeNacimiento}
+            onChange={e => setFechaDeNacimiento(e.target.value)}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Calle</label>
-          <input type="text" value={calle} onChange={e => setCalle(e.target.value)} />
+          <input
+            type="text"
+            value={calle}
+            onChange={e => setCalle(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Número</label>
-          <input type="text" value={numero} onChange={e => setNumero(e.target.value)} />
+          <input
+            type="text"
+            value={numero}
+            onChange={e => setNumero(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Código Postal</label>
-          <input type="text" value={codigoPostal} onChange={e => setCodigoPostal(e.target.value)} />
+          <input
+            type="text"
+            value={codigoPostal}
+            onChange={e => setCodigoPostal(e.target.value)}
+            onInput={e => {
+              const target = e.target as HTMLInputElement;
+              target.value = target.value.replace(/[^0-9]/g, '');
+            }}
+          />
         </div>
         <div className={styles.fieldGroup}>
           <label>Localidad</label>
-          <select value={localidadId} onChange={e => setLocalidadId(Number(e.target.value))}>
+          <select
+            value={localidadId}
+            onChange={e => setLocalidadId(Number(e.target.value))}
+          >
             <option value={0}>-- Selecciona un departamento --</option>
             {localidades.map(localidad => (
               <option key={localidad.id} value={localidad.id}>
