@@ -17,8 +17,6 @@ import pensamiento from "../../assets/images/imagen-pensamiento.png";
 import personas from "../../assets/images/imagen-personas.png";
 import celular from "../../assets/images/imagen-celular.png";
 
-// ...importaciones iguales...
-
 export default function RegistroPage() {
   const { isAuthenticated, isLoading, loginWithRedirect, user } = useAuth0();
   const navigate = useNavigate();
@@ -50,6 +48,26 @@ export default function RegistroPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validación de edad mínima (18 años)
+    const hoy = new Date();
+    const fechaNacimientoDate = new Date(fechaNacimiento);
+    const edad = hoy.getFullYear() - fechaNacimientoDate.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimientoDate.getMonth();
+    const dia = hoy.getDate() - fechaNacimientoDate.getDate();
+
+    if (
+      edad < 18 ||
+      (edad === 18 && mes < 0) ||
+      (edad === 18 && mes === 0 && dia < 0)
+    ) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Edad inválida",
+        text: "Debes tener al menos 18 años para registrarte.",
+      });
+      return;
+    }
 
     const domicilio = new Domicilio();
     domicilio.calle = calle;
@@ -87,6 +105,11 @@ export default function RegistroPage() {
       });
     }
   };
+
+  // Limite máximo para el input de fecha: hoy menos 18 años
+  const maxFechaNacimiento = new Date();
+  maxFechaNacimiento.setFullYear(maxFechaNacimiento.getFullYear() - 18);
+  const maxDateString = maxFechaNacimiento.toISOString().split("T")[0];
 
   return (
     <div className={styles.pageContainer}>
@@ -157,6 +180,7 @@ export default function RegistroPage() {
               id="edad"
               value={fechaNacimiento}
               onChange={(e) => setFechaNacimiento(e.target.value)}
+              max={maxDateString}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -166,7 +190,6 @@ export default function RegistroPage() {
               id="street"
               value={calle}
               onChange={(e) => setCalle(e.target.value)}
-              
             />
           </div>
           <div className={styles.inputGroup}>
@@ -210,12 +233,9 @@ export default function RegistroPage() {
               ))}
             </select>
           </div>
-          <button className={styles.submitButton}>
-            Guardar
-          </button>
+          <button className={styles.submitButton}>Guardar</button>
         </form>
       </div>
     </div>
   );
 }
-
