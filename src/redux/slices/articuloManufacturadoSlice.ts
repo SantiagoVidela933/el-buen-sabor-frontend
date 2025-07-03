@@ -34,7 +34,6 @@ const articuloManufacturadoSlice = createSlice({
 export const { setArticulosManufacturados, setLoading, setError  } = articuloManufacturadoSlice.actions;
 export default articuloManufacturadoSlice.reducer;
 
-// thunk que usa el service
 export const fetchArticulosManufacturados = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(setLoading(true));

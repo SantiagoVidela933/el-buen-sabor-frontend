@@ -22,7 +22,7 @@ interface CartState {
 // Estado inicial
 const initialState: CartState = {
   cartItems: [],
-  isStoreOpen: true, // Por defecto asumimos que está abierto hasta verificar
+  isStoreOpen: true, 
   storeHours: {
     opening: '09:00',
     closing: '22:00'
@@ -71,8 +71,6 @@ export const addToCartIfStoreOpen = createAsyncThunk(
   async (payload: { articuloVenta: ArticuloVenta; quantity?: number }, { getState, dispatch }) => {
     const state: any = getState();
     
-    // Si ya tenemos el estado de la tienda, lo usamos
-    // Si no, hacemos una verificación
     let isStoreOpen = state.cart.isStoreOpen;
     let storeHours = state.cart.storeHours;
     
@@ -83,10 +81,8 @@ export const addToCartIfStoreOpen = createAsyncThunk(
     }
     
     if (isStoreOpen) {
-      // Si la tienda está abierta, agregamos al carrito
       return { payload, success: true };
     } else {
-      // Si está cerrada, mostramos alerta
       await Swal.fire({
         title: 'Tienda cerrada',
         text: `Lo sentimos, nuestra tienda está cerrada en este momento. Nuestro horario de atención es de ${storeHours.opening} a ${storeHours.closing}.`,

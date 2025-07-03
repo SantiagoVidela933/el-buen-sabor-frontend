@@ -12,8 +12,7 @@ const AutoRedirect = () => {
 
   useEffect(() => {
     if (isAuthenticated && !isLoading && location.pathname === "/") {
-      // Redirigir según el primer rol
-      if (userRoles.includes("ADMINISTRADOR")) return; // El admin elige a mano
+      if (userRoles.includes("ADMINISTRADOR")) return; 
 
       if (userRoles.includes("COCINERO")) {
         navigate("/cocinero", { replace: true });
@@ -22,7 +21,6 @@ const AutoRedirect = () => {
       } else if (userRoles.includes("CAJERO")) {
         navigate("/cajero", { replace: true });
       }
-      // Cliente se queda en /
     }
   }, [isAuthenticated, isLoading, userRoles, location.pathname, navigate]);
 

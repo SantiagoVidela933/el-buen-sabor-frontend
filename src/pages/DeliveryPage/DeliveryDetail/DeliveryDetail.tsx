@@ -38,7 +38,6 @@ const DeliveryDetail: React.FC<DeliveryDetailProps> = ({ pedido, onClose }) => {
               <td>{pedido.estado}</td>
             </tr>
 
-            {/* Datos del cliente */}
             {pedido.cliente && (
               <>
                 <tr>
@@ -52,7 +51,6 @@ const DeliveryDetail: React.FC<DeliveryDetailProps> = ({ pedido, onClose }) => {
               </>
             )}
 
-            {/* Dirección de entrega */}
             {(pedido.domicilio || (pedido.cliente && pedido.cliente.domicilio)) && (
               <tr>
                 <th>Dirección</th>

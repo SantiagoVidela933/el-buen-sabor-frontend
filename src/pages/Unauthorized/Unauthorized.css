@@ -4,10 +4,10 @@
   background-color: #d56d2f; /* Fondo naranja */
   margin: 0;
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
-  min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la ventana */
-  width: 100%; /* Asegura que ocupe todo el ancho */
+  justify-content: center; /* Centrado horizontal */
+  align-items: center; /* Centrado vertical */
+  min-height: 100vh;
+  width: 100%;
 }
 
 .unauthorized-component .container {
@@ -19,10 +19,10 @@
 }
 
 .unauthorized-component .imagen-central img {
-  max-width: 50%; /* Puedes ajustar este valor para hacer la imagen más grande o más pequeña */
+  max-width: 50%;
   height: auto;
   display: block;
-  margin: 0 auto 20px auto; /* Centra la imagen horizontalmente y añade un margen inferior */
+  margin: 0 auto 20px auto;
 }
 
 .unauthorized-component button {

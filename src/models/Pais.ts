@@ -12,14 +12,13 @@ export class Pais extends BaseEntity {
   }
 
   static fromJson(json: any): Pais | null {
-  if (!json) return null;
+    if (!json) return null;
 
-  const provincias = (json.provincias || []).map((p: any) => Provincia.fromJson(p));
+    const provincias = (json.provincias || []).map((p: any) => Provincia.fromJson(p));
 
-  return new Pais(
-    json.nombre,
-    provincias
-  );
-}
-
+    return new Pais(
+      json.nombre,
+      provincias
+    );
+  }
 }

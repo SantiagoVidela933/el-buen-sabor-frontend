@@ -1,7 +1,6 @@
 import styles from './LandingPage.module.css';
 import ProductSection from '../../components/Products/ProductSection/ProductSection';
 import Destacados from '../../components/LandingPage/Destacados/Destacados';
-import SobreNosotros from '../../components/LandingPage/SobreNosotros/SobreNosotros';
 import Promociones from '../../components/LandingPage/Promociones/Promociones';
 import HeroSection from '../../components/LandingPage/HeroSection/HeroSection';
 

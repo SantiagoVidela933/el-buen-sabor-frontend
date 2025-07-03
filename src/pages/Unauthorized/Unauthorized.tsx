@@ -1,11 +1,11 @@
 import "./Unauthorized.css";
-import { useNavigate } from "react-router-dom"; // ¡Importa useNavigate, no Navigate!
+import { useNavigate } from "react-router-dom"; 
 
 export default function Unauthorized() {
-  const navigate = useNavigate(); // Inicializa el hook useNavigate
+  const navigate = useNavigate(); 
 
   const handleGoBack = () => {
-    navigate("/"); // Usa la función navigate para ir a la ruta raíz
+    navigate("/");
   };
 
   return (

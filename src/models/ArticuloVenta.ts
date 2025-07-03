@@ -29,7 +29,6 @@ export class ArticuloVenta {
         this.imagenUrl = imagenUrl;
         this.stockDisponible = stockDisponible;
     }
-    // Método estático para mapear datos JSON a una instancia de ArticuloVenta
     static fromJson(json: any): ArticuloVenta {
         const categoriaArticulo = json.categoriaArticulo
             ? new CategoriaArticulo(

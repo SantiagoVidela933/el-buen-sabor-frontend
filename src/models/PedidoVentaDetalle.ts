@@ -39,7 +39,7 @@ export class PedidoVentaDetalle extends BaseEntity {
       json.subtotal,
       json.subtotalCosto,
       promocion,
-      undefined, // No seteamos pedidoVenta para evitar ciclo
+      undefined, 
       articulo
     );
   }

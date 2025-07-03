@@ -11,7 +11,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/src/sweetalert2.scss';
 
-/*IMAGENES*/
 import logo from "../../assets/logos/logo_buenSabor.png";
 import pensamiento from "../../assets/images/imagen-pensamiento.png";
 import personas from "../../assets/images/imagen-personas.png";
@@ -49,7 +48,6 @@ export default function RegistroPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación de edad mínima (18 años)
     const hoy = new Date();
     const fechaNacimientoDate = new Date(fechaNacimiento);
     const edad = hoy.getFullYear() - fechaNacimientoDate.getFullYear();
@@ -98,6 +96,7 @@ export default function RegistroPage() {
       });
       navigate("/");
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -106,7 +105,6 @@ export default function RegistroPage() {
     }
   };
 
-  // Limite máximo para el input de fecha: hoy menos 18 años
   const maxFechaNacimiento = new Date();
   maxFechaNacimiento.setFullYear(maxFechaNacimiento.getFullYear() - 18);
   const maxDateString = maxFechaNacimiento.toISOString().split("T")[0];

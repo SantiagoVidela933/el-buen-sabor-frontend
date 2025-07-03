@@ -9,9 +9,9 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth0();
-  const namespace = "https://buensaboroto.com/roles"; // tu namespace
+  const namespace = "https://buensaboroto.com/roles"; 
   if (isLoading) {
-    return <div>Cargando...</div>; // o un spinner
+    return <div>Cargando...</div>; 
   }
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;

@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
       audience: 'https://apiSabor',
       scope: 'openid profile email'
     }}
-    cacheLocation="localstorage" // ¡agregar esto para persistir sesión!
+    cacheLocation="localstorage" 
   >
     <Provider store={store}>
       <BrowserRouter>

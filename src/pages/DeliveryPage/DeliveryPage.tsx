@@ -13,11 +13,9 @@ const DeliveryPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
 
-  // --- LÓGICA DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(8); // Puedes ajustar la cantidad de ítems por página si es necesario
+  const [itemsPerPage] = useState<number>(8); 
 
-  // GET Pedidos de Venta Delivery
   const fetchPedidos = async () => {
     try {
       const data = await getPedidosVentasDelivery();
@@ -38,40 +36,20 @@ const DeliveryPage = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    // IMPORTANTE: Reiniciar la página a 1 cuando cambia la búsqueda
     setCurrentPage(1);
   };
 
   const pedidosFiltrados = pedidos
     .filter((pedido) =>
       search.trim() === "" || (pedido.id !== undefined && pedido.id.toString().includes(search.trim()))
-    ); // <-- Eliminado el ";" aquí
-
-  // Lógica de paginación
+    );
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem); // <-- Definición de currentItems
+  const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  // No necesitamos renderPaginationButtons como función separada si lo mapeamos directamente en el JSX
-  // const renderPaginationButtons = () => {
-  //   const pageNumbers = [];
-  //   for (let i = 1; i <= totalPages; i++) {
-  //     pageNumbers.push(
-  //       <button
-  //         key={i}
-  //         onClick={() => paginate(i)}
-  //         className={`${styles.paginationButton} ${currentPage === i ? styles.activePage : ''}`}
-  //       >
-  //         {i}
-  //       </button>
-  //     );
-  //   }
-  //   return pageNumbers;
-  // };
 
   return (
     <div className={styles.container}>
@@ -105,7 +83,6 @@ const DeliveryPage = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Renderiza los ítems de la página actual */}
             {currentItems.length === 0 ? (
               <tr>
                 <td colSpan={5} className={styles.noData}>
@@ -160,14 +137,12 @@ const DeliveryPage = () => {
         </table>
       </div>
 
-      {/* --- CONTROLES DE PAGINACIÓN NUMÉRICA --- */}
       {totalPages > 1 && (
         <div className={styles.pagination}>
           {[...Array(totalPages)].map((_, index) => (
             <button
               key={index + 1}
               onClick={() => paginate(index + 1)}
-              // Aplica la clase 'activePage' solo si es la página actual
               className={`${styles.paginationButton} ${currentPage === index + 1 ? styles.activePage : ''}`}
             >
               {index + 1}

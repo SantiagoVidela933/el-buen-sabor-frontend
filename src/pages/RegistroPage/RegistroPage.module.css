@@ -42,18 +42,15 @@
   margin-top: auto;
 }
 
-/* Imagen de pensamiento: más chica y un poco más arriba */
 .pensamiento {
   max-height: 150px;
-  transform: translateY(-350px) translateX(100px);; /* sube la imagen */
+  transform: translateY(-350px) translateX(100px);
 }
 
-/* Imagen de personas: la más grande */
 .personas {
   max-height: 400px;
 }
 
-/* Imagen de celular: tamaño intermedio */
 .celular {
   max-height: 200px;
   transform: translateX(-50px);
@@ -129,7 +126,6 @@
   background-color:  #ff9756;
 }
 
-/* 📱 Responsive Tablet */
 @media (max-width: 1408px) {
 
   .bottomImages {
@@ -154,7 +150,6 @@
   }
 }
 
-/* 📱 Responsive Mobile */
 @media (max-width: 600px) {
   html, body {
     height: 100%;
@@ -167,25 +162,25 @@
 
   .leftSide {
     width: 100%;
-    height: auto; /* ya tenés esto, muy bien */
-    padding: 1.5rem 1rem; /* menos padding para más espacio */
-    justify-content: flex-start; /* que el contenido arranque desde arriba */
-    gap: 1rem; /* espacio entre elementos dentro */
+    height: auto; 
+    padding: 1.5rem 1rem; 
+    justify-content: flex-start;
+    gap: 1rem;
   }
 
   .rightSide {
     flex: none;
     min-height: 100vh;
     overflow-y: auto;
-    justify-content: flex-start; /* Asegura que comience desde arriba */
+    justify-content: flex-start; 
   }
 
   .form {
-    padding: 10px; /* más compacto en mobile */
+    padding: 10px;
   }
 
   .title {
-    margin-top: 1rem; /* espacio superior por si hay notch o barra */
+    margin-top: 1rem;
   }
 
   .submitButton {
