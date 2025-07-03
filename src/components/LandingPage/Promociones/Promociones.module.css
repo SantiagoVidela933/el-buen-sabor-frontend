@@ -1,7 +1,8 @@
 .contenedor {
-  padding: 2rem;
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
+  border-radius: 12px;
+  overflow-x: hidden;
 }
 
 .carouselWrapper {
@@ -9,41 +10,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .carousel {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   overflow-x: hidden;
   scroll-behavior: smooth;
   padding: 1rem 0;
-  max-width: 880px; /* Para desktop */
+  width: 100%;
 }
 
-/* Flechas */
 .flecha {
   background-color: #ff6609;
   border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 55px;
+  height: 55px;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-
-  /* 🔥 Espaciado horizontal */
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
   margin: 0 1rem;
 }
 
 .flecha:hover {
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   color: #ff6609;
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .titulo {
@@ -51,33 +51,48 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ff6609;
+  margin-bottom: 2rem;
 }
 
 .icono {
-  color: #ff6b00; /* o el color que uses en el borde */
-  font-size: 1.6rem;
+  color: #ff6609;
+  font-size: 2.2rem;
 }
 
-/* 📱 Responsividad */
+@media (max-width: 1024px) {
+  .carousel {
+    gap: 1rem;
+  }
+
+  .flecha {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .carousel {
-    max-width: 600px;
+    max-width: 95%;
+    gap: 0.8rem;
+  }
+
+  .flecha {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .titulo {
+    font-size: 1.6rem;
   }
 }
 
 @media (max-width: 480px) {
   .carousel {
-    max-width: 90%;
-    gap: 0.75rem;
-  }
-
-  .flecha:first-of-type {
-    left: -10px;
-  }
-
-  .flecha:last-of-type {
-    right: -10px;
+    gap: 0.5rem;
   }
 }

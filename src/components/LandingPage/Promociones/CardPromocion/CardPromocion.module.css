@@ -1,78 +1,82 @@
 .card {
   background: white;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 280px;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 360px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: scale(1.07);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 .titulo {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ff6609; 
+  margin-bottom: 0.5rem;
 }
 
 .descripcion {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.7rem;
 }
 
 .precios {
-  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
 }
 
 .precioActual {
-  font-weight: bold;
-  color: #000;
-  margin-right: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #28a745;
 }
 
 .precioAnterior {
   text-decoration: line-through;
   color: #888;
+  font-size: 1rem;
 }
 
 .imagenWrapper {
-  height: 150px;
+  height: 220px;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  border-radius: 8px;
+  margin-top: 0.7rem;
 }
 
 .imagen {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
 .card:hover .imagen {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 @media (max-width: 768px) {
   .card {
-    width: 220px;
-  }
-}
-
-@media (max-width: 480px) {
-  .card {
     width: 90vw;
   }
 }
+
 .outOfStock {
   color: red;
   font-weight: bold;
@@ -93,7 +97,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(194, 63, 63, 0.2); /* rojo suave */
+  background-color: rgba(194, 63, 63, 0.2);
   z-index: 1;
-  border-radius: 1.25rem;
+  border-radius: 12px;
 }

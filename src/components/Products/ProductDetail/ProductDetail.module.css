@@ -1,7 +1,6 @@
 .detail_wrapper {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
   max-width: 600px;
   width: 100%;
   background-color: white;
