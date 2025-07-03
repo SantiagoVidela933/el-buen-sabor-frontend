@@ -22,7 +22,6 @@ const CreateRecetaForm = ({onChange}: CreateRecetaFormProps) => {
   // Estado de ingredientes agregados ( insumo y cantidad )
   const [ingredientes, setIngredientes] = useState<IngredienteReceta[]>([]);
 
-  // GET insumos disponibles
   useEffect(() => {
     const fetchInsumos = async () => {
       const data = await getInsumosBySucursalId(1);
@@ -43,11 +42,9 @@ const CreateRecetaForm = ({onChange}: CreateRecetaFormProps) => {
     if (selectedInsumoId === 0) return alert('Seleccioná un ingrediente');
     if (cantidad <= 0) return alert('Ingresá una cantidad válida');
 
-    // busca insumo por id seleccionado
     const insumo = insumos.find(i => i.id === selectedInsumoId);
     if (!insumo) return alert('Ingrediente no encontrado');
 
-    // si existe insumo, suma cantidad, sino se agrega
     setIngredientes((prev) => {
       const existe = prev.find(i => i.insumo.id === selectedInsumoId);
       if (existe) {
@@ -57,10 +54,8 @@ const CreateRecetaForm = ({onChange}: CreateRecetaFormProps) => {
             : i
         );
       }
-      // si no existe, agrega como nuevo
       return [...prev, { insumo, cantidad }];
     });
-    // reinicia campos
     setSelectedInsumoId(0);
     setCantidad(0);
   };

@@ -1,7 +1,7 @@
 import styles from './Destacados.module.css';
 import ubicacionIcon from '../../../assets/images/ubicacion-icon.png';
 import comidaIcon from '../../../assets/images/comida-icon.png';
-import chicaComiendo from '../../../assets/images/chica-pizza.webp'; // Cambiá por tu ruta real
+import chicaComiendo from '../../../assets/images/chica-pizza.webp';
 
 const Destacados = () => {
   return (

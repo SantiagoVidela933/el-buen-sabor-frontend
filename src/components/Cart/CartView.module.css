@@ -358,24 +358,23 @@
 }
 
 
-/* Responsive adjustments for smaller screens */
 @media (max-width: 1400px) {
 
     .cartView_wrapper {
         max-width: 1300px;
-        min-height: auto; /* Permite que la altura se ajuste al contenido */
-        padding: 2rem; /* Asegura un padding consistente */
+        min-height: auto;
+        padding: 2rem; 
     }
 
     .cartView_rightColumn {
-        max-height: min(70vh, 500px); /* Ajuste para pantallas medianas */
+        max-height: min(70vh, 500px);
     }
 }
 
 @media (max-width: 992px) {
     .cartView_wrapper {
         max-width: 700px;
-        padding: 1.5rem; /* Reduce el padding para más espacio del borde */
+        padding: 1.5rem; 
     }
 
     .cartView_rightColumn {
@@ -385,8 +384,8 @@
 
 @media (max-width: 768px) {
     .cartView_wrapper {
-        padding: 1.2rem; /* Más reducción de padding para móviles */
-        margin: 1rem auto; /* Un poco menos de margen vertical */
+        padding: 1.2rem; 
+        margin: 1rem auto; 
     }
 
     .cartView_title h3 {
@@ -435,7 +434,7 @@
 
 @media (max-width: 480px) {
     .cartView_wrapper {
-        padding: 0.8rem; /* Padding mínimo para pantallas muy pequeñas */
+        padding: 0.8rem;
     }
 
     .cartView_title h3 {

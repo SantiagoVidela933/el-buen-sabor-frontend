@@ -2,7 +2,6 @@
   width: 260px;
   background-color: #fff;
   padding: 1.5rem 1rem;
-  /* height: 100vh; */ /* ¡Asegúrate de que esta línea NO esté aquí! */
   box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
   border-right: 3px solid #ff6609;
   display: flex;
@@ -11,11 +10,9 @@
   border-left: 1px solid #ddd;
 }
 
-/* Nueva clase para la altura inicial */
 .initialHeight {
-  height: 700px; /* O la altura que consideres adecuada para el mensaje inicial */
-  /* Puedes añadir overflow-y: auto; si el contenido inicial puede ser más grande que esta altura */
-  overflow-y: hidden; /* Oculta el scroll si el contenido inicial es pequeño */
+  height: 700px; 
+  overflow-y: hidden;
 }
 
 

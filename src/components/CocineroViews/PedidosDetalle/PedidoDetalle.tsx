@@ -42,22 +42,17 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
     }
   };
 
-  // Procesar artículos agrupados
   const articulosUnicos = useMemo(() => {
     if (!pedido || !pedido.pedidosVentaDetalle) return [];
 
     const articulosAgrupados: Record<number, ArticuloConCantidad> = {};
     
-    // Recorrer todos los detalles del pedido
     pedido.pedidosVentaDetalle.forEach((detalle) => {
-      // Si el detalle tiene un artículo directo
       if (detalle.articulo && detalle.articulo.id) {
         const id = detalle.articulo.id;
         if (articulosAgrupados[id]) {
-          // Si ya existe, sumamos la cantidad
           articulosAgrupados[id].cantidad += detalle.cantidad;
         } else {
-          // Si no existe, lo agregamos al objeto
           articulosAgrupados[id] = {
             articulo: detalle.articulo,
             cantidad: detalle.cantidad
@@ -65,7 +60,6 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
         }
       }
       
-      // Si el detalle tiene una promoción, extraer sus artículos
       if (detalle.promocion && detalle.promocion.promocionesDetalle) {
         detalle.promocion.promocionesDetalle.forEach(promoDetalle => {
           if (promoDetalle.articulo && promoDetalle.articulo.id) {
@@ -73,10 +67,8 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
             const cantidadTotal = promoDetalle.cantidad * detalle.cantidad;
             
             if (articulosAgrupados[id]) {
-              // Si ya existe, sumamos la cantidad
               articulosAgrupados[id].cantidad += cantidadTotal;
             } else {
-              // Si no existe, lo agregamos al objeto
               articulosAgrupados[id] = {
                 articulo: promoDetalle.articulo,
                 cantidad: cantidadTotal
@@ -87,15 +79,10 @@ const PedidoDetalle = ({ pedido, actualizarMinutosExtra, onClose  }: PedidoDetal
       }
     });
     
-    // Convertir el objeto de artículos agrupados a un array
     return Object.values(articulosAgrupados);
   }, [pedido]);
 
   if (!pedido) return <p>Pedido no disponible</p>;
-
-
-
-
 
   return (
     <div className={styles.container}>

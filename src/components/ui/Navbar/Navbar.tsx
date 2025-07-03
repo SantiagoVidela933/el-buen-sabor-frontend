@@ -6,7 +6,7 @@ import UserData from "../../User/UserData/UserData";
 import { useAuth0 } from "@auth0/auth0-react";
 import Cliente from "../../../models/prueba/Client";
 import { Empleado } from "../../../models/Empleado";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
@@ -33,7 +33,6 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
   const namespace = "https://buensaboroto.com/roles";
   const userRoles: string[] = user?.[namespace] || [];
   const navigate = useNavigate();
-  const location = useLocation();
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const hasItemsInCart = cartItems.length > 0;
 
@@ -88,45 +87,42 @@ const Navbar = ({ onCartClick, onViewChange }: NavbarProps) => {
 
     verificarRegistro();
   }, [isAuthenticated, user, isLoading]);
-  // Logout automático por inactividad
-// Logout automático por inactividad (1 minuto)
-useEffect(() => {
-  let timeoutId: ReturnType<typeof setTimeout>;
 
-  const resetTimer = () => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      localStorage.setItem("logoutReason", "inactividad");
-      logout({ logoutParams: { returnTo: "http://localhost:5173" } });
-    }, 30 * 60 * 1000); // 1 minuto de inactividad
-  };
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-  const events = ["mousemove", "keydown", "click", "scroll"];
-  events.forEach((event) => window.addEventListener(event, resetTimer));
-  resetTimer(); // iniciar temporizador
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        localStorage.setItem("logoutReason", "inactividad");
+        logout({ logoutParams: { returnTo: "http://localhost:5173" } });
+      }, 30 * 60 * 1000); // 1 minuto de inactividad
+    };
 
-  return () => {
-    clearTimeout(timeoutId);
-    events.forEach((event) => window.removeEventListener(event, resetTimer));
-  };
-}, [logout]);
-;
+    const events = ["mousemove", "keydown", "click", "scroll"];
+    events.forEach((event) => window.addEventListener(event, resetTimer));
+    resetTimer(); // iniciar temporizador
 
-// Mostrar alerta si fue por inactividad
-useEffect(() => {
-  const logoutReason = localStorage.getItem("logoutReason");
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach((event) => window.removeEventListener(event, resetTimer));
+    };
+  }, [logout]);
 
-  if (logoutReason === "inactividad") {
-    Swal.fire({
-      title: "Sesión cerrada",
-      text: "Tu sesión se cerró por inactividad.",
-      icon: "info",
-      confirmButtonText: "Entendido",
-    });
+  useEffect(() => {
+    const logoutReason = localStorage.getItem("logoutReason");
 
-    localStorage.removeItem("logoutReason");
-  }
-}, []);
+    if (logoutReason === "inactividad") {
+      Swal.fire({
+        title: "Sesión cerrada",
+        text: "Tu sesión se cerró por inactividad.",
+        icon: "info",
+        confirmButtonText: "Entendido",
+      });
+
+      localStorage.removeItem("logoutReason");
+    }
+  }, []);
 
   const handleOptionUser = () => {
     setOptionUser((prev) => {
@@ -194,12 +190,10 @@ useEffect(() => {
                 </div>
               )}
 
-              {/* Línea separadora entre botón de cuenta y botón de navegación (visibility) */}
               {(userRoles.includes("ADMINISTRADOR") || !isEmpleado) && (
                 <div className={styles.div_line_profile}></div>
               )}
 
-              {/* Mostrar carrito solo si NO es empleado ni admin */}
               {!isEmpleado && !userRoles.includes("ADMINISTRADOR") && (
                 <>
                   <div className={styles.cartButtonContainer}>
@@ -213,7 +207,6 @@ useEffect(() => {
                 </>
               )}
 
-              {/* Botón para navegación entre roles (visibility) SOLO para admin */}
               {userRoles.includes("ADMINISTRADOR") && (
                 <div className={styles.admin_nav_menu}>
                   <button onClick={handleShowAdminMenu} className={styles.iconButton} title="Vistas">

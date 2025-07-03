@@ -13,11 +13,9 @@ const PedidosView = () => {
   const [showModal, setShowModal] = useState(false);
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
 
-  // Paginación
   const pedidosPorPagina = 8;
   const [paginaActual, setPaginaActual] = useState(1);
 
-  // GET Pedidos de Venta Delivery
   const fetchPedidos = async () => {
     try {
       const data = await getPedidosVentasCocinero();
@@ -36,17 +34,15 @@ const PedidosView = () => {
     setShowModal(true);
   };
 
-  // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setPaginaActual(1); // Resetear a la primera página en cada búsqueda
+    setPaginaActual(1); 
   };
 
   const pedidosFiltrados = pedidos.filter((pedido) =>
     search.trim() === "" || (pedido.id !== undefined && pedido.id !== null && pedido.id.toString().includes(search.trim()))
   );
 
-  // Lógica de Paginación
   const totalPaginas = Math.ceil(pedidosFiltrados.length / pedidosPorPagina);
   const pedidosPaginados = pedidosFiltrados.slice(
     (paginaActual - 1) * pedidosPorPagina,
@@ -76,7 +72,7 @@ const PedidosView = () => {
           </div>
         </div>
         <div className={styles.searchBar}>
-          <span className="material-symbols-outlined">search</span> {/* Lupa de búsqueda añadida aquí */}
+          <span className="material-symbols-outlined">search</span> 
           <input
             type="text"
             placeholder="Buscar por Nro. de Pedido"
@@ -152,7 +148,6 @@ const PedidosView = () => {
         </table>
       </div>
 
-      {/* --- Sección de Paginación --- */}
       {totalPaginas > 1 && (
         <div className={styles.pagination}>
           {Array.from({ length: totalPaginas }, (_, i) => (

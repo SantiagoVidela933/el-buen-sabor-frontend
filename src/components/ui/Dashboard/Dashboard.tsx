@@ -7,22 +7,18 @@ interface DashboardProps {
 
 const Dashboard = ({ onSelect }: DashboardProps) => {
   const [expanded, setExpanded] = useState<string | null>(null);
-  // Renombramos a 'viewSelected' para que sea más claro el propósito
   const [viewSelected, setViewSelected] = useState(false);
 
   const toggleSection = (section: string) => {
     setExpanded(prev => (prev === section ? null : section));
-    // IMPORTANTE: No cambiamos viewSelected aquí.
-    // Solo expandimos/contraemos la sección.
   };
 
   const handleSelect = (view: string) => {
-    onSelect(view); // Llama a la función del padre para cambiar la vista principal
-    setViewSelected(true); // Una vez que se selecciona una vista, desactiva la altura inicial
+    onSelect(view);
+    setViewSelected(true); 
   };
 
   return (
-    // Aplicamos 'initialHeight' mientras no se haya seleccionado una vista
     <aside className={`${styles.sidebar} ${!viewSelected ? styles.initialHeight : ''}`}>
       <div className={styles.section}>
         <button onClick={() => toggleSection('usuarios')}>Usuarios</button>

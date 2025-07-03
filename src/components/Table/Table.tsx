@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styles from "./Table.module.css";
 export type Column<T> = {
   header: string;
@@ -24,16 +24,6 @@ export function Table<T extends Record<string, any>>({
   const [estadoFiltro, setEstadoFiltro] = useState<string | null>(null);
   const [showEstadoMenu, setShowEstadoMenu] = useState(false);
 
-  // Filtrado por texto
-  /*const filteredData = useMemo(() => {
-    return data.filter((item) =>
-      Object.values(item).some((value) =>
-        String(value).toLowerCase().includes(search.toLowerCase())
-      )
-    );
-  }, [data, search]);*/
-
-  // Filtrado por texto y por estado
   const filteredData = data.filter((item) => {
     const matchesSearch = Object.values(item).some((val) =>
       String(val).toLowerCase().includes(search.toLowerCase())
@@ -113,7 +103,7 @@ export function Table<T extends Record<string, any>>({
             {columns.map((col, index) => (
               <th key={index}>{col.header}</th>
             ))}
-            <th>Detalle</th> {/* Nueva columna */}
+            <th>Detalle</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -133,7 +123,6 @@ export function Table<T extends Record<string, any>>({
                     Ver detalle
                   </button>
                 </td>{" "}
-                {/* Nuevo botón de detalle */}
                 <td>
                   <div className={styles.actions}>
                     <button className={`${styles.btn} ${styles.cocina}`}>

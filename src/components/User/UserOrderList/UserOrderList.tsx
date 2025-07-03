@@ -20,10 +20,8 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // --- ESTADOS PARA PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Puedes ajustar este número
-  // --- FIN ESTADOS PARA PAGINACIÓN ---
+  const [itemsPerPage] = useState(5); 
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -56,30 +54,30 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     switch (estado) {
       case Estado.PENDIENTE:
         nombre = "Pendiente";
-        color = "#ff6609"; // Naranja
+        color = "#ff6609"; 
         break;
       case Estado.PREPARACION:
         nombre = "En Preparación";
-        color = "#2196f3"; // Azul
+        color = "#2196f3"; 
         break;
       case Estado.RECHAZADO:
         nombre = "Rechazado";
-        color = "#f44336"; // Rojo
+        color = "#f44336"; 
         break;
       case Estado.EN_DELIVERY:
         nombre = "En Camino";
-        color = "#ffeb3b"; // Amarillo
+        color = "#ffeb3b"; 
         break;
       case Estado.ENTREGADO:
         nombre = "Entregado";
-        color = "#4CAF50"; // Verde
+        color = "#4CAF50"; 
         break;
       case Estado.CANCELADO:
         nombre = "Cancelado";
-        color = "#f44336"; // Rojo
+        color = "#f44336"; 
         break;
       default:
-        nombre = Estado[estado]; // Fallback para otros estados
+        nombre = Estado[estado]; 
         color = "#777";
     }
     return <span style={{ color, fontWeight: "bold" }}>{nombre}</span>;
@@ -90,6 +88,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
       setIsLoading(true);
       await descargarFacturaPDF(facturaId, `factura-${facturaId}.pdf`);
     } catch (error) {
+      console.error(error);
       alert("No se pudo descargar la factura. Intente nuevamente más tarde.");
     } finally {
       setIsLoading(false);
@@ -101,6 +100,7 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
       setIsLoading(true);
       await descargarNotaCreditoPDF(facturaId, `nota-credito-${facturaId}.pdf`);
     } catch (error) {
+      console.error(error);
       alert("No se pudo descargar la nota de crédito. Intente nuevamente más tarde.");
     } finally {
       setIsLoading(false);
@@ -108,8 +108,6 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
   };
 
   const numeroColumnasTabla = 5;
-
-  // --- LÓGICA DE PAGINACIÓN ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentPedidos = pedidos.slice(indexOfFirstItem, indexOfLastItem);
@@ -133,7 +131,6 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
     }
     return pageNumbers;
   };
-  // --- FIN LÓGICA DE PAGINACIÓN ---
 
   return (
     <div className={styles.container}>
@@ -157,14 +154,14 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
             </tr>
           </thead>
           <tbody>
-            {currentPedidos.length === 0 ? ( // Usamos currentPedidos aquí
+            {currentPedidos.length === 0 ? ( 
               <tr>
                 <td colSpan={numeroColumnasTabla} className={styles.noData}>
                   Aún no tenés pedidos
                 </td>
               </tr>
             ) : (
-              currentPedidos.map((order) => ( // Iteramos sobre currentPedidos
+              currentPedidos.map((order) => ( 
                 <tr key={order.id}>
                   <td>{formatearFechaHora(order)}</td>
                   <td>#{order.id}</td>
@@ -173,7 +170,6 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
                   <td className={styles.actions}>
                     <button className={styles.viewBtn} onClick={() => handleViewOrder(order)}>Ver detalle</button>
 
-                    {/* Mostrar botón Nota de crédito o Factura según estado y facturas */}
                       {order.estado === Estado.CANCELADO ? (
                         <button
                           disabled={isLoading}
@@ -213,13 +209,11 @@ const UserOrderList = ({ onBack }: UserOrderListProps) => {
         </table>
       </div>
 
-      {/* --- CONTROLES DE PAGINACIÓN --- */}
-      {totalPages > 1 && ( // Solo muestra los botones si hay más de una página
+      {totalPages > 1 && ( 
         <div className={styles.paginationControls}>
           {renderPaginationButtons()}
         </div>
       )}
-      {/* --- FIN CONTROLES DE PAGINACIÓN --- */}
 
       <button className={styles.backButton} onClick={onBack}>
         Volver

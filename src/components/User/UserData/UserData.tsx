@@ -7,7 +7,7 @@ import { actualizarEmpleado } from '../../../api/empleado';
 import { Cliente } from '../../../models/Cliente';
 import { Empleado } from '../../../models/Empleado';
 import { EmpleadoRequest } from '../../../api/empleado';
-import { useAuth0 } from "@auth0/auth0-react"; // 👈 Importamos el hook
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface UserDataProps {
   cliente: Cliente | null;
@@ -20,7 +20,7 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
   const [editableEmpleado, setEditableEmpleado] = useState<Empleado | null>(null);
   const [editableCliente, setEditableCliente] = useState<Cliente | null>(null);
 
-  const { loginWithRedirect } = useAuth0(); // 👈 Lo usamos para refrescar el perfil
+  const { loginWithRedirect } = useAuth0(); 
 
   useEffect(() => {
     getLocalidadesJSONFetch().then(setLocalidades);
@@ -52,11 +52,10 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
     const { name, value } = e.target;
     let filteredValue = value;
 
-    // Aplicar filtros según el nombre del campo
     if (name === "nombre" || name === "apellido") {
-      filteredValue = value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, ''); // Solo letras y espacios
+      filteredValue = value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, ''); 
     } else if (name === "telefono" || name === "domicilio.codigoPostal") {
-      filteredValue = value.replace(/[^0-9]/g, ''); // Solo números
+      filteredValue = value.replace(/[^0-9]/g, ''); 
     }
 
     if (esEmpleado && editableEmpleado) {
@@ -145,7 +144,6 @@ const UserData: React.FC<UserDataProps> = ({ cliente, empleado }) => {
         alert("Datos actualizados correctamente.");
       }
 
-      // 👇 Refrescar perfil Auth0 para actualizar email y que Navbar no redirija
       await loginWithRedirect({
         prompt: "none",
         appState: { returnTo: "/" }

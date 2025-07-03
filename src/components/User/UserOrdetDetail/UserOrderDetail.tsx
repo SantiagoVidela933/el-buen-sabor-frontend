@@ -8,6 +8,7 @@ import { getClientePorPedido } from '../../../api/cliente';
 import {Cliente} from '../../../models/Cliente';
 import { formatearFechaHora } from '../../../api/formatearFechaHora';
 import { getPedidoVentaPorId } from '../../../api/pedidoVenta';
+
 interface OrderDetailProps {
   pedidoVenta: PedidoVenta;
   onClose: () => void;
@@ -31,7 +32,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
         }
         setLoadingPedido(true);
         const pedidoCompleto = await getPedidoVentaPorId(pedidoVenta.id);
-        // Validar que el pedido tenga los detalles necesarios
         if (!pedidoCompleto.pedidosVentaDetalle) {
           console.error("El pedido no contiene detalles");
           setErrorPedido("No se encontraron detalles del pedido");
@@ -72,7 +72,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
     obtenerClienteDetallado();
   }, [pedidoVenta.id]);
 
-  // Mostrar estado de carga mientras se obtienen los datos
   if (loadingPedido) {
     return (
       <div className={styles.container}>
@@ -82,7 +81,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
     );
   }
 
-  // Mostrar mensaje de error si hay problemas con el pedido
   if (errorPedido) {
     return (
       <div className={styles.container}>
@@ -93,7 +91,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
     );
   }
 
-  // Usar pedidoCargado si está disponible, de lo contrario usar pedidoVenta
   const pedidoMostrar = pedidoCargado || pedidoVenta;
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
@@ -144,7 +141,6 @@ const OrderDetail = ({ pedidoVenta, onClose }: OrderDetailProps) => {
             <strong>Hora estimada:</strong>{" "}
             {pedidoMostrar.horaPedido} -{" "}
             {(() => {
-              // Calculo hora estimada + 20 minutos
               const [h, m] = pedidoMostrar.horaPedido.split(":").map(Number);
               let date = new Date(pedidoMostrar.fechaPedido);
               date.setHours(h, m + 20);

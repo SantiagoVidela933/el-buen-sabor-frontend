@@ -41,7 +41,6 @@
   color: #333;
 }
 
-/* Responsive - en pantallas medianas o más grandes */
 @media (min-width: 768px) {
   .hero {
     flex-direction: row;

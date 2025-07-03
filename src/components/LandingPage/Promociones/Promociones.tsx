@@ -13,7 +13,7 @@ const Promociones: React.FC = () => {
   useEffect(() => {
     const fetchPromociones = async () => {
       try {
-        const data = await getArticulosByTipo(1, "promocion"); // ID de sucursal = 1
+        const data = await getArticulosByTipo(1, "promocion"); 
         setPromociones(data);
       } catch (error) {
         console.error("Error al cargar las promociones:", error);

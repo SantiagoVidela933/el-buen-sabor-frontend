@@ -1,7 +1,5 @@
-/* Table.module.css */
-
 .container {
-  padding: 1rem 1.5rem; /* padding arriba/abajo: 1rem, izquierda/derecha: 1.5rem */
+  padding: 1rem 1.5rem; 
   background-color: #e6e6e6;
   font-family: "Georgia", serif;
   width: 100%;
@@ -81,7 +79,6 @@
   cursor: pointer;
 }
 
-/* Botón de acción por color */
 .cocina {
   background-color: #ff6600;
 }
@@ -148,7 +145,7 @@
 
 .table {
   width: 100%;
-  min-width: 800px; /* Asegura que tenga un ancho mínimo razonable */
+  min-width: 800px;
   border-collapse: collapse;
 }
 

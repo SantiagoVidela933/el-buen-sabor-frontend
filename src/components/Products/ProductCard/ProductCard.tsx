@@ -18,20 +18,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isStoreOpen, storeHours } = useSelector((state: RootState) => state.cart);
   
-  // Verificar el estado de la tienda al cargar el componente
   useEffect(() => {
     dispatch(checkStoreStatus());
   }, [dispatch]);
 
 const handleClick = () => {
-    // Si no hay stock, no hacemos nada
     if (isOutOfStock || !onClick) {
       return;
     }
     
-    // Verificar si la tienda está abierta
     if (!isStoreOpen) {
-      // Mostrar SweetAlert si la tienda está cerrada
       Swal.fire({
         icon: "warning",
         title: "Tienda cerrada",
@@ -40,7 +36,6 @@ const handleClick = () => {
         confirmButtonColor: '#ff5722',
       });
     } else {
-      // Si está abierta, ejecutamos el onClick original
       onClick();
     }
   };

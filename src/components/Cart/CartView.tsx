@@ -74,10 +74,9 @@ const CartView = ({ onClose }: CartViewProps) => {
     (total, item) => total + (item.articuloVenta.precioVenta ?? 0) * item.quantity,
     0
   );
-  const descuento = deliveryMethod === 'retiro' ? subtotal * 0.1 : 0; // 10% de descuento si es retiro
+  const descuento = deliveryMethod === 'retiro' ? subtotal * 0.1 : 0; 
   const totalConDescuento = subtotal - descuento;
 
-    // Obtener las localidades al cargar el componente
   useEffect(() => {
     const fetchLocalidades = async () => {
       setLoadingLocalidades(true);
@@ -94,20 +93,14 @@ const CartView = ({ onClose }: CartViewProps) => {
     fetchLocalidades();
   }, []); 
 
-  
-
   const isFormValid = () => {
-    // si es retiro, que haya al menos 1 metodo de pago
     if (deliveryMethod === 'retiro') {
       return paymentMethod != '';
     }
-    // si es envio, que los campos esten completos y pago con MP
     if (deliveryMethod === 'envio') {
-      // Si usa dirección predeterminada, solo verificar método de pago
       if (useDefaultAddress && clientData?.domicilios?.length > 0) {
         return paymentMethod ==='mercadoPago';
       } 
-      // Si usa dirección nueva, verificar que todos los campos estén completos
       return (
         calle.trim() !== '' &&
         numero.trim() !== '' &&
@@ -125,7 +118,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         try {
           const cliente = await getClientesMailJSONFetch(user.email);
           setClientData(cliente);
-          // Comprobar si el cliente tiene domicilio
           if (cliente && cliente.domicilio) {
             if (useDefaultAddress) {
               setCalle(cliente.domicilio.calle || '');
@@ -147,7 +139,6 @@ const CartView = ({ onClose }: CartViewProps) => {
   }, [isAuthenticated, user?.email, useDefaultAddress]);
 
   function mapPedidoToDto(pedido: PedidoVenta): any {
-    // Inicializa el objeto base con sus propiedades
     const pedidoDto: any = {
       fechaPedido: pedido.fechaPedido.toISOString().split("T")[0],
       horaPedido: pedido.horaPedido,
@@ -158,7 +149,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         id: 1
       },
       pedidosVentaDetalle: pedido.pedidosVentaDetalle.map((detalle) => {
-        // Verificamos si es una promoción por la propiedad tipo="PROMOCION"
         if (detalle.articulo && detalle.articulo.tipoArticulo === 'PROMOCION') {
           return {
             cantidad: detalle.cantidad,
@@ -167,7 +157,6 @@ const CartView = ({ onClose }: CartViewProps) => {
             }
           };
         } 
-        // Si es un artículo normal
         else if (detalle.articulo) {
           return {
             cantidad: detalle.cantidad,
@@ -177,7 +166,6 @@ const CartView = ({ onClose }: CartViewProps) => {
             }
           };
         } 
-        // Si ya tiene un objeto promoción explícito
         else if (detalle.promocion) {
           return {
             cantidad: detalle.cantidad,
@@ -186,17 +174,12 @@ const CartView = ({ onClose }: CartViewProps) => {
             }
           };
         }
-        
-        // Caso por defecto
         return {
           cantidad: detalle.cantidad
         };
       })
     };
 
-
-
-    // Solo añadir domicilio si es necesario
     if (deliveryMethod === 'envio') {
       pedidoDto.domicilio = useDefaultAddress && clientData?.domicilio 
         ? { id: clientData.domicilio.id }
@@ -211,48 +194,33 @@ const CartView = ({ onClose }: CartViewProps) => {
             }
           };
     }
-
-    // Para el backend podemos añadir el cliente, pero lo hacemos de forma explícita
-    // para evitar incluirlo en la comparación con el formato esperado
     pedidoDto.cliente = {
       id: clientData?.id
     };
-
     return pedidoDto;
   }
 
   // Función para determinar el tipo de artículo
   function determinarTipoArticulo(articulo: any): string {
-    // Si conocemos explícitamente el tipo
     if (articulo.tipo === 'MANUFACTURADO') {
       return "manufacturado";
     } else if (articulo.tipo === 'INSUMO') {
       return "insumo";
     }
-    
-    // Si tenemos una lista de IDs conocidos
-    const idsManufacturados = [1, 2, 3, 27, 48]; // Añade aquí los IDs que sabes que son manufacturados
+    const idsManufacturados = [1, 2, 3, 27, 48]; 
     if (idsManufacturados.includes(articulo.id)) {
       return "manufacturado";
     }
-    
-    // Por defecto, asumimos que es manufacturado 
-    // (ya que parece ser el caso más común en tu aplicación)
     return "manufacturado";
   }
 
   const handleConfirmOrder = async () => {
-    // Validación de autenticación
     if (!isAuthenticated || !user?.email) {
       alert("Debes iniciar sesión para realizar un pedido.");
       return;
     }
-    
-    // Iniciar el proceso de carga
     setLoading(true);
-    
     try {
-      // Obtener información actualizada del cliente
       const cliente = await getClientesMailJSONFetch(user.email);
       if (!cliente || !cliente.id) {
         throw new Error("No se pudo obtener la información del cliente");
@@ -262,10 +230,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         const cantidadManu = item.quantity;
         const subtotal = (item.articuloVenta.precioVenta ?? 0) * cantidadManu;
         const subtotalCosto = subtotal;
-        
-        
-        // Verificación exacta según cómo está marcada la promoción en CardPromocion.tsx
-        // Nota que en CardPromocion.tsx usas tipo: "PROMOCION" (en mayúsculas)
         if (item.articuloVenta.tipo === 'PROMOCION') {
           return new PedidoVentaDetalle(
             cantidadManu,
@@ -290,7 +254,6 @@ const CartView = ({ onClose }: CartViewProps) => {
         }
       });
 
-      // Crear el pedido con los detalles
       const newPedido = new PedidoVenta(
         new Date(),
         new Date().toTimeString().slice(0, 8),
@@ -304,12 +267,10 @@ const CartView = ({ onClose }: CartViewProps) => {
         detalles
       );
 
-      // Domicilio
       if (deliveryMethod === 'envio') {
         if (useDefaultAddress && clientData?.domicilio) {
           newPedido.domicilio = clientData.domicilio;
         } else {
-          // Asegúrate de crear un objeto Domicilio válido según tu modelo
           newPedido.domicilio = {
             id: 0,
             fechaAlta: new Date(),
@@ -323,29 +284,19 @@ const CartView = ({ onClose }: CartViewProps) => {
               id: localidadId || 1,
               nombre: localidad || "Desconocido"
             }
-          } as any; // Casting para evitar problemas de tipo
+          } as any; 
         }
       }
       
-      // Preparar DTO para enviar al backend
       const pedidoDto = mapPedidoToDto(newPedido);
-
-      // Enviar pedido al backend
       const pedidoCreado = await crearPedidoVenta(pedidoDto, getAccessTokenSilently);
-      // Si el pago es con MercadoPago, crear preferencia
       if (paymentMethod === 'mercadoPago') {
         try {
-          // Esperar un momento para asegurar que la factura se haya creado en el backend
           await new Promise(resolve => setTimeout(resolve, 500));
-
-          // Obtener el ID del pedido
           const pedidoId = pedidoCreado.id;
-
           if (!pedidoId) {
             throw new Error("ID de pedido no disponible");
           }
-
-          // Crear pago en MercadoPago
           const mercadoPagoData = await crearPagoMercadoPago(pedidoId, getAccessTokenSilently);
           setPreferenceId(mercadoPagoData.preferenceId);
         } catch (mpError) {
@@ -354,8 +305,6 @@ const CartView = ({ onClose }: CartViewProps) => {
           return;
         }
       }
-      
-      // Limpiar carrito y confirmar pedido
       dispatch(clearCart());
       setConfirmed(true);
     } catch (error) {
@@ -366,7 +315,6 @@ const CartView = ({ onClose }: CartViewProps) => {
     }
   };
 
-  // Handler para cuando se selecciona una localidad del dropdown
   const handleLocalidadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(e.target.value);
     const selectedLocalidad = localidades.find(loc => loc.id === selectedId);
@@ -389,7 +337,6 @@ const CartView = ({ onClose }: CartViewProps) => {
       <div className={styles.cartView_mainContent}>
         <div className={styles.cartView_leftColumn}>
           <div className={styles.cart_products}>
-            {/* Lista de Productos */}
             {cartItems.length === 0 ? (
               <p>No hay productos en el carrito</p>
             ) : (
@@ -456,7 +403,6 @@ const CartView = ({ onClose }: CartViewProps) => {
                     setDeliveryMethod('envio');
                     setPaymentMethod('');
                     
-                    // Si hay datos de cliente disponibles y tiene domicilio, precarga los valores
                     if (clientData?.domicilio && useDefaultAddress) {
                       setCalle(clientData.domicilio.calle || '');
                       setNumero(clientData.domicilio.numero?.toString() || '');
@@ -464,7 +410,6 @@ const CartView = ({ onClose }: CartViewProps) => {
                       setLocalidad(clientData.domicilio.localidad?.nombre || '');
                       setLocalidadId(clientData.domicilio.localidad?.id || null);
                     } else {
-                      // Limpiar campos
                       setCalle('');
                       setNumero('');
                       setDepartamento('');
@@ -477,7 +422,6 @@ const CartView = ({ onClose }: CartViewProps) => {
               </label>
             </div>
 
-            {/* RETIRO POR LOCAL */}
             {deliveryMethod === 'retiro' && (
               <div className={styles.form_section}>
                 <p className={styles.sectionTitle}>Tipo de pago:</p>
@@ -508,7 +452,6 @@ const CartView = ({ onClose }: CartViewProps) => {
               </div>
             )}
 
-            {/* ENVÍO A DOMICILIO */}
             {deliveryMethod === 'envio' && (
               <div className={styles.form_section}>
                 <p className={styles.sectionTitle}>Datos de envío:</p>
@@ -603,7 +546,6 @@ const CartView = ({ onClose }: CartViewProps) => {
               </div>
             )}
 
-            {/* BOTÓN CONFIRMAR dentro del formulario */}
             {!confirmed && isFormValid() && (
               <button type="button" onClick={handleConfirmOrder} className={styles.confirmButton} disabled={confirmed}>
                 Confirmar pedido
@@ -611,7 +553,6 @@ const CartView = ({ onClose }: CartViewProps) => {
             )}
           </form>
 
-          {/* Sacamos los BOTONES POST-CONFIRMACIÓN FUERA del formulario */}
           {confirmed && (
             <div className={styles.postConfirm}>
               {paymentMethod==='mercadoPago' && (

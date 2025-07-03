@@ -35,7 +35,6 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const { isStoreOpen, storeHours } = useSelector((state: RootState) => state.cart);
   
-  // Verificar el estado de la tienda al cargar el componente
   useEffect(() => {
     dispatch(checkStoreStatus());
   }, [dispatch]);
@@ -57,9 +56,7 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
       return;
     }
     
-    // Verificar si la tienda está abierta
     if (!isStoreOpen) {
-      // Mostrar SweetAlert si la tienda está cerrada
       Swal.fire({
         icon: "warning",
         title: "Tienda cerrada",
@@ -68,7 +65,6 @@ const CardPromocion: React.FC<CardPromocionProps> = ({
         confirmButtonColor: '#ff5722',
       });
     } else {
-      // Si está abierta, mostramos el detalle de la promoción
       setIsDetailOpen(true);
     }
   };
