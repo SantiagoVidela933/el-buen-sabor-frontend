@@ -33,8 +33,6 @@ interface UserClienteFormProps {
   onSubmit: (clienteActualizado: Cliente) => void;
 }
 
-// ... importaciones iguales ...
-
 const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormProps) => {
   const [nombre, setNombre] = useState(cliente?.nombre || '');
   const [apellido, setApellido] = useState(cliente?.apellido || '');
@@ -92,6 +90,7 @@ const UserClienteForm = ({ modo, cliente, onClose, onSubmit }: UserClienteFormPr
 
       onSubmit(clienteActualizado);
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",

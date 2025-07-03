@@ -14,25 +14,23 @@ interface ClienteStatsDetailsProps {
 
 const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fechaInicio, fechaFin }) => {
   const [pedidos, setPedidos] = useState<PedidoVenta[]>([]);
-  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<PedidoVenta | null>(null); // Pedido seleccionado para mostrar detalles
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<PedidoVenta | null>(null); 
 
-  // --- Estados para la paginación ---
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(2); // Ajusta la cantidad de ítems por página si es necesario
+  const [itemsPerPage] = useState<number>(2); 
 
   const formatoMoneda = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
   });
 
-  // fetch - obtengo categorias de articulos manufacturados
   useEffect(() => {
     const fetchPedidos = async () => {
       if (clienteId === null) return;
       try {
         const data = await getPedidosVentasPorCliente(clienteId, fechaInicio, fechaFin);
         setPedidos(data);
-        setCurrentPage(1); // Resetear a la primera página cuando cambian los pedidos
+        setCurrentPage(1); 
       } catch (error) {
         console.error("Error al cargar pedidos:", error);
       }
@@ -48,7 +46,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
     setPedidoSeleccionado(null);
   };
 
-  // --- Lógica de Paginación ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = pedidos.slice(indexOfFirstItem, indexOfLastItem);
@@ -68,7 +65,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
           </tr>
         </thead>
         <tbody>
-          {/* Usamos currentItems para renderizar los pedidos de la página actual */}
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan={4} className={styles.emptyMessage}> {/* Colspan ajustado a 4 */}
@@ -109,7 +105,6 @@ const ClienteStatsDetails: React.FC<ClienteStatsDetailsProps> = ({ clienteId, fe
         </tbody>
       </table>
 
-      {/* --- Controles de Paginación Numérica --- */}
       {totalPages > 1 && (
         <div className={styles.pagination}>
           {[...Array(totalPages)].map((_, index) => (

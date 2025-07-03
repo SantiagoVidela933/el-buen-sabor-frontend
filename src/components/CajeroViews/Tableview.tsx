@@ -16,9 +16,8 @@ export function Table() {
   const [showEstadoMenu, setShowEstadoMenu] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState<Estado | null>(null);
 
-  // --- Estados para paginación (Aunque no los uses directamente en el renderizado de paginación numérica, la lógica de filtrado los necesita) ---
-  const [currentPage, setCurrentPage] = useState(1); // Necesario para el reseteo al filtrar/buscar
-  const itemsPerPage = 8; // Define cuántos elementos quieres por página
+  const [currentPage, setCurrentPage] = useState(1); 
+  const itemsPerPage = 8;
 
   const estadoLabels: Record<Estado, string> = {
     [Estado.PREPARACION]: "En cocina",
@@ -30,7 +29,6 @@ export function Table() {
     [Estado.LISTO]: "Listo"
   };
 
-  // GET Pedidos de Venta
   const fetchPedidos = async () => {
     try {
       const data = await getPedidosVentas();
@@ -53,10 +51,9 @@ export function Table() {
     currency: "ARS",
   });
   
-  // Buscar por número de pedido
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setCurrentPage(1); // Resetear a la primera página al buscar
+    setCurrentPage(1); 
   };
 
   const pedidosFiltrados = pedidos
@@ -69,14 +66,11 @@ export function Table() {
 
   const tieneManufacturados = (pedido: PedidoVenta): boolean => {
     return pedido.pedidosVentaDetalle.some(detalle => {
-      // Caso 1: El detalle tiene un artículo manufacturado directamente
       if (detalle.articulo?.tipoArticulo === "manufacturado") {
         return true;
       }
       
-      // Caso 2: El detalle tiene una promoción con artículos manufacturados
       if (detalle.promocion && detalle.promocion.promocionesDetalle) {
-        // Verificar si algún artículo de la promoción es manufacturado
         return detalle.promocion.promocionesDetalle.some(
           promoArticulo => promoArticulo.articulo?.tipoArticulo === "manufacturado"
         );
@@ -86,7 +80,6 @@ export function Table() {
     });
   };
 
-  // --- Lógica de paginación para el filtrado ---
   const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -98,7 +91,6 @@ export function Table() {
     }
   };
 
-  // Generar los botones de números de página
   const getPaginationButtons = () => {
     const buttons = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -119,16 +111,14 @@ export function Table() {
 
   return (
     <div className={styles.container}>
-      {/* HEADER: Título y barra de búsqueda/filtro */}
-      <div className={styles.header}> {/* Añadido .header para el layout */}
-        <div className={styles.titleGroup}> {/* Añadido .titleGroup para envolver el título */}
-          <div className={styles.titleBox}> {/* Añadido .titleBox para el fondo del título */}
+      <div className={styles.header}> 
+        <div className={styles.titleGroup}> 
+          <div className={styles.titleBox}> 
             <h2 className={styles.title}>CAJERO</h2>
           </div>
         </div>
 
         <div className={styles.searchFilterContainer}>
-          {/* Filtro por estado */}
           <div className={styles.estadoFilter}>
             <button
               onClick={() => setShowEstadoMenu(!showEstadoMenu)}
@@ -145,7 +135,7 @@ export function Table() {
                     onClick={() => {
                       setEstadoFiltro(key as Estado);
                       setShowEstadoMenu(false);
-                      setCurrentPage(1); // Resetear a la primera página al cambiar filtro
+                      setCurrentPage(1);
                     }}
                   >
                     {label}
@@ -156,7 +146,7 @@ export function Table() {
                   onClick={() => {
                     setEstadoFiltro(null);
                     setShowEstadoMenu(false);
-                    setCurrentPage(1); // Resetear a la primera página al ver todos
+                    setCurrentPage(1); 
                   }}
                 >
                   Ver todos
@@ -164,21 +154,18 @@ export function Table() {
               </div>
             )}
           </div>
-          {/* Barra de búsqueda */}
-          <div className={styles.searchBar}> {/* Usamos .searchBar para el input */}
-            <span className="material-symbols-outlined">search</span> {/* Icono de búsqueda */}
+          <div className={styles.searchBar}> 
+            <span className="material-symbols-outlined">search</span> 
             <input
               type="text"
               placeholder="Buscar número de pedido..." 
               value={search}
               onChange={handleSearchChange}
-              // className={styles.searchInput} <- Reemplazado por estilos en .searchBar input
             />
           </div>
         </div>
-      </div> {/* Fin de .header */}
+      </div>
 
-      {/* TABLA DE PEDIDOS */}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead className={styles.thead}>
@@ -201,7 +188,6 @@ export function Table() {
                   <td>{formatoARS.format(order.totalVenta)}</td>
                   <td>{estadoLabels[order.estado]}</td>
                   <td className={styles.actions}>
-                    {/* Botón Ver Detalle - Ahora usa la clase .detailBtn */}
                     <button className={styles.detailBtn} onClick={() => handleViewOrder(order)}>Ver detalle</button>
 
                     {order.estado === Estado.PENDIENTE && (
@@ -296,14 +282,12 @@ export function Table() {
         </table>
       </div>
 
-      {/* --- Controles de paginación numérica --- */}
       {pedidosFiltrados.length > 0 && totalPages > 1 && (
         <div className={styles.pagination}>
           {getPaginationButtons()}
         </div>
       )}
 
-      {/* MODAL DE DETALLE DEL PEDIDO */}
       {showModal && selectedOrder && (
         <Modal onClose={() => setShowModal(false)}>
           <UserOrderDetail

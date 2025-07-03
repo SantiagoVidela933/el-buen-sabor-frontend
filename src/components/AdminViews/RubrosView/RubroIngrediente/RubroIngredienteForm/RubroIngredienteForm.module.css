@@ -55,7 +55,6 @@
   outline: none;
 }
 
-/* Receta button */
 .recipeButton {
   padding: 0.6rem 1rem;
   border: none;
@@ -72,7 +71,6 @@
   background-color: #574fd6;
 }
 
-/* Imagen input estilizado (estilo moderno simple) */
 .imageInput {
   padding: 0.45rem;
   border: 1px solid #ccc;
@@ -81,7 +79,6 @@
   font-size: 0.95rem;
 }
 
-/* Botones de acción unificados */
 .buttonActions {
   display: flex;
   justify-content: flex-end;
@@ -119,7 +116,6 @@
   background-color: #218838;
 }
 
-/* Responsive: una sola columna */
 @media (max-width: 700px) {
   .fieldsGrid {
     grid-template-columns: 1fr;

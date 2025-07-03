@@ -1,37 +1,31 @@
 .container {
   padding: 2rem;
-  max-width: 100%; /* Ajustado para no sobrepasar el dashboard */
+  max-width: 100%;
   margin: auto;
-  background-color: #f9f9f9; /* Fondo consistente */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
-  box-sizing: border-box; /* Crucial para que padding y borde no sumen al width */
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
-/* --- ESTILOS DEL TÍTULO COMO EN FACTURACIÓN --- */
-.titleBox { /* Contenedor para el título con el fondo */
+.titleBox {
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   color: #ff6609;
-  display: inline-block; /* Para que el padding se ajuste al contenido */
-  margin-bottom: 1.5rem; /* Espacio debajo del título */
-  /* Centrar el titleBox */
-  margin-left: auto;
-  margin-right: auto;
-  display: block; /* Necesario para que margin: auto funcione */
-  width: fit-content; /* Para que el titleBox solo ocupe el ancho de su contenido */
+  display: block;
+  margin: 0 auto 1.5rem auto;
+  width: fit-content;
 }
 
-.title { /* Estilo para el texto h2 dentro de titleBox */
+.title {
   font-size: 1.8rem;
-  margin: 0; /* Elimina márgenes por defecto del h2 */
-  text-align: center; /* Centra el texto dentro del titleBox */
-  background-color: transparent; /* Asegura que no tenga fondo propio */
-  padding: 0; /* Sin padding adicional en el h2 */
-  color: #ff6609; /* Color del texto */
+  margin: 0;
+  text-align: center;
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
-/* ------------------------------------------- */
 
 .filtros {
   display: flex;
@@ -53,7 +47,6 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  /* Añadido para consistencia */
   font-size: 0.9rem;
   color: #333;
 }
@@ -69,29 +62,29 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
-  transition: background-color 0.3s ease; /* Transición para hover */
+  transition: background-color 0.3s ease;
 }
 
 .exportarBtn:hover {
-  background-color: #e05500; /* Un poco más oscuro al pasar el ratón */
+  background-color: #e05500;
 }
 
 .tabla table {
   width: 100%;
-  border-collapse: separate; /* Cambiado a separate para border-radius en filas */
-  border-spacing: 0 0.5rem; /* Espacio entre filas */
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
   margin-top: 2rem;
   background-color: #ffffff;
-  border-radius: 12px; /* Bordes redondeados de la tabla */
-  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
-  padding: 10px; /* Padding interno de la tabla */
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
 }
 
 .tabla th,
 .tabla td {
   padding: 0.8rem;
   text-align: center;
-  border-bottom: none; /* Eliminado para usar el border-spacing */
+  border-bottom: none;
 }
 
 .tabla thead th {
@@ -100,26 +93,25 @@
   color: #333;
 }
 
-/* Estilo para las filas del body */
 .tabla tbody tr {
-  border-radius: 8px; /* Bordes redondeados para las filas */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   background-color: #eee;
   transition: transform 0.2s ease;
 }
 
-/* Asegurar que las esquinas de las celdas redondeen las filas */
-.tabla tbody td:first-child { 
-  border-top-left-radius: 8px; 
-  border-bottom-left-radius: 8px; 
+.tabla tbody td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
-.tabla tbody td:last-child { 
-  border-top-right-radius: 8px; 
-  border-bottom-right-radius: 8px; 
+
+.tabla tbody td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .verPedidosBtn {
-  background-color: #ff6609; /* Cambiado a un amarillo más estándar */
+  background-color: #ff6609;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
@@ -130,59 +122,48 @@
 }
 
 .verPedidosBtn:hover {
-  background-color: #d86015; /* Un poco más oscuro al pasar el ratón */
+  background-color: #d86015;
 }
 
-/* --- ESTILOS DE PAGINACIÓN NUMÉRICA (Copiados directamente) --- */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 1.5rem; /* Espacio consistente */
-  gap: 0.5rem; /* Espacio entre los botones de paginación */
-  flex-wrap: wrap; /* Para asegurar que se ajusten en pantallas pequeñas */
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .paginationButton {
-  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
-  border: none; /* Sin borde */
+  background-color: #f1f1f1;
+  border: none;
   padding: 0.5rem 0.9rem;
-  border-radius: 8px; /* Bordes más redondeados */
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600; /* Peso de fuente consistente */
-  color: #333; /* Color de texto oscuro para inactivos */
+  font-weight: 600;
+  color: #333;
   transition: background-color 0.3s ease, color 0.3s ease;
-  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  min-width: 35px;
   text-align: center;
 }
 
 .paginationButton:hover:not(:disabled) {
-  background-color: #dceeff; /* Un azul claro al pasar el ratón */
-  color: #ff6609; /* Color de texto naranja */
+  background-color: #dceeff;
+  color: #ff6609;
 }
 
 .paginationButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
-  color: #888; /* Texto gris para deshabilitados */
+  background-color: #e0e0e0;
+  color: #888;
 }
 
 .activePage {
-  background-color: #ff6609; /* Color principal para la página activa */
-  color: white; /* Texto blanco para la página activa */
+  background-color: #ff6609;
+  color: white;
   font-weight: bold;
 }
 
 .activePage:hover {
-  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
-}
-
-/* MEDIA QUERIES para asegurar que el container no sobrepase */
-@media (min-width: 768px) {
-  .container {
-    /* Si tienes un max-width definido para tu dashboard, ajústalo aquí */
-    /* Por ejemplo, si tu dashboard tiene 1200px de ancho, podrías poner 1100px aquí */
-    /* max-width: 1100px; */ 
-    /* Si quieres que simplemente se adapte al 100% de su padre, puedes quitar el max-width o dejarlo en 100% */
-  }
+  background-color: #e05500;
 }

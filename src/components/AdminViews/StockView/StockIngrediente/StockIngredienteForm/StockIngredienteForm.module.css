@@ -62,7 +62,6 @@ r h2 {
   outline: none;
 }
 
-/* Receta button */
 .recipeButton {
   border: none;
   border-radius: 0.5rem;
@@ -78,7 +77,6 @@ r h2 {
   background-color: #574fd6;
 }
 
-/* Imagen input estilizado (estilo moderno simple) */
 .imageInput {
   padding: 0.45rem;
   border: 1px solid #ccc;
@@ -89,7 +87,6 @@ r h2 {
   box-sizing: border-box;
 }
 
-/* Botones de acción unificados */
 .buttonActions {
   display: flex;
   justify-content: flex-end;
@@ -98,7 +95,7 @@ r h2 {
 }
 
 .saveBtn {
-  background-color: #2e7d32; /* verde fuerte */
+  background-color: #2e7d32; 
   color: white;
   padding: 0rem 1.2rem;
   border: none;
@@ -109,7 +106,7 @@ r h2 {
 }
 
 .saveBtn:hover {
-  background-color: #1b5e20; /* verde más oscuro */
+  background-color: #1b5e20; 
 }
 
 .cancelBtn {
@@ -128,8 +125,6 @@ r h2 {
   border-color: #aaa;
 }
 
-
-/* Responsive: una sola columna */
 @media (max-width: 700px) {
   .fieldsGrid {
     grid-template-columns: 1fr;
@@ -189,7 +184,6 @@ r h2 {
   white-space: nowrap;
   min-width: 110px;
 }
-/* Add these styles at the end of the file */
 
 .costSummary {
   background-color: #f8f9fa;
@@ -264,7 +258,6 @@ r h2 {
   color: #6c757d;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .costEquation {
     flex-direction: column;

@@ -18,9 +18,8 @@ const UserClient = () => {
   const [clienteSeleccionado, setClienteSeleccionado] = useState<Cliente | undefined>(undefined);
   const [filtroNombre, setFiltroNombre] = useState('');
 
-  // --- Lógica de Paginación ---
-  const clientesPorPagina = 8; // Define cuántos clientes mostrar por página
-  const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
+  const clientesPorPagina = 8; 
+  const [paginaActual, setPaginaActual] = useState(1); 
 
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const UserClient = () => {
 
   useEffect(() => {
     if (!modalAbierto) {
-      cargarClientes(); // Recarga clientes solo si el modal se cierra
+      cargarClientes(); 
     }
   }, [modalAbierto]);
 
@@ -37,7 +36,6 @@ const UserClient = () => {
     try {
       const data = await getClientesJSONFetch();
 
-      // Ordena clientes: activos primero
       const ordenados = [...data].sort((a, b) => {
         if (!a.fechaBaja && b.fechaBaja) return -1;
         if (a.fechaBaja && !b.fechaBaja) return 1;
@@ -45,7 +43,7 @@ const UserClient = () => {
       });
 
       setClientes(ordenados);
-      setPaginaActual(1); // Resetear a la primera página al cargar nuevos clientes
+      setPaginaActual(1); 
     } catch (error) {
       console.error("Error al obtener clientes:", error);
     }
@@ -162,13 +160,11 @@ const UserClient = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        {/* --- INICIO DEL CAMBIO --- */}
         <div className={styles.titleGroup}>
           <div className={styles.titleBox}>
             <h2 className={styles.title}>CLIENTES</h2>
           </div>
         </div>
-        {/* --- FIN DEL CAMBIO --- */}
 
         <div className={styles.searchBar}>
           <span className="material-symbols-outlined">search</span>
@@ -178,7 +174,7 @@ const UserClient = () => {
             value={filtroNombre}
             onChange={(e) => {
               setFiltroNombre(e.target.value);
-              setPaginaActual(1); // Resetear a la primera página al cambiar el filtro
+              setPaginaActual(1); 
             }}
           />
         </div>
@@ -233,7 +229,6 @@ const UserClient = () => {
         </tbody>
       </table>
 
-      {/* --- Sección de Paginación --- */}
       {totalPaginas > 1 && (
         <div className={styles.pagination}>
           {Array.from({ length: totalPaginas }, (_, i) => (

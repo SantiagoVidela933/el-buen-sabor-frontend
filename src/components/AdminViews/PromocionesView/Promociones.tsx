@@ -18,7 +18,6 @@ const Promociones = () => {
   const [promocionAEliminar, setPromocionAEliminar] = useState<Promocion | null>(null);
   const [busqueda, setBusqueda] = useState('');
 
-  // Cargar promocion desde el backend al montar
   useEffect(() => {
     const fetchpromocion = async () => {
       const data = await getPromociones(); 
@@ -43,7 +42,6 @@ const Promociones = () => {
     setModalAbierto(false);
   };
 
-  // Abrir modal DELETE
   const abrirModalEliminar = (producto: Promocion) => {
     setPromocionAEliminar(producto);
     setModalConfirmacionAbierto(true);
@@ -102,7 +100,6 @@ const Promociones = () => {
     setPaginaActual(numero);
   };
 
-  // --- Cálculos para la paginación ---
   const totalPaginas = Math.ceil(promocionesFiltradas.length / promocionesPorPagina);
   const promocionesPaginadas = promocionesFiltradas.slice(
     (paginaActual - 1) * promocionesPorPagina,
@@ -128,17 +125,14 @@ const Promociones = () => {
         timer: 1500
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: `Error al dar de alta la promocion.`
+        text: `Error al dar de alta la promoción.`
       });
     }
   };
-
-  const promocionFiltrados = promocion.filter((promo)=> 
-    promo.denominacion.toLowerCase().includes(busqueda.toLowerCase())
-  );
 
   const manejarSubmit = (rubroActualizado: Promocion) => {
     if (modoFormulario === 'crear') {
@@ -158,7 +152,7 @@ const Promociones = () => {
       <div className={styles.header}>
         <div className={styles.titleGroup}>
           <div className={styles.titleBox}>
-            <h2 className={styles.title}>PROMOCIONES</h2> {/* Texto en mayúsculas para consistencia */}
+            <h2 className={styles.title}>PROMOCIONES</h2>
           </div>
           <button className={styles.addBtn} onClick={abrirCrearPromocion}>
             <span className="material-symbols-outlined">add</span>
@@ -214,7 +208,6 @@ const Promociones = () => {
         </tbody>
       </table>
 
-      {/* --- Sección de Paginación --- */}
       {totalPaginas > 1 && (
         <div className={styles.pagination}>
           {Array.from({ length: totalPaginas }, (_, i) => (

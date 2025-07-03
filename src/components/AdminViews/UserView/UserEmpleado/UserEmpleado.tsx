@@ -6,7 +6,6 @@ import UserEmpleadoForm from "./UserEmpleadoForm/UserEmpleadoForm";
 import {
   getEmpleados,
   eliminarEmpleadoAPI,
-  darDeBajaEmpleadoAPI,
   reactivarEmpleadoAPI,
 } from "../../../../api/empleado";
 import Swal from 'sweetalert2/dist/sweetalert2.js';
@@ -23,9 +22,8 @@ const UserEmpleado = () => {
   >(undefined);
   const [filtro, setFiltro] = useState<string>("");
 
-  // --- Lógica de Paginación ---
-  const empleadosPorPagina = 8; // Define cuántos empleados mostrar por página
-  const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
+  const empleadosPorPagina = 8; 
+  const [paginaActual, setPaginaActual] = useState(1); 
 
   const cargarEmpleados = async () => {
     try {
@@ -34,7 +32,7 @@ const UserEmpleado = () => {
         .map((item) => Empleado.fromJson(item))
         .filter((e): e is Empleado => e !== null && e.id != null);
       setEmpleados(listado);
-      setPaginaActual(1); // Resetear a la primera página al cargar nuevos empleados
+      setPaginaActual(1); 
     } catch (err) {
       console.error("Error al cargar empleados:", err);
     }
@@ -69,7 +67,7 @@ const UserEmpleado = () => {
       );
     }
     cerrarModal();
-    cargarEmpleados(); // Recargar empleados para asegurar la paginación correcta después de una modificación
+    cargarEmpleados(); 
   };
 
   const eliminarEmpleado = async (id: number) => {
@@ -113,7 +111,7 @@ const UserEmpleado = () => {
   const reactivarEmpleado = async (id: number) => {
     try {
       await reactivarEmpleadoAPI(id);
-      cargarEmpleados(); // Recargar para actualizar la lista y la paginación
+      cargarEmpleados(); 
       Swal.fire({
         title: "Dado de alta!",
         text: "El registro ha sido exitosamente dado de alta.",
@@ -133,7 +131,6 @@ const UserEmpleado = () => {
     return nombreCompleto.includes(filtro.toLowerCase());
   });
 
-  // --- Cálculos para la paginación ---
   const totalPaginas = Math.ceil(
     empleadosFiltrados.length / empleadosPorPagina
   );
@@ -166,7 +163,7 @@ const UserEmpleado = () => {
             value={filtro}
             onChange={(e) => {
               setFiltro(e.target.value);
-              setPaginaActual(1); // Resetear a la primera página al cambiar el filtro
+              setPaginaActual(1);
             }}
           />
         </div>
@@ -235,14 +232,12 @@ const UserEmpleado = () => {
         </tbody>
       </table>
 
-      {/* --- Sección de Paginación --- */}
       {totalPaginas > 1 && (
         <div className={styles.pagination}>
           {Array.from({ length: totalPaginas }, (_, i) => (
             <button
               key={i}
               className={`${styles.paginationButton} ${
-                // ¡Aquí el cambio!
                 paginaActual === i + 1 ? styles.activePage : ""
               }`}
               onClick={() => cambiarPagina(i + 1)}

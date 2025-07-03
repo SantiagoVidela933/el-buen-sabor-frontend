@@ -1,37 +1,31 @@
 .container {
   padding: 2rem;
-  max-width: 100%; /* Ajustado para no sobrepasar el dashboard */
+  max-width: 100%;
   margin: auto;
-  background-color: #f9f9f9; /* Fondo consistente */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
-  box-sizing: border-box; /* Crucial para que padding y borde no sumen al width */
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
-/* --- ESTILOS DEL TÍTULO COMO EN FACTURACIÓN --- */
-.titleBox { /* Contenedor para el título con el fondo */
+.titleBox {
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   color: #ff6609;
-  display: inline-block; /* Para que el padding se ajuste al contenido */
-  margin-bottom: 1.5rem; /* Espacio debajo del título */
-  /* Centrar el titleBox */
-  margin-left: auto;
-  margin-right: auto;
-  display: block; /* Necesario para que margin: auto funcione */
-  width: fit-content; /* Para que el titleBox solo ocupe el ancho de su contenido */
+  display: block;
+  margin: 0 auto 1.5rem auto;
+  width: fit-content;
 }
 
-.title { /* Estilo para el texto h2 dentro de titleBox */
+.title {
   font-size: 1.8rem;
-  margin: 0; /* Elimina márgenes por defecto del h2 */
-  text-align: center; /* Centra el texto dentro del titleBox */
-  background-color: transparent; /* Asegura que no tenga fondo propio */
-  padding: 0; /* Sin padding adicional en el h2 */
-  color: #ff6609; /* Color del texto */
+  margin: 0;
+  text-align: center;
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
-/* ------------------------------------------- */
 
 .filtros {
   display: flex;
@@ -52,7 +46,6 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  /* Añadido para consistencia */
   font-size: 0.9rem;
   color: #333;
 }
@@ -68,11 +61,11 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
-  transition: background-color 0.3s ease; /* Transición para hover */
+  transition: background-color 0.3s ease;
 }
 
 .exportarBtn:hover {
-  background-color: #e05500; /* Un poco más oscuro al pasar el ratón */
+  background-color: #e05500;
 }
 
 .resumen {
@@ -84,43 +77,42 @@
 }
 
 .card {
-  background-color: #ffffff; /* Color de fondo más claro */
+  background-color: #ffffff;
   border-radius: 12px;
   padding: 1rem 2rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra ligeramente más pronunciada */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   min-width: 200px;
-  flex: 1; /* Permite que las tarjetas se expandan y contraigan */
-  max-width: 30%; /* Limita el ancho máximo para evitar que una sola ocupe demasiado */
-  box-sizing: border-box; /* Asegura que padding y border estén dentro del ancho */
-  transition: transform 0.2s ease; /* Transición para hover */
+  flex: 1;
+  max-width: 30%;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px); /* Pequeño efecto de elevación al pasar el ratón */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12); /* Sombra más fuerte al pasar el ratón */
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .card h4 {
   margin-bottom: 0.5rem;
-  color: #555; /* Color de texto más suave */
-  font-size: 1.1rem; /* Tamaño de fuente ligeramente más grande */
+  color: #555;
+  font-size: 1.1rem;
 }
 
 .card p {
-  font-size: 1.5rem; /* Tamaño de fuente ligeramente más grande */
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #ff6609; /* Color naranja para los valores */
+  color: #ff6609;
 }
 
-/* MEDIA QUERIES para asegurar que el container no sobrepase */
 @media (max-width: 768px) {
   .resumen {
-    flex-direction: column; /* Apila las tarjetas en pantallas pequeñas */
-    align-items: center; /* Centra las tarjetas apiladas */
+    flex-direction: column;
+    align-items: center;
   }
 
   .card {
-    max-width: 90%; /* Ocupa más ancho en pantallas pequeñas */
+    max-width: 90%;
   }
 }

@@ -54,6 +54,7 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
         });
         onSubmit(result);
       } catch (error) {
+        console.error(error);
         Swal.fire({
           icon: "error",
           title: "Oops...",
@@ -74,6 +75,7 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
         });
         onSubmit(result);
       } catch (error) {
+        console.error(error);
         Swal.fire({
           icon: "error",
           title: "Oops...",
@@ -94,7 +96,6 @@ const RubroIngredienteForm = ({ rubro, onClose, modo, onSubmit }: RubroIngredien
             type="text"
             value={descripcion}
             onChange={(e) => {
-              // Filtra la entrada para permitir solo letras (y espacios)
               const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
               setDescripcion(onlyLetters);
             }}

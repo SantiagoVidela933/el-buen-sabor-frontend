@@ -1,8 +1,8 @@
 .container {
   padding: 2rem;
-  background-color: #f9f9f9; /* Consistencia con StockIngrediente */
-  border-radius: 12px; /* Consistencia */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Consistencia */
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .header {
@@ -12,7 +12,6 @@
   margin-bottom: 1rem;
 }
 
-/* Clases para el título y el botón de añadir, consistentes con StockIngrediente */
 .titleGroup {
   display: flex;
   align-items: center;
@@ -23,7 +22,7 @@
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  color: #ff6609; /* Color naranja consistente */
+  color: #ff6609;
   display: inline-block;
 }
 
@@ -34,7 +33,7 @@
 
 .addBtn {
   background-color: #f1f1f1;
-  color: #ff6609; /* Color naranja consistente */
+  color: #ff6609;
   border: none;
   padding: 0.8rem 1rem;
   border-radius: 8px;
@@ -45,29 +44,29 @@
 }
 
 .addBtn:hover {
-  background-color: #ff6609; /* Efecto hover consistente */
+  background-color: #ff6609;
   color: white;
 }
 
 .addBtn span {
-  font-size: 1.5rem; /* Tamaño de icono consistente */
+  font-size: 1.5rem;
 }
 
 .searchBar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid #ff6609; /* Borde y color consistente */
+  border: 1px solid #ff6609;
   padding: 0.5rem 1rem;
-  border-radius: 15px; /* Border-radius consistente */
+  border-radius: 15px;
   width: 100%;
   max-width: 400px;
   background-color: #fff;
-  margin-bottom: 1rem; /* Margen inferior consistente */
+  margin-bottom: 1rem;
 }
 
 .searchBar span {
-  color: #ff6609; /* Color del icono consistente */
+  color: #ff6609;
 }
 
 .searchBar input {
@@ -79,64 +78,62 @@
 
 .table {
   width: 100%;
-  border-collapse: separate; /* Consistencia con StockIngrediente */
-  border-spacing: 0 0.5rem; /* Espacio entre filas consistente */
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
   margin-top: 1.5rem;
 }
 
 .table th {
-  background-color: #ddd; /* Consistencia en el color de fondo */
+  background-color: #ddd;
   padding: 0.75rem;
   text-align: left;
   font-weight: bold;
-  border-bottom: none; /* Eliminar el borde inferior para usar el espaciado de border-spacing */
+  border-bottom: none;
 }
 
 .table td {
-  background-color: #eee; /* Consistencia en el color de fondo */
+  background-color: #eee;
   padding: 0.75rem;
-  border-bottom: none; /* Eliminar el borde inferior */
+  border-bottom: none;
 }
 
 .table tr {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra para cada fila consistente */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Botones de acción, con colores y tamaños consistentes */
 .editBtn,
 .deleteBtn,
 .reactivarBtn {
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 0.5rem; /* Espaciado entre botones */
-  font-size: 1.2rem; /* Tamaño de fuente para el texto */
-  display: inline-flex; /* Permite alinear el icono y texto si hubiera */
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .editBtn span {
-  color: #2196f3; /* Azul para editar */
-  font-size: 1.4rem; /* Tamaño de icono */
+  color: #2196f3;
+  font-size: 1.4rem;
 }
 
 .deleteBtn span {
-  color: #f44336; /* Rojo para eliminar */
+  color: #f44336;
   font-size: 1.4rem;
 }
 
 .reactivarBtn span {
-  color: #4CAF50; /* Verde para reactivar */
+  color: #4CAF50;
   font-size: 1.4rem;
 }
 
 .filaBaja {
-  background-color: #ffcccc; /* Rojo clarito consistente */
-  color: rgb(255, 0, 0); /* Texto rojo oscuro consistente */
+  background-color: #ffcccc;
+  color: rgb(255, 0, 0);
 }
 
-/* Estilos para el modal de confirmación */
 .confirmation {
   text-align: center;
   padding: 1.5rem;
@@ -165,7 +162,7 @@
 }
 
 .confirmBtn {
-  background-color: #f44336; /* Rojo de eliminar */
+  background-color: #f44336;
   color: white;
 }
 
@@ -182,7 +179,6 @@
   background-color: #666;
 }
 
-/* --- Estilos de Paginación (Consistente con StockIngrediente) --- */
 .pagination {
   display: flex;
   justify-content: center;

@@ -43,6 +43,7 @@ const Movimientos = () => {
       await downloadMovimientosExcel(desde, hasta);
       alert('Archivo descargado con éxito.');
     } catch (error) {
+      console.error(error);
       alert('Error al descargar el archivo Excel.');
     }
   };
@@ -54,7 +55,6 @@ const Movimientos = () => {
 
   return (
     <div className={styles.container}>
-      {/* SECCIÓN DEL TÍTULO MODIFICADA */}
       <div className={styles.titleBox}>
         <h2 className={styles.title}>Movimientos monetarios</h2>
       </div>
@@ -99,15 +99,15 @@ const Movimientos = () => {
       <div className={styles.resumen}>
         <div className={styles.card}>
           <h4>Ingresos Totales</h4>
-          <p>${totales.ingreso ? totales.ingreso.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
+          <p>${totales.ingreso ? totales.ingreso.toFixed(2) : '0.00'}</p> 
         </div>
         <div className={styles.card}>
           <h4>Costos Totales</h4>
-          <p>${totales.costo ? totales.costo.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
+          <p>${totales.costo ? totales.costo.toFixed(2) : '0.00'}</p> 
         </div>
         <div className={styles.card}>
           <h4>Ganancias</h4>
-          <p>${totales.ganancia ? totales.ganancia.toFixed(2) : '0.00'}</p> {/* Asegura que muestre '0.00' si es 0 */}
+          <p>${totales.ganancia ? totales.ganancia.toFixed(2) : '0.00'}</p> 
         </div>
       </div>
     </div>

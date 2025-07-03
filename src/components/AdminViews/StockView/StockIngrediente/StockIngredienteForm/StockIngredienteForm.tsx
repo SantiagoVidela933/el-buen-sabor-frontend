@@ -83,7 +83,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       if (imageName && typeof imageName === 'string' && imageName.trim() !== '') {
         setImagenNombre(imageName);
         setNombreImagenActual(imageName);
-        // Usar la misma ruta que StockProductoForm
         setImagenPreview(`http://localhost:8080/imagenes/${imageName}`);
         didSetPreview.current = true;
       }
@@ -109,11 +108,9 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
   useEffect(() => {
     async function fetchCategorias() {
       if (esParaElaborar) {
-        // Cargo categorías para insumos (las que ya tenés)
         const data = await getCategoriasInsumosABM(1);
         setCategorias(data);
       } else {
-        // Cargo categorías de menú (manufacturados)
         const data = await getCategoriasMenuABM(1);
         setCategorias(data);
       }
@@ -137,20 +134,17 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
         setMargenGanancia(Number(margin || 0));
       }
 
-      // Handle image
       if (ingrediente.imagenes && ingrediente.imagenes.length > 0) {
         const imagen = ingrediente.imagenes[ingrediente.imagenes.length - 1];
         setImagenNombre(imagen.nombre || "");
         setNombreImagenActual(imagen.nombre || null);
 
-        // Use the correct endpoint for images
         const imageUrl = `http://localhost:8080/api/v1/imagenes/${imagen.nombre}`;
         setImagenPreview(imageUrl);
         didSetPreview.current = true;
       } else if (!ingrediente.esParaElaborar) {
-        console.warn("No images found for this ingredient");
+        console.warn("Imagen no encontrada para este insumo");
 
-        // Try to fetch the image name from the specific endpoint
         if (ingrediente.id !== undefined) {
           fetchImageForIngrediente(ingrediente.id);
         }
@@ -165,7 +159,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
         setStockMinimo(stockSucursal.stockMinimo ?? 0);
       }
 
-      // Set the elaboration flag
       setEsParaElaborar(ingrediente.esParaElaborar ?? true);
     }
   }, [ingrediente, modo]);
@@ -217,10 +210,8 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
 
     try {
       if (imagenArchivo) {
-        // Subo la imagen y obtengo el nombre encriptado que genera backend
         nombreImagenBackend = await subirImagen(imagenArchivo);
       } else {
-        // Si no seleccionó archivo nuevo, uso el que ya tenía (editar)
         nombreImagenBackend = imagenNombre;
       }
     } catch (error) {
@@ -257,7 +248,7 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
             fechaModificacion: null,
             fechaBaja: null
           },
-          stockActual: 0, // No se usa en insumos, pero se requiere
+          stockActual: 0,
           stockMinimo,
           stockMaximo,
           fechaAlta: null,
@@ -322,7 +313,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
               type="text"
               value={denominacion}
               onChange={(e) => {
-                // Filtra la entrada para permitir solo letras (y espacios, si es necesario)
                 const onlyLetters = e.target.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
                 setDenominacion(onlyLetters);
               }}
@@ -489,7 +479,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
                     style={{ maxWidth: 200, border: '1px solid black' }}
                     onError={(e) => {
                       console.error('Error cargando imagen:', e.currentTarget.src);
-                      // Intenta cargar con una URL alternativa
                       if (e.currentTarget.src.includes('/api/v1/imagenes/')) {
                         e.currentTarget.src = e.currentTarget.src.replace('/api/v1/imagenes/', '/imagenes/');
                       } else if (e.currentTarget.src.includes('/imagenes/')) {

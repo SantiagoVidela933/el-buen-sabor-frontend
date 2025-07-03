@@ -23,36 +23,31 @@ export default function StockIngrediente() {
   const [insumoAEliminar, setInsumoAEliminar] = useState<ArticuloInsumo | null>(null);
   const [busqueda, setBusqueda] = useState("");
 
-  // --- Lógica de Paginación ---
-  const insumosPorPagina = 8; // Define cuántos insumos mostrar por página
-  const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
+  const insumosPorPagina = 8; 
+  const [paginaActual, setPaginaActual] = useState(1); 
 
   useEffect(() => {
     fetchInsumos();
   }, []);
 
-  // Resetear la página actual a 1 cuando el filtro de búsqueda cambia
   useEffect(() => {
     setPaginaActual(1);
   }, [busqueda]);
 
   const fetchInsumos = async () => {
     const data = await getAllArticuloInsumo();
-    // Ordenar insumos: activos primero, luego los de baja.
     const ordenados = [...data].sort((a, b) => {
-      if (!a.fechaBaja && b.fechaBaja) return -1; // a es activo, b es de baja -> a va primero
-      if (a.fechaBaja && !b.fechaBaja) return 1;  // a es de baja, b es activo -> b va primero
-      return 0; // Si ambos son activos o ambos son de baja, mantener el orden relativo
+      if (!a.fechaBaja && b.fechaBaja) return -1; 
+      if (a.fechaBaja && !b.fechaBaja) return 1; 
+      return 0; 
     });
     setInsumos(ordenados);
-    setPaginaActual(1); // Siempre ir a la primera página al recargar los datos
+    setPaginaActual(1); 
   };
 
   const manejarSubmit = (insumoActualizado: ArticuloInsumo) => {
-    // Después de crear/editar, refetch para asegurar el orden y la frescura de los datos.
     fetchInsumos();
     setModalOpen(false);
-    // No es necesario setPaginaActual(1) aquí si fetchInsumos ya lo hace.
   };
   const abrirAdministrarStock = () => {
     setModalStockOpen(true);
@@ -60,7 +55,7 @@ export default function StockIngrediente() {
 
   const cerrarModalStock = () => {
     setModalStockOpen(false);
-    fetchInsumos(); // Recargar datos después de administrar el stock
+    fetchInsumos();
   };
   const abrirCrear = () => {
     setModoFormulario("crear");
@@ -82,24 +77,21 @@ export default function StockIngrediente() {
     }
   };
 
-  // Abrir confirmación para baja lógica
   const abrirConfirmDarDeBaja = (insumo: ArticuloInsumo) => {
     setInsumoAEliminar(insumo);
     setModalConfirmOpen(true);
   };
 
-  // Confirmar baja lógica
   const confirmarDarDeBaja = async () => {
     if (!insumoAEliminar) return;
     try {
       await darDeBajaArticuloInsumo(insumoAEliminar.id!);
-      // Actualizar el estado local para reflejar el cambio sin recargar todo el fetch.
       setInsumos(prev =>
         prev.map(i =>
           i.id === insumoAEliminar.id
             ? { ...i, fechaBaja: new Date().toISOString() } as ArticuloInsumo
             : i
-        ).sort((a, b) => { // Re-ordenar después del cambio de estado
+        ).sort((a, b) => {
             if (!a.fechaBaja && b.fechaBaja) return -1;
             if (a.fechaBaja && !b.fechaBaja) return 1;
             return 0;
@@ -107,8 +99,6 @@ export default function StockIngrediente() {
       );
       setModalConfirmOpen(false);
       setInsumoAEliminar(null);
-      // Asegurarse de que la paginación no se rompa si el último elemento de la página es dado de baja
-      // y la página se queda vacía.
       if (insumosPaginados.length === 1 && paginaActual > 1 && totalPaginas === paginaActual) {
         setPaginaActual(paginaActual - 1);
       }
@@ -119,6 +109,7 @@ export default function StockIngrediente() {
         icon: "success"
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -134,20 +125,18 @@ export default function StockIngrediente() {
 
   const cerrarModal = () => {
     setModalOpen(false);
-    fetchInsumos(); // Recargar datos para asegurar la consistencia y ordenamiento
+    fetchInsumos(); 
   };
 
-  // Alta lógica sin confirmación
   const handleDarDeAlta = async (id: number) => {
     try {
       await darDeAltaArticuloInsumo(id);
-      // Actualizar el estado local para reflejar el cambio.
       setInsumos(prev =>
         prev.map(i =>
           i.id === id
             ? { ...i, fechaBaja: null } as ArticuloInsumo
             : i
-        ).sort((a, b) => { // Re-ordenar después del cambio de estado
+        ).sort((a, b) => { 
             if (!a.fechaBaja && b.fechaBaja) return -1;
             if (a.fechaBaja && !b.fechaBaja) return 1;
             return 0;
@@ -161,6 +150,7 @@ export default function StockIngrediente() {
         timer: 1500
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -173,7 +163,6 @@ export default function StockIngrediente() {
     i.denominacion.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // --- Cálculos para la paginación ---
   const totalPaginas = Math.ceil(insumosFiltrados.length / insumosPorPagina);
   const insumosPaginados = insumosFiltrados.slice(
     (paginaActual - 1) * insumosPorPagina,
@@ -207,7 +196,6 @@ export default function StockIngrediente() {
         </div>
       </div>
       
-      {/* Botón Administrar Stock */}
       <div className={styles.adminStockContainer}>
         <button 
           className={styles.adminStockBtn} 

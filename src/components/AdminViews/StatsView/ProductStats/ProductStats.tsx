@@ -46,6 +46,7 @@ const ProductStats = () => {
       await downloadRankingProductosExcel(fechaInicio, fechaFin);
       alert('Archivo descargado con éxito.');
     } catch (error) {
+      console.error(error);
       alert('Error al descargar el archivo Excel.');
     }
   };
@@ -56,7 +57,6 @@ const ProductStats = () => {
 
   return (
     <div className={styles.container}>
-      {/* SECCIÓN DEL TÍTULO MODIFICADA */}
       <div className={styles.titleBox}>
         <h2 className={styles.title}>Ranking de productos más vendidos</h2>
       </div>

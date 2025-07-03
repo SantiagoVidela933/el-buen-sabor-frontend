@@ -179,7 +179,6 @@
   background-color: #666;
 }
 
-/* --- Estilos de Paginación --- */
 .pagination {
   display: flex;
   justify-content: center;
@@ -225,8 +224,8 @@
 .adminStockContainer {
   margin-bottom: 16px;
   display: flex;
-  justify-content: center; /* Cambiar de flex-start a center */
-  width: 100%; /* Asegurar que el contenedor ocupe todo el ancho disponible */
+  justify-content: center; 
+  width: 100%;
 }
 
 .adminStockBtn {

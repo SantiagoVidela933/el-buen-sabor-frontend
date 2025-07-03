@@ -16,30 +16,26 @@ const RubroIngrediente = () => {
   const [rubroAEliminar, setRubroAEliminar] = useState<CategoriaArticulo | null>(null);
   const [busqueda, setBusqueda] = useState('');
 
-  // --- Lógica de Paginación ---
-  const rubrosPorPagina = 8; // Define cuántos rubros mostrar por página
-  const [paginaActual, setPaginaActual] = useState(1); // Estado para controlar la página actual
+  const rubrosPorPagina = 8; 
+  const [paginaActual, setPaginaActual] = useState(1); 
 
-  // Cargar rubros desde el backend al montar
   useEffect(() => {
     fetchRubros();
   }, []);
 
-  // Resetear la página actual a 1 cuando el filtro de búsqueda cambia
   useEffect(() => {
     setPaginaActual(1);
   }, [busqueda]);
 
   const fetchRubros = async () => {
-    const data = await getCategoriasInsumosBySucursalId(1); // Asumiendo que 1 es el ID de sucursal
-    // Ordenar rubros: activos primero, luego los de baja.
+    const data = await getCategoriasInsumosBySucursalId(1); 
     const ordenados = [...data].sort((a, b) => {
-      if (!a.fechaBaja && b.fechaBaja) return -1; // a es activo, b es de baja -> a va primero
-      if (a.fechaBaja && !b.fechaBaja) return 1;  // a es de baja, b es activo -> b va primero
-      return 0; // Si ambos son activos o ambos son de baja, mantener el orden relativo
+      if (!a.fechaBaja && b.fechaBaja) return -1; 
+      if (a.fechaBaja && !b.fechaBaja) return 1;  
+      return 0; 
     });
     setRubros(ordenados);
-    setPaginaActual(1); // Siempre ir a la primera página al recargar los datos
+    setPaginaActual(1); 
   };
 
   const abrirCrearRubro = () => {
@@ -48,7 +44,7 @@ const RubroIngrediente = () => {
     setModalAbierto(true);
   };
 
-  const abrirEditarRubro = (rubroIngrediente: CategoriaArticulo) => { // Cambiado a rubroIngrediente para claridad
+  const abrirEditarRubro = (rubroIngrediente: CategoriaArticulo) => { 
     setModoFormulario('editar');
     setRubroSeleccionado(rubroIngrediente);
     setModalAbierto(true);
@@ -56,7 +52,7 @@ const RubroIngrediente = () => {
 
   const cerrarModal = () => {
     setModalAbierto(false);
-    fetchRubros(); // Recargar rubros al cerrar el modal de formulario para asegurar datos actualizados y ordenados
+    fetchRubros(); 
   };
 
   const abrirModalEliminar = (rubro: CategoriaArticulo) => {
@@ -70,18 +66,17 @@ const RubroIngrediente = () => {
   };
 
   const eliminarRubro = async () => {
-    if (!rubroAEliminar || !rubroAEliminar.id) return; // Asegurarse de que el ID exista
+    if (!rubroAEliminar || !rubroAEliminar.id) return; 
 
     try {
       await deleteCategoria(rubroAEliminar.id); 
 
-      // Actualizar el estado local para reflejar la baja lógica
       setRubros(prev =>
         prev.map(rubro =>
           rubro.id === rubroAEliminar.id
-            ? { ...rubro, fechaBaja: new Date().toISOString() } as CategoriaArticulo // Casteo explícito
+            ? { ...rubro, fechaBaja: new Date().toISOString() } as CategoriaArticulo 
             : rubro
-        ).sort((a, b) => { // Re-ordenar después del cambio de estado
+        ).sort((a, b) => {
             if (!a.fechaBaja && b.fechaBaja) return -1;
             if (a.fechaBaja && !b.fechaBaja) return 1;
             return 0;
@@ -90,7 +85,6 @@ const RubroIngrediente = () => {
 
       setRubroAEliminar(null);
       setModalConfirmacionAbierto(false);
-      // Asegurarse de que la paginación no se rompa si el último elemento de la página es dado de baja
       if (rubrosPaginados.length === 1 && paginaActual > 1 && totalPaginas === paginaActual) {
         setPaginaActual(paginaActual - 1);
       }
@@ -102,6 +96,7 @@ const RubroIngrediente = () => {
         timer: 1500
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -115,14 +110,12 @@ const RubroIngrediente = () => {
   );
 
   const manejarSubmit = () => {
-    // Después de crear/editar, refetch para asegurar el orden y la frescura de los datos.
     fetchRubros();
-    cerrarModal(); // Esto ya cierra el modal y llama a fetchRubros()
+    cerrarModal(); 
   };
 
   const handleDarDeAlta = async (rubro: CategoriaArticulo) => {
     try {
-      // Asegurarse de que el ID y sucursal.id existan
       if (!rubro.id) {
         console.error("ID de rubro o sucursal missing para dar de alta.");
         Swal.fire({
@@ -135,20 +128,19 @@ const RubroIngrediente = () => {
 
       const payload = {
         denominacion: rubro.denominacion,
-        categoriaPadreId: rubro.categoriaPadre?.id ?? null, // Usar el ID de la categoría padre existente, si hay
+        categoriaPadreId: rubro.categoriaPadre?.id ?? null, 
         sucursalId: rubro.sucursal?.id ?? 1,
         fechaBaja: null,
       };
 
       await updateCategoria(rubro.id, payload);
 
-      // Actualizar el estado local para reflejar el alta lógica
       setRubros(prev =>
         prev.map(r =>
           r.id === rubro.id
-            ? { ...r, fechaBaja: null } as CategoriaArticulo // Casteo explícito
+            ? { ...r, fechaBaja: null } as CategoriaArticulo
             : r
-        ).sort((a, b) => { // Re-ordenar después del cambio de estado
+        ).sort((a, b) => { 
             if (!a.fechaBaja && b.fechaBaja) return -1;
             if (a.fechaBaja && !b.fechaBaja) return 1;
             return 0;
@@ -162,6 +154,7 @@ const RubroIngrediente = () => {
         timer: 1500
       });
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -170,7 +163,6 @@ const RubroIngrediente = () => {
     }
   };
 
-  // --- Cálculos para la paginación ---
   const totalPaginas = Math.ceil(rubrosFiltrados.length / rubrosPorPagina);
   const rubrosPaginados = rubrosFiltrados.slice(
     (paginaActual - 1) * rubrosPorPagina,
@@ -184,10 +176,9 @@ const RubroIngrediente = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        {/* Estructura del encabezado consistente */}
         <div className={styles.titleGroup}>
           <div className={styles.titleBox}>
-            <h2 className={styles.title}>CATEGORÍAS INGREDIENTE</h2> {/* Nombre actualizado */}
+            <h2 className={styles.title}>CATEGORÍAS INGREDIENTE</h2>
           </div>
           <button className={styles.addBtn} onClick={abrirCrearRubro}>
             <span className="material-symbols-outlined">add</span>
@@ -208,7 +199,7 @@ const RubroIngrediente = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Denominación</th> {/* Cambiado de 'Rubro' a 'Denominación' para ser más genérico */}
+            <th>Denominación</th> 
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -219,8 +210,8 @@ const RubroIngrediente = () => {
               <td colSpan={3} style={{ textAlign: 'center' }}>No hay categorías que coincidan con la búsqueda.</td>
             </tr>
           ) : (
-            rubrosPaginados.map((rubro) => ( // Usar rubrosPaginados
-              <tr key={rubro.id} className={rubro.fechaBaja ? styles.filaBaja : ''}> {/* Usar rubro.id como key */}
+            rubrosPaginados.map((rubro) => ( 
+              <tr key={rubro.id} className={rubro.fechaBaja ? styles.filaBaja : ''}>
                 <td>{rubro.denominacion}</td>
                 <td>{rubro.fechaBaja ? "Baja" : "Alta"}</td>
                 <td>
@@ -249,7 +240,6 @@ const RubroIngrediente = () => {
         </tbody>
       </table>
 
-      {/* Sección de Paginación */}
       {totalPaginas > 1 && (
         <div className={styles.pagination}>
           {Array.from({ length: totalPaginas }, (_, i) => (

@@ -128,7 +128,6 @@
   font-size: 1.1rem;
 }
 
-/* Botones de acción unificados */
 .buttonActions {
   display: flex;
   justify-content: flex-end;
@@ -137,7 +136,7 @@
 }
 
 .saveBtn {
-  background-color: #2e7d32; /* verde fuerte */
+  background-color: #2e7d32;
   color: white;
   padding: 0rem 1.2rem;
   border: none;
@@ -148,7 +147,7 @@
 }
 
 .saveBtn:hover {
-  background-color: #1b5e20; /* verde más oscuro */
+  background-color: #1b5e20;
 }
 
 .cancelBtn {
@@ -168,7 +167,6 @@
 }
 
 
-/* Responsive: una sola columna */
 @media (max-width: 700px) {
   .fieldsGrid {
     grid-template-columns: 1fr;
@@ -257,7 +255,6 @@
   font-weight: 500;
 }
 
-/* Estilos específicos para cada operación */
 .operationButton:first-child.selected {
   border-color: #28a745;
   background-color: #e8f4ea;
@@ -273,7 +270,6 @@
 .operationButton:hover:not(.selected) {
   background-color: #e9ecef;
 }
-/* Agregar estos estilos nuevos */
 
 .rowContainer {
   display: flex;
@@ -307,7 +303,6 @@
   font-size: 0.9rem;
 }
 
-/* Ajustes para dispositivos móviles */
 @media (max-width: 640px) {
   .rowContainer {
     flex-direction: column;

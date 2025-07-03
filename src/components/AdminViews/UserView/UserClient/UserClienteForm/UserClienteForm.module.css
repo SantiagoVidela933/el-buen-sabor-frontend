@@ -1,7 +1,7 @@
 .formContainer {
   background-color: #fff;
   border-radius: 1rem;
-  max-width: 800px; /* Aumentado para mayor ancho */
+  max-width: 800px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -15,7 +15,6 @@
   text-align: center;
 }
 
-/* Nuevo: Grid para dos columnas */
 .fieldsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,7 +127,6 @@
   opacity: 0.9;
 }
 
-/* Responsive: una sola columna en móvil */
 @media (max-width: 700px) {
   .fieldsGrid {
     grid-template-columns: 1fr;

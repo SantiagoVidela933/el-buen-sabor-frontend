@@ -17,14 +17,11 @@ const Facturacion = () => {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPedido, setSelectedPedido] = useState<PedidoVenta | null>(null);
-
-  // Nuevo estado para controlar la visibilidad del dropdown de estados
   const [showEstadoDropdown, setShowEstadoDropdown] = useState<boolean>(false);
-  // Ref para detectar clics fuera del dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Mantengo el itemsPerPage original del primer componente
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const cargarPedidos = async () => {
@@ -44,14 +41,12 @@ const Facturacion = () => {
     cargarPedidos();
   }, []);
 
-  // useEffect para cerrar el dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowEstadoDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -69,13 +64,10 @@ const Facturacion = () => {
       if (b.id === undefined) return -1;
 
       return b.id - a.id;
-
     });
   };
 
   const pedidosFiltrados = filtrarPedidos();
-
-  // Calculamos las propiedades para la paginación
   const totalPages = Math.ceil(pedidosFiltrados.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -87,7 +79,6 @@ const Facturacion = () => {
     }
   };
 
-  // Generar los botones de números de página
   const getPaginationButtons = () => {
     const buttons = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -106,19 +97,16 @@ const Facturacion = () => {
     return buttons;
   };
 
-  // Función para ver detalle del pedido
   const handleVerDetalle = (pedido: PedidoVenta) => {
     setSelectedPedido(pedido);
     setShowModal(true);
   };
 
-  // Función para manejar el cambio de estado desde el dropdown personalizado
   const handleEstadoChange = (estado: string) => {
     setEstadoFiltro(estado);
-    setShowEstadoDropdown(false); // Cerrar dropdown después de seleccionar
+    setShowEstadoDropdown(false); 
   };
 
-  // Función para descargar la factura en PDF
   const handleDescargarFactura = async (pedido: PedidoVenta) => {
     if (!pedido.facturas || pedido.facturas.length === 0) {
       alert('Este pedido no tiene factura asociada.');
@@ -127,7 +115,6 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
       if (!ultimaFactura || ultimaFactura.id === undefined) {
         throw new Error('ID de factura no disponible');
@@ -143,7 +130,6 @@ const Facturacion = () => {
     }
   };
 
-  // Función para descargar nota de crédito
   const handleDescargarNotaCredito = async (pedido: PedidoVenta) => {
     if (!pedido.facturas || pedido.facturas.length === 0) {
       alert('Este pedido no tiene factura asociada para generar nota de crédito.');
@@ -152,7 +138,6 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
       if (!ultimaFactura || ultimaFactura.id === undefined) {
         throw new Error('ID de factura no disponible');
@@ -167,7 +152,6 @@ const Facturacion = () => {
     }
   };
 
-  // Función para anular factura
   const handleAnularFactura = async (pedido: PedidoVenta) => {
     if (!pedido.facturas || pedido.facturas.length === 0) {
       alert('Este pedido no tiene factura asociada para anular.');
@@ -180,7 +164,6 @@ const Facturacion = () => {
 
     try {
       setActionLoading(true);
-      // Obtenemos el ID de la última factura
       const ultimaFactura = pedido.facturas[pedido.facturas.length - 1];
       if (!ultimaFactura || ultimaFactura.id === undefined) {
         throw new Error('ID de factura no disponible');
@@ -315,7 +298,7 @@ const Facturacion = () => {
                 </td>
                 <td>
                   {pedido.facturas && pedido.facturas.length > 0 ? (
-                    <div className={styles.actionButtonsGroup}> {/* Nuevo contenedor para los botones */}
+                    <div className={styles.actionButtonsGroup}> 
                       {pedido.estado === Estado.CANCELADO ? (
                         <button
                           className={styles.actionBtn}

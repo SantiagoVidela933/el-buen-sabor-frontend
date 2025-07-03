@@ -34,7 +34,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
   const [precioTotal, setPrecioTotal] = useState<number>(0);
   const [precioFinal, setPrecioFinal] = useState<number>(0);
 
- // Muestro imagen (img, nombre) a editar en form
   const [nombreImagenActual, setNombreImagenActual] = useState<string | null>(null);
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
   const didSetPreview = useRef(false);
@@ -48,7 +47,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
     }
   };
   
-  //Calcular precio
   useEffect(() => {
   const nuevoTotal = detallePromocion.reduce((total, detalle) => {
     const precio = detalle.articulo?.precioVenta || 0;
@@ -160,7 +158,7 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
         descripcion: descripcion,
         fechaBaja: estado === 'Baja' ? new Date().toISOString() : null,
         imagenes: [],
-        sucursal: promocion?.sucursal, // Mantener la sucursal de la promoción existente
+        sucursal: promocion?.sucursal, 
 
         promocionesDetalle: detallePromocion,
         descuento: descuento,
@@ -336,8 +334,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
             onChange={e => {
               const id = Number(e.target.value);
               setSelectedArticuloId(id);
-              
-              // Si se selecciona un artículo válido, agregarlo automáticamente
               if (id !== 0) {
                 const articulo = articulos.find(a => a.id === id);
                 if (articulo) {
@@ -351,7 +347,6 @@ const PromocionesForm = ({ promocion, modo, onClose, onSubmit }: PromocionesForm
                       fechaBaja: null
                     }
                   ]);
-                  // Resetear la selección
                   setSelectedArticuloId(0);
                 }
               }

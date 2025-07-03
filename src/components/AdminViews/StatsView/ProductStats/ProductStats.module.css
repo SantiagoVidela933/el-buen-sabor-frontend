@@ -1,38 +1,31 @@
 .container {
   max-width: 900px;
   margin: auto;
-  padding: 2rem; /* Añadido padding para consistencia */
-  background-color: #f9f9f9; /* Fondo consistente */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
-  box-sizing: border-box; /* Asegura que el padding no afecte el max-width */
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
-/* --- ESTILOS DEL TÍTULO COMO EN FACTURACIÓN --- */
-.titleBox { /* Contenedor para el título con el fondo */
+.titleBox {
   background-color: #f1f1f1;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   color: #ff6609;
-  display: inline-block; /* Para que el padding se ajuste al contenido */
-  margin-bottom: 1.5rem; /* Espacio debajo del título */
-  /* Centrar el titleBox si el contenedor principal lo permite */
-  margin-left: auto;
-  margin-right: auto;
-  display: block; /* Necesario para que margin: auto funcione */
-  width: fit-content; /* Para que el titleBox solo ocupe el ancho de su contenido */
+  display: block;
+  margin: 0 auto 1.5rem auto;
+  width: fit-content;
 }
 
-.title { /* Estilo para el texto h2 dentro de titleBox */
+.title {
   font-size: 1.8rem;
-  margin: 0; /* Elimina márgenes por defecto del h2 */
-  text-align: center; /* Centra el texto dentro del titleBox */
-  background-color: transparent; /* Asegura que no tenga fondo propio */
-  padding: 0; /* Sin padding adicional en el h2 */
-  color: #ff6609; /* Color del texto */
+  margin: 0;
+  text-align: center;
+  background-color: transparent;
+  padding: 0;
+  color: #ff6609;
 }
-/* ------------------------------------------- */
-
 
 .filtros {
   display: flex;
@@ -66,11 +59,11 @@
   align-items: center;
   gap: 0.4rem;
   font-weight: 500;
-  transition: background-color 0.3s ease; /* Transición para hover */
+  transition: background-color 0.3s ease;
 }
 
 .exportarBtn:hover {
-  background-color: #e05500; /* Un poco más oscuro al pasar el ratón */
+  background-color: #e05500;
 }
 
 .graficoContainer {
@@ -81,6 +74,6 @@
   font-size: 1.2rem;
   margin-bottom: 1rem;
   text-align: center;
-  color: #ff6609; /* Color de texto consistente */
-  font-weight: 600; /* Peso de fuente para subtítulos */
+  color: #ff6609;
+  font-weight: 600;
 }

@@ -5,9 +5,7 @@ import Chart from 'react-google-charts';
 import ClientStatsDetails from './ClientStatsDetail/ClientStatsDetail';
 import { fetchRankingClientes, downloadRankingClientesExcel } from '../../../../api/ranking';
 
-
 const ClientStats = () => {
-
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [orden, setOrden] = useState('cantidad');
@@ -15,9 +13,8 @@ const ClientStats = () => {
   const [tablaClientes, setTablaClientes] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
 
-  // --- Estados para la paginación ---
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(2); // Cantidad de clientes por página
+  const [itemsPerPage] = useState<number>(2);
 
   const obtenerDatos = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
@@ -33,7 +30,7 @@ const ClientStats = () => {
                   : [['Sin Ventas', 0]];      
       setDatosClientes([['Cliente', 'Cantidad Comprada'], ...clientesGrafico]);
       setTablaClientes(data);
-      setCurrentPage(1); // Resetear a la primera página cuando cambian los datos
+      setCurrentPage(1); 
     } catch (error) {
       console.error('Error al obtener los datos:', error);
     }
@@ -48,6 +45,7 @@ const ClientStats = () => {
       await downloadRankingClientesExcel(desde, hasta, orden);
       alert('Archivo descargado con éxito.');
     } catch (error) {
+      console.error(error)
       alert('Error al descargar el archivo Excel.');
     }
   };
@@ -64,7 +62,6 @@ const ClientStats = () => {
     obtenerDatos();
   }, [fechaInicio, fechaFin, orden]);
 
-  // --- Lógica de Paginación ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentClients = tablaClientes.slice(indexOfFirstItem, indexOfLastItem);
@@ -74,7 +71,6 @@ const ClientStats = () => {
   
   return (
     <div className={styles.container}>
-      {/* SECCIÓN DEL TÍTULO MODIFICADA */}
       <div className={styles.titleBox}>
         <h2 className={styles.title}>Ranking de clientes</h2>
       </div>
@@ -141,7 +137,6 @@ const ClientStats = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Usamos currentClients para renderizar los clientes de la página actual */}
             {currentClients.length === 0 ? (
               <tr>
                 <td colSpan={4} className={styles.emptyMessage}>
@@ -170,8 +165,8 @@ const ClientStats = () => {
                       <td colSpan={4}>
                         <ClientStatsDetails
                           clienteId={cliente.clienteId}
-                          fechaInicio={fechaInicio || '2000-01-01'} // Usar directamente la cadena seleccionada
-                          fechaFin={fechaFin || new Date().toISOString().split('T')[0]} // Usar directamente la cadena seleccionada
+                          fechaInicio={fechaInicio || '2000-01-01'} 
+                          fechaFin={fechaFin || new Date().toISOString().split('T')[0]} 
                         />
                       </td>
                     </tr>
@@ -184,7 +179,6 @@ const ClientStats = () => {
         </table>
       </div>
 
-      {/* --- Controles de Paginación Numérica --- */}
       {totalPages > 1 && (
         <div className={styles.pagination}>
           {[...Array(totalPages)].map((_, index) => (

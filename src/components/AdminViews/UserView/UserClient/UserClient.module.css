@@ -12,11 +12,10 @@
   margin-bottom: 1rem;
 }
 
-/* Estilos para el grupo del título (fondo y color) */
 .titleGroup {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Si en el futuro quieres añadir algo junto al título, como un botón, este gap ayudará */
+  gap: 1rem;
 }
 
 .titleBox {
@@ -29,10 +28,8 @@
 
 .title {
   font-size: 1.8rem;
-  margin: 0; /* Elimina el margen por defecto del h2 */
+  margin: 0;
 }
-
-/* Eliminado .addBtn y sus estilos ya que no se usa para este componente */
 
 .searchBar {
   display: flex;
@@ -116,7 +113,6 @@
   color: rgb(255, 0, 0);
 }
 
-/* --- Estilos de Paginación --- */
 .pagination {
   display: flex;
   justify-content: center;

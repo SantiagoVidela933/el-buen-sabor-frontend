@@ -54,7 +54,7 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
     setSelectedInsumo(selected);
     
     if (selected) {
-      setCantidad(0); // Resetear cantidad al cambiar de insumo
+      setCantidad(0); 
     }
   };
 
@@ -69,7 +69,7 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
       setStockFinal(stockActual + cantidad);
     } else {
       const nuevoStock = stockActual - cantidad;
-      setStockFinal(nuevoStock < 0 ? 0 : nuevoStock); // Evitar stock negativo
+      setStockFinal(nuevoStock < 0 ? 0 : nuevoStock); 
     }
   };
 
@@ -78,8 +78,7 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
       if (!selectedInsumo || selectedInsumo.id === undefined) {
         throw new Error("No hay insumo seleccionado");
       }
-      // Solo enviar el stockFinal a la API
-      await updateStockSucursalInsumo(selectedInsumo.id, 1, { stockActual: stockFinal }); // 1 es el idSucursal, cámbialo si es necesario
+      await updateStockSucursalInsumo(selectedInsumo.id, 1, { stockActual: stockFinal }); 
 
       Swal.fire({
         icon: "success",
@@ -164,8 +163,6 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
       <h2>Administrar Stock</h2>
       <form onSubmit={handleSubmit}>
         <div className={styles.fieldsGrid}>
-          {/* Select para elegir insumo */}
-          
           <div className={styles.fieldGroup}>
             <select 
               className={styles.select}
@@ -182,7 +179,6 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
             </select>
           </div>
             <div className={styles.rowContainer}>
-            {/* Campo para ingresar cantidad */}
             <div className={styles.fieldGroup}>
               <div className={styles.inputWithUnit}>
                 <label>Cantidad:</label>
@@ -221,7 +217,6 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
 
           {selectedInsumo && (
             <>
-              {/* Información del insumo */}
               <div className={styles.infoContainer}>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>Stock Actual:</span>
@@ -231,7 +226,6 @@ const StockIngredienteAdmin: React.FC<Props> = ({ onClose, onSubmit }) => {
                 </div>
               </div>
               
-              {/* Resumen del stock final */}
               <div className={styles.resultContainer}>
                 <div className={styles.resultItem}>
                   <span className={styles.resultLabel}>Stock Final:</span>

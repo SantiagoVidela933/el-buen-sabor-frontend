@@ -1,17 +1,11 @@
 .container {
-  padding: 1rem; /* Reducido un poco el padding ya que es un sub-componente */
+  padding: 1rem;
   font-family: Arial, sans-serif;
-  background-color: #fcfcfc; /* Fondo un poco diferente para distinguirlo */
+  background-color: #fcfcfc;
   border-radius: 8px;
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05); /* Sombra interna para efecto de "incrustado" */
-  margin-top: 1rem; /* Espacio superior para separarse de la fila principal */
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
+  margin-top: 1rem;
 }
-
-/* El title no se usa en este componente, puedes quitarlo si no lo necesitas */
-/* .title {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-} */
 
 .tableWrapper {
   overflow-x: auto;
@@ -19,53 +13,51 @@
 
 .table {
   width: 100%;
-  border-collapse: separate; /* Cambiado a separate para border-radius en filas */
-  border-spacing: 0 0.4rem; /* Espacio entre filas */
+  border-collapse: separate;
+  border-spacing: 0 0.4rem;
   margin-top: 1rem;
   background-color: #ffffff;
-  border-radius: 8px; /* Bordes redondeados de la tabla */
-  overflow: hidden; /* Importante para que border-radius funcione en las celdas */
-  padding: 5px; /* Padding interno de la tabla */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03); /* Sombra ligera para la tabla */
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .table th,
 .table td {
   padding: 0.75rem;
-  border: none; /* Eliminado el borde para usar border-spacing */
+  border: none;
   text-align: center;
-  vertical-align: middle; /* Alineación vertical */
+  vertical-align: middle;
 }
 
 .table th {
-  background-color: #e0e0e0; /* Un gris más claro para encabezados */
+  background-color: #e0e0e0;
   font-weight: bold;
   color: #333;
 }
 
-/* Estilo para las filas del body */
 .table tbody tr {
-  border-radius: 6px; /* Bordes redondeados para las filas */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave para las filas */
-  background-color: #f5f5f5; /* Fondo más suave para las filas */
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: #f5f5f5;
   transition: transform 0.2s ease;
 }
 
 .table tbody tr:hover {
-  transform: translateY(-2px); /* Pequeño efecto al pasar el ratón */
+  transform: translateY(-2px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Asegurar que las esquinas de las celdas redondeen las filas */
-.table tbody td:first-child { 
-  border-top-left-radius: 6px; 
-  border-bottom-left-radius: 6px; 
-}
-.table tbody td:last-child { 
-  border-top-right-radius: 6px; 
-  border-bottom-right-radius: 6px; 
+.table tbody td:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
 
+.table tbody td:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
 
 .emptyMessage {
   text-align: center;
@@ -97,46 +89,45 @@
   color: black;
 }
 
-/* --- ESTILOS DE PAGINACIÓN NUMÉRICA (Copiados directamente) --- */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 1.5rem; /* Espacio consistente */
-  gap: 0.5rem; /* Espacio entre los botones de paginación */
-  flex-wrap: wrap; /* Para asegurar que se ajusten en pantallas pequeñas */
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .paginationButton {
-  background-color: #f1f1f1; /* Fondo suave para botones inactivos */
-  border: none; /* Sin borde */
+  background-color: #f1f1f1;
+  border: none;
   padding: 0.5rem 0.9rem;
-  border-radius: 8px; /* Bordes más redondeados */
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600; /* Peso de fuente consistente */
-  color: #333; /* Color de texto oscuro para inactivos */
+  font-weight: 600;
+  color: #333;
   transition: background-color 0.3s ease, color 0.3s ease;
-  min-width: 35px; /* Asegura un ancho mínimo para todos los números */
+  min-width: 35px;
   text-align: center;
 }
 
 .paginationButton:hover:not(:disabled) {
-  background-color: #dceeff; /* Un azul claro al pasar el ratón */
-  color: #ff6609; /* Color de texto naranja */
+  background-color: #dceeff;
+  color: #ff6609;
 }
 
 .paginationButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: #e0e0e0; /* Fondo más oscuro para deshabilitados */
-  color: #888; /* Texto gris para deshabilitados */
+  background-color: #e0e0e0;
+  color: #888;
 }
 
 .activePage {
-  background-color: #ff6609; /* Color principal para la página activa */
-  color: white; /* Texto blanco para la página activa */
+  background-color: #ff6609;
+  color: white;
   font-weight: bold;
 }
 
 .activePage:hover {
-  background-color: #e05500; /* Un poco más oscuro al pasar el ratón sobre el activo */
+  background-color: #e05500;
 }
