@@ -1,4 +1,4 @@
-
+// GET Sucursales
 export const getSucursal = async () => {
   try {
     const response = await fetch("http://localhost:8080/api/sucursales/1");

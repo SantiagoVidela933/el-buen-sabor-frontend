@@ -1,6 +1,5 @@
 import ArticuloVenta from '../models/ArticuloVenta';
 
-
 const API_URL = 'http://localhost:8080/api/articulo-venta';
 
 // GET Articulos para venta

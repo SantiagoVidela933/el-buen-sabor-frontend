@@ -79,7 +79,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
       }
 
       const imageName = await response.text();
-      console.log("Fetched image name:", imageName);
 
       if (imageName && typeof imageName === 'string' && imageName.trim() !== '') {
         setImagenNombre(imageName);
@@ -128,20 +127,12 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
 
   useEffect(() => {
     if (modo === "editar" && ingrediente) {
-      console.log("Setting form values from ingrediente:", ingrediente);
-
-      // Basic data
       setDenominacion(ingrediente.denominacion || "");
       setPrecioCompra(ingrediente.precioCompra || 0);
-
-      // Handle margin of gain - ensure it's a number and not 0 when it shouldn't be
       const margin = ingrediente.margenGanancia;
-      console.log("Margin from backend:", margin, "Type:", typeof margin);
-
-      // If it's not a para elaborar item, margin should be > 0
       if (!ingrediente.esParaElaborar && (!margin || margin <= 0)) {
         console.warn("Non-elaboration item has invalid margin, using default 20%");
-        setMargenGanancia(20); // Default reasonable margin
+        setMargenGanancia(20); 
       } else {
         setMargenGanancia(Number(margin || 0));
       }
@@ -154,7 +145,6 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
 
         // Use the correct endpoint for images
         const imageUrl = `http://localhost:8080/api/v1/imagenes/${imagen.nombre}`;
-        console.log("Setting image preview URL:", imageUrl);
         setImagenPreview(imageUrl);
         didSetPreview.current = true;
       } else if (!ingrediente.esParaElaborar) {
@@ -501,10 +491,8 @@ const StockIngredienteForm: React.FC<Props> = ({ ingrediente, modo, onClose, onS
                       console.error('Error cargando imagen:', e.currentTarget.src);
                       // Intenta cargar con una URL alternativa
                       if (e.currentTarget.src.includes('/api/v1/imagenes/')) {
-                        console.log('Intentando URL sin /api/v1/');
                         e.currentTarget.src = e.currentTarget.src.replace('/api/v1/imagenes/', '/imagenes/');
                       } else if (e.currentTarget.src.includes('/imagenes/')) {
-                        console.log('Intentando URL con /api/imagenes/');
                         e.currentTarget.src = e.currentTarget.src.replace('/imagenes/', '/api/imagenes/');
                       } else {
                         e.currentTarget.style.display = 'none';

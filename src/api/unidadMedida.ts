@@ -1,5 +1,6 @@
 import { UnidadMedida } from '../models/UnidadMedida';
 
+// GET Unidades de Medida
 export async function getUnidadMedida(): Promise<UnidadMedida[]> {
   try {
     const response = await fetch('http://localhost:8080/api/unidadmedida');

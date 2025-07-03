@@ -1,30 +1,5 @@
 import {Cliente} from "../models/Cliente";
 
-
-export async function crearCliente(cliente: Cliente) {
-  try {
-    const response = await fetch("http://localhost:8080/api/clientes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(cliente)
-    });
-
-    if (!response.ok) {
-      return response.text().then(errorText => {
-        throw new Error(errorText || 'Error desconocido en el servidor');
-      });
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error en la solicitud:", error);
-    throw error;
-  }
-}
-
 export interface PutClienteDTO {
   id?: number;
   nombre: string;
@@ -40,12 +15,34 @@ export interface PutClienteDTO {
   };
 }
 
+// POST Cliente
+export async function crearCliente(cliente: Cliente) {
+  try {
+    const response = await fetch("http://localhost:8080/api/clientes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cliente)
+    });
+    if (!response.ok) {
+      return response.text().then(errorText => {
+        throw new Error(errorText || 'Error desconocido en el servidor');
+      });
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error en la solicitud:", error);
+    throw error;
+  }
+}
 
+// PUT Cliente
 export async function guardarCliente(cliente: PutClienteDTO): Promise<Cliente> {
   if (!cliente.id) {
     throw new Error("El cliente debe tener id para actualizar");
   }
-
   const response = await fetch(`http://localhost:8080/api/clientes/${cliente.id}`, {
     method: "PUT",
     headers: {
@@ -64,7 +61,7 @@ export async function guardarCliente(cliente: PutClienteDTO): Promise<Cliente> {
   return Cliente.fromJson(data)!;
 }
 
-
+// GET Email de Cliente
 export async function getClientesMailJSONFetch(email:string) {
   const urlServer = `http://localhost:8080/api/clientes/email/${email}`;
   const response = await fetch(urlServer, {
@@ -75,7 +72,6 @@ export async function getClientesMailJSONFetch(email:string) {
     },
     mode: 'cors'
   });
-
   if (!response.ok) {
     return response.text().then(errorText => {
       throw new Error(errorText || 'Error desconocido en el servidor');
@@ -84,6 +80,7 @@ export async function getClientesMailJSONFetch(email:string) {
   return await response.json();
 }
 
+// GET Clientes
 export async function getClientesJSONFetch() {
   const response = await fetch("http://localhost:8080/api/clientes", {
     method: "GET",
@@ -91,7 +88,6 @@ export async function getClientesJSONFetch() {
       "Content-type": "application/json"
     }
   });
-
   if (!response.ok) {
     return response.text().then(errorText => {
       throw new Error(errorText || 'Error desconocido en el servidor');
@@ -100,6 +96,8 @@ export async function getClientesJSONFetch() {
 
   return await response.json();
 }
+
+// DELETE Cliente
 export async function eliminarCliente(id: number) {
   const response = await fetch(`http://localhost:8080/api/clientes/${id}`, {
     method: "DELETE",
@@ -107,7 +105,6 @@ export async function eliminarCliente(id: number) {
       "Content-type": "application/json"
     }
   });
-
   if (!response.ok) {
     return response.text().then(errorText => {
       throw new Error(errorText || 'Error desconocido en el servidor');
@@ -117,7 +114,7 @@ export async function eliminarCliente(id: number) {
   return await response.text();
 }
 
-
+// PUT Reactivar Cliente
 export async function reactivarCliente(id: number) {
   const response = await fetch(`http://localhost:8080/api/clientes/${id}/reactivar`, {
     method: "PUT",
@@ -135,6 +132,7 @@ export async function reactivarCliente(id: number) {
   return await response.text();
 }
 
+// GET Cliente por pedido
 export async function getClientePorPedido(pedidoId: number) {
   try {
     const response = await fetch(`http://localhost:8080/api/clientes/por-pedido/${pedidoId}`, {

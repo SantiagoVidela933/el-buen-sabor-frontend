@@ -5,10 +5,10 @@ interface MercadoPagoPreferenceResponse {
     preferenceId: string;
     initPoint: string;
     sandboxInitPoint: string | null;
-    }
+}
 
-
-    export const crearPagoMercadoPago = async (
+// POST Pago con MP
+export const crearPagoMercadoPago = async (
     pedidoId: number,
     getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
     ): Promise<MercadoPagoPreferenceResponse> => {
@@ -36,10 +36,10 @@ interface MercadoPagoPreferenceResponse {
         console.error("Error al crear pago con Mercado Pago:", error);
         throw error;
     }
-    };
+};
 
-
-    export const getDatosMercadoPago = async (
+// GET Datos de MP
+export const getDatosMercadoPago = async (
     pagoId: number,
     getAccessTokenSilently: (options?: GetTokenSilentlyOptions) => Promise<string>
     ): Promise<DatoMercadoPago> => {
@@ -69,7 +69,7 @@ interface MercadoPagoPreferenceResponse {
     }
 };
 
-
+// PUT Estado de pago
 export const actualizarEstadoPago = async (
     facturaId: number,
     status: string,

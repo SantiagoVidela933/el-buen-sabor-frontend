@@ -4,7 +4,6 @@ import Navbar from "../../components/ui/Navbar/Navbar";
 import styles from "./CocineroLayout.module.css";
 import PhotoLanding from "../../components/LandingPage/PhotoLanding/PhotoLanding";
 import PedidosView from "../../components/CocineroViews/PedidosView";
-import { columns, pedidos } from "../../data/pedidosCocinero";
 import Dashboard from "../../components/ui/DashboardCocinero/DashboardCocinero";
 import StockProducto from "../../components/AdminViews/StockView/StockProducto/StockProducto";
 import StockIngrediente from "../../components/AdminViews/StockView/StockIngrediente/StockIngrediente";
@@ -17,14 +16,7 @@ const CocineroLayout = () => {
   const renderActiveView = () => {
     switch (activeView) {
       case "pedidos":
-        return (
-          <PedidosView
-            columns={columns}
-            data={pedidos}
-            title="LISTA DE PEDIDOS A PREPARAR"
-            itemsPerPage={5}
-          />
-        );
+        return <PedidosView/>
       case "stockProducto":
         return <StockProducto />; 
       case "stockIngrediente":

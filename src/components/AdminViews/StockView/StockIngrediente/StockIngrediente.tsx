@@ -69,21 +69,13 @@ export default function StockIngrediente() {
   };
 
   const abrirEditar = async (insumo: ArticuloInsumo) => {
-    console.log("Insumo seleccionado para editar:", insumo);
-    
     try {
-
       const insumoCompleto = await getArticuloInsumoById(insumo.id!);
-      console.log("Datos completos del insumo:", insumoCompleto);
-      
-      // Use the complete data
       setModoFormulario("editar");
       setSelectedInsumo(insumoCompleto);
       setModalOpen(true);
     } catch (error) {
       console.error("Error al obtener datos completos del insumo:", error);
-      
-      // Fallback to using the partial data
       setModoFormulario("editar");
       setSelectedInsumo(insumo);
       setModalOpen(true);

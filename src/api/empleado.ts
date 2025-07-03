@@ -1,4 +1,3 @@
-
 export interface EmpleadoRequest {
   nombre: string;
   apellido: string;
@@ -15,13 +14,12 @@ export interface EmpleadoRequest {
   };
 }
 
-
-
 export interface Localidad {
   id: number;
   nombre: string;
 }
 
+// GET Localidades
 export const getLocalidades = async (): Promise<Localidad[]> => {
   const response = await fetch('http://localhost:8080/api/localidades');
   if (!response.ok) {
@@ -32,6 +30,7 @@ export const getLocalidades = async (): Promise<Localidad[]> => {
   return response.json();
 };
 
+// POST Empleado
 export const crearEmpleado = async (empleado: EmpleadoRequest): Promise<any> => {
   const response = await fetch('http://localhost:8080/api/empleados/crear', {
     method: 'POST',
@@ -53,6 +52,7 @@ export const crearEmpleado = async (empleado: EmpleadoRequest): Promise<any> => 
   }
 };
 
+// PUT Empleado
 export const actualizarEmpleado = async (id: number, empleado: EmpleadoRequest): Promise<any> => {
   const response = await fetch(`http://localhost:8080/api/empleados/${id}`, {
     method: 'PUT',
@@ -74,7 +74,7 @@ export const actualizarEmpleado = async (id: number, empleado: EmpleadoRequest):
   }
 };
 
-// Obtener empleados
+// GET Empleados
 export const getEmpleados = async (): Promise<any[]> => {
   const response = await fetch("http://localhost:8080/api/empleados");
   if (!response.ok) {
@@ -85,7 +85,7 @@ export const getEmpleados = async (): Promise<any[]> => {
   return response.json();
 };
 
-// Eliminar empleado
+// DELETE Empleado
 export const eliminarEmpleadoAPI = async (id: number): Promise<void> => {
   const response = await fetch(`http://localhost:8080/api/empleados/${id}`, {
     method: "DELETE",
@@ -98,7 +98,7 @@ export const eliminarEmpleadoAPI = async (id: number): Promise<void> => {
   }
 };
 
-// Dar de baja empleado
+// PUT Dar de baja Empleado
 export const darDeBajaEmpleadoAPI = async (id: number): Promise<void> => {
   const response = await fetch(`http://localhost:8080/api/empleados/${id}/baja`, {
     method: "PUT",
@@ -113,7 +113,7 @@ export const darDeBajaEmpleadoAPI = async (id: number): Promise<void> => {
   }
 };
 
-// Reactivar empleado
+// PUT Reactivar Empleado
 export const reactivarEmpleadoAPI = async (id: number): Promise<void> => {
   const response = await fetch(`http://localhost:8080/api/empleados/${id}/reactivar`, {
     method: "PUT",

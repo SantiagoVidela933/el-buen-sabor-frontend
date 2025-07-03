@@ -4,7 +4,6 @@ import type { GetTokenSilentlyOptions } from '@auth0/auth0-react';
 
 // GET PedidoVenta con detalles completos
 export const getPedidosVentas = async (): Promise<PedidoVenta[]> => {
-  // Primero obtenemos todos los pedidos básicos
   const response = await fetch("http://localhost:8080/api/v1/pedidoVenta", {
     method: "GET",
     headers: {
@@ -17,16 +16,14 @@ export const getPedidosVentas = async (): Promise<PedidoVenta[]> => {
     throw new Error(`Error al obtener los pedidos: ${errorText}`);
   }
 
-  // Obtenemos la lista básica de pedidos
   const pedidosBasicos: PedidoVenta[] = await response.json();
   
   try {
-    // Para cada pedido, obtenemos sus detalles completos
     const pedidosDetallados = await Promise.all(
       pedidosBasicos.map(async (pedido) => {
         if (pedido.id === undefined) {
           console.error('Pedido sin ID válido:', pedido);
-          return pedido; // Devolvemos el pedido básico si no tiene ID
+          return pedido; 
         }
         return await getPedidoVentaPorId(pedido.id);
       })
@@ -34,12 +31,11 @@ export const getPedidosVentas = async (): Promise<PedidoVenta[]> => {
     return pedidosDetallados;
   } catch (error) {
     console.error('Error al obtener detalles de los pedidos:', error);
-    // Si falla la obtención de detalles, devolvemos al menos la lista básica
     return pedidosBasicos;
   }
 };
 
-//GET PedidoVenta por id
+// GET PedidoVenta por id
 export const getPedidoVentaPorId = async (id: number): Promise<PedidoVenta> => {
   try {
     const response = await fetch(`http://localhost:8080/api/v1/pedidoVenta/pedido/${id}`, {
@@ -89,10 +85,8 @@ export const getMisPedidosVenta = async (
 
 // GET PedidoVenta por idCliente y fechas
 export const getPedidosVentasPorCliente = async (idCliente: number, fechaInicio: string, fechaFin: string) => {
-  // Construir la URL con el nuevo endpoint
   const url = new URL(`http://localhost:8080/api/v1/pedidoVenta/pedidos/cliente/${idCliente}/fechas`);
   
-  // Agregar parámetros de consulta (fechas)
   url.searchParams.append('desde', fechaInicio);
   url.searchParams.append('hasta', fechaFin);
 
@@ -195,7 +189,7 @@ export const agregarMinutosExtraPedido = async (id: number, minutosExtra: number
   const res = await fetch(`/api/v1/pedidoVenta/${id}/minutos-extra`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ minutosExtra }), // 👈 CORREGIDO: ahora es un objeto con clave-valor
+    body: JSON.stringify({ minutosExtra }), 
   });
   if (!res.ok) throw new Error("Error actualizando minutos extra");
 };

@@ -22,6 +22,8 @@ export async function getInsumosBySucursalId(sucursalId: number): Promise<Articu
     return [];
   }
 }
+
+// GET Articulos Insumo por id
 export const getArticuloInsumoById = async (id: number): Promise<ArticuloInsumo> => {
   try {
     const response = await fetch(`http://localhost:8080/api/articuloInsumo/${id}`);
@@ -35,6 +37,7 @@ export const getArticuloInsumoById = async (id: number): Promise<ArticuloInsumo>
     throw error;
   }
 };
+
 // GET Articulos Insumos
 export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
   const res = await fetch(`${API_URL}/todos`);
@@ -42,7 +45,7 @@ export async function getAllArticuloInsumo(): Promise<ArticuloInsumo[]> {
   return data.map((item: any) => ArticuloInsumo.fromJson(item));
 }
 
-  // GET Articulos Insumos activos
+// GET Articulos Insumos activos
 export async function getAllArticuloInsumoActivos(): Promise<ArticuloInsumo[]>{
   const res = await fetch(`${API_URL}/todos/activos`);
   const data = await res.json();
@@ -103,31 +106,6 @@ export async function updateArticuloInsumo(
   return ArticuloInsumo.fromJson(data);
 }
 
-// export const updateArticuloInsumo = async (
-//   id: number | string,
-//   insumoPayload: object,
-//   imagen?: File
-// ) => {
-//   const formData = new FormData();
-//   const articuloBlob = new Blob([JSON.stringify(insumoPayload)], {
-//     type: 'application/json',
-//   });
-//   formData.append('articuloManufacturado', articuloBlob);
-//   if (imagen) {
-//     formData.append('imagenes', imagen);
-//   }
-//   const res = await fetch(`${API_URL}/${id}`, {
-//     method: 'PUT',
-//     body: formData,
-//   });
-//   if (!res.ok) {
-//     const errorText = await res.text();
-//     console.error('[ERROR] Backend response:', errorText);
-//     throw new Error('Error al actualizar artículo manufacturado');
-//   }
-//   return res.json();
-// };
-
 // DELETE Articulo Insumo ( logico )
 export async function deleteArticuloInsumo(id: number): Promise<void> {
   await fetch(`${API_URL}/${id}`, {
@@ -135,6 +113,7 @@ export async function deleteArticuloInsumo(id: number): Promise<void> {
   });
 }
 
+// PATCH Dar de baja Articulo Insumo
 export const darDeBajaArticuloInsumo = async (id: number): Promise<void> => {
   const res = await fetch(`${API_URL}/${id}/darBaja`, {
     method: 'PATCH',
@@ -146,6 +125,7 @@ export const darDeBajaArticuloInsumo = async (id: number): Promise<void> => {
   }
 };
 
+// PATCH Dar de alta Articulo Insumo
 export const darDeAltaArticuloInsumo = async (id: number): Promise<void> => {
   const res = await fetch(`${API_URL}/${id}/darAlta`, {
     method: 'PATCH',
@@ -157,7 +137,7 @@ export const darDeAltaArticuloInsumo = async (id: number): Promise<void> => {
   }
 };
 
-// subir imagen para insumo NO para elaborar
+// POST imagen para insumo NO para elaborar
 export async function subirImagen(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
@@ -171,10 +151,11 @@ export async function subirImagen(file: File): Promise<string> {
     throw new Error("Error al subir la imagen");
   }
 
-  const data = await res.json(); // suponiendo que responde el objeto Imagen con campo nombre
+  const data = await res.json(); 
   return data.nombre;
 }
 
+// PATCH Actualizar stock de Articulo Insumo
 export const updateStockSucursalInsumo = async (idInsumo: number, idSucursal: number, data: { stockActual: number} ): Promise<void> => {
   const res = await fetch(`http://localhost:8080/api/sucursalInsumos/stock/${idInsumo}/${idSucursal}`, {
     method: 'PATCH',

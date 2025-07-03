@@ -1,5 +1,6 @@
 import { Promocion } from "../models/Promocion";
 
+// GET Promociones
 export async function getPromociones(): Promise<Promocion[]> {
   const response = await fetch(`http://localhost:8080/api/v1/promociones`);
 
@@ -14,7 +15,7 @@ export async function getPromociones(): Promise<Promocion[]> {
   return dataApi;
 }
 
-// POST - Crear nueva categoría
+// POST Promocion
 export async function createPromocion(
    promocion: Partial<Promocion>,
    imagen: File
@@ -44,6 +45,7 @@ export async function createPromocion(
   return Promocion.fromJson(data);
 }
 
+// PUT Promocion
 export async function updatePromocion(
   promocion: Partial<Promocion>,
   imagen: File,
@@ -65,9 +67,7 @@ export async function updatePromocion(
     });
 
     if (!response.ok) {
-      // Si la respuesta no es OK (por ejemplo, status 500), leemos el texto del body.
         return response.text().then(errorText => {
-        // Lanzamos un error con el texto del cuerpo.
         throw new Error(errorText || 'Error desconocido en el servidor');
       });
     }
@@ -77,7 +77,7 @@ export async function updatePromocion(
     return data;
 }
 
-// DELETE Articulo Manufacturado por ID
+// DELETE Promocion
 export const deletePromocion = async (id?: number): Promise<void> => {
   const response = await fetch(`http://localhost:8080/api/v1/promociones/${id}`, {
     method: 'DELETE',
@@ -90,6 +90,7 @@ export const deletePromocion = async (id?: number): Promise<void> => {
   }
 };
 
+// PUT Dar de alta Promocion
 export const darDeAltaPromocion = async (id: number): Promise<void> => {
   const response = await fetch(`http://localhost:8080/api/v1/promociones/alta/${id}`, {
     method: 'PUT',
